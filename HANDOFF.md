@@ -121,7 +121,10 @@ Montserrat en Excel (si no está instalada, Excel usa otra). Ver CLAUDE.md «Pla
   rama `main`, primer commit `a689e30`. `Programa/` queda **fuera** (pedido del usuario), igual que
   `.venv/`, `data/*.db`, `data/reportes/` y `respaldos/`. Autor: identidad global ya configurada
   en el equipo (stanjul), elegida por el usuario. `.gitattributes`: `run.sh` LF, `run.bat` CRLF.
-  Aún sin remoto (GitHub opcional). Hacer un commit al cerrar cada fase.
+  Remoto: **https://github.com/stanjul/CEP-TRABAJO-FINAL** (`origin`, privado, subido el 2026-11-23).
+  Hacer commit y `git push` al cerrar cada fase. La sesión de GitHub quedó guardada en el
+  Administrador de credenciales; desde una terminal no interactiva, el push necesita
+  `GCM_INTERACTIVE=always` la primera vez.
 - Respaldo previo: `respaldos/antes_plantilla_2026-11-23.zip`.
 
 ## 3. Decisiones tomadas con el usuario (no volver a discutir)
