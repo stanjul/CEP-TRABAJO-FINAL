@@ -101,6 +101,21 @@ de Google Stitch (`Stitch/stitch_industrial_spc_suite/`). `Programa/` es un proy
 - Pantalla `/ingenieria/plantilla` (`ing_plantilla.html/js`). Verificación del Excel: abrirlo con
   Excel por COM (`DisplayFormat.Interior.Color`, `ExportAsFixedFormat`) si está instalado.
 
+## Programa de escritorio e instalador (2026-11)
+- `app/escritorio.py` = entrada de `CEP.exe`: datos en `Documentos\CEP` (o `CEP_DATOS`), mutex de
+  instancia única, respaldo al iniciar, `registro.log`, uvicorn en un hilo (127.0.0.1) y ventana
+  pywebview/WebView2 con pantalla de carga inmediata. `private_mode=False` + `storage_path` para
+  conservar localStorage; `ALLOW_DOWNLOADS` para PDF/Excel. `--sin-ventana --puerto N` para pruebas.
+- Variables de entorno: `CEP_MODO=escritorio`, `CEP_SIN_DEMO=1` (la base arranca vacía; demo con
+  `POST /api/sistema/demo`). `app/db/respaldos.py` + `app/api/sistema.py` (respaldos, restaurar,
+  copia descargable). sqlite3: cerrar conexiones con `contextlib.closing` (Windows bloquea archivos).
+- Construir: `construir.bat` → `instalador/cep.spec` (PyInstaller onedir) + `instalador/cep.iss`
+  (Inno Setup, por usuario, sin admin; el .iss debe guardarse en UTF-8 **con BOM**). Salida en
+  `instalador/salida/`. Construcción intermedia en `%USERPROFILE%\.cep-construccion`: **nunca en
+  AppData** (el Python de la Microsoft Store la redirige en silencio a su carpeta privada).
+- Al agregar archivos que la app lee de disco, sumarlos a `datas` en `cep.spec`.
+- Skill del proyecto `construir-cep` (`.claude/skills/`) con la receta y la verificación.
+
 ## Diseño (frontend)
 - Conservar las clases Tailwind y la estructura de Stitch; la configuración de colores está en
   `Stitch/.../industrial_precision_control/DESIGN.md`.

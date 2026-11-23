@@ -78,6 +78,7 @@
           <h2 class="font-headline-sm text-headline-sm font-bold">Empieza creando la primera variable</h2>
           <p class="font-body-md text-body-md text-on-surface-variant max-w-xl">El asistente te pregunta qué se revisa, cómo se registra y cada cuánto se toma la muestra, y elige la gráfica adecuada.</p>
           <button class="mt-space-sm h-12 px-space-lg rounded-lg bg-primary text-on-primary font-label-lg text-label-lg font-bold" data-abrir-asistente type="button">Nueva variable</button>
+          <a class="font-body-md text-body-md text-primary underline" href="/ingenieria/base-de-datos">o cargar los datos de demostración para conocer la aplicación</a>
         </section>`;
     } else {
       cont.innerHTML = procesos.map((p) => `

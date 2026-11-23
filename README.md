@@ -6,10 +6,11 @@ Western Electric con alarmas trazables, validación de supuestos, capacidad, dis
 muestreo de aceptación y reportes PDF / Excel. Interfaz basada en el diseño exportado de Google Stitch.
 
 ## Inicio rápido
-- **Windows:** doble clic en `run.bat`
-- **Linux / macOS:** `./run.sh`
-
-Se abre el navegador en `http://127.0.0.1:8000` con datos de demostración cargados.
+- **Usuarios (Windows):** instalar `CEP-Setup-1.0.0.exe`. Programa de escritorio con ventana propia;
+  los datos quedan en `Documentos\CEP`. Se genera con `construir.bat` (ver
+  [INSTALACION.md](docs/INSTALACION.md) §0).
+- **Desde el código, Windows:** doble clic en `run.bat` · **Linux / macOS:** `./run.sh`
+  (se abre el navegador en `http://127.0.0.1:8000` con datos de demostración cargados).
 
 ## Documentación
 - [Instalación y solución de problemas](docs/INSTALACION.md)
@@ -23,6 +24,8 @@ app/core/      lógica estadística pura (validada con Montgomery)
 app/api/       endpoints FastAPI por módulo
 app/db/        modelos SQLAlchemy, sesión SQLite y datos de demostración
 app/web/       plantillas Jinja2 (derivadas de Stitch), JS por pantalla y recursos locales
+app/escritorio.py  programa de escritorio (ventana propia + servidor local)
+instalador/    receta de PyInstaller (cep.spec), Inno Setup (cep.iss) e ícono
 tests/         pytest
 datos_prueba/  CSV/XLSX de ejemplo y script generador
 docs/          instalación, manual y capturas

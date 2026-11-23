@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{# Base de datos y respaldos: dónde están los datos, respaldos automáticos/manuales, restaurar,
+   descargar una copia y cargar la demostración. Lógica: ing_base_datos.js · API: /api/sistema/* #}
+{% block contenido %}
+<section class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-xs">
+  <h1 class="font-headline-md text-headline-md font-bold text-on-surface">Base de datos y respaldos</h1>
+  <p class="font-body-md text-body-md text-on-surface-variant max-w-3xl">
+    Todos los procesos se guardan en un solo archivo en este equipo. La aplicación hace un respaldo cada vez que se
+    abre; también puedes hacerlo a mano, volver a un respaldo o descargar una copia para guardarla o compartirla.</p>
+</section>
+
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-space-lg items-start">
+  <section class="xl:col-span-5 bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+    <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Tus datos</h2>
+    <dl class="grid grid-cols-3 gap-space-sm text-center" id="bd-conteos">
+      {% for id, t in [("procesos", "Procesos"), ("variables", "Variables"), ("muestras", "Muestras")] %}
+      <div class="p-space-sm rounded-lg bg-surface-container-low"><dt class="font-body-sm text-body-sm text-on-surface-variant">{{ t }}</dt>
+        <dd class="font-metric-display-mobile text-metric-display-mobile font-bold text-primary" id="bd-{{ id }}">—</dd></div>
+      {% endfor %}
+    </dl>
+    <div class="flex flex-col gap-1">
+      <span class="font-body-sm text-body-sm text-on-surface-variant">Ubicación</span>
+      <code class="font-body-sm text-body-sm text-on-surface break-all bg-surface-container-low rounded p-space-xs" id="bd-ruta">—</code>
+      <span class="font-body-sm text-body-sm text-on-surface-variant" id="bd-tamano">—</span>
+    </div>
+    <div class="flex flex-wrap gap-space-sm">
+      <button class="h-11 px-space-md rounded-lg bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md font-bold flex items-center gap-space-xs" id="bd-respaldar" type="button">
+        <span class="material-symbols-outlined text-lg">backup</span>Respaldar ahora</button>
+      <a class="h-11 px-space-md rounded-lg bg-surface-container-low hover:bg-surface-container text-primary font-label-md text-label-md font-semibold flex items-center gap-space-xs" href="/api/sistema/base/descargar" id="bd-descargar">
+        <span class="material-symbols-outlined text-lg">download</span>Descargar una copia</a>
+      <button class="hidden h-11 px-space-md rounded-lg bg-surface-container-low hover:bg-surface-container text-primary font-label-md text-label-md font-semibold items-center gap-space-xs" id="bd-carpeta" type="button">
+        <span class="material-symbols-outlined text-lg">folder_open</span>Abrir la carpeta</button>
+    </div>
+    <div class="hidden flex-col gap-space-sm p-space-md rounded-lg bg-primary-fixed/30" id="bd-demo">
+      <span class="font-body-md text-body-md font-semibold">La base está vacía</span>
+      <span class="font-body-sm text-body-sm text-on-surface-variant">Puedes empezar creando tu primer proceso o cargar los datos de demostración (un proceso de envasado y los ejemplos del libro de Montgomery) para conocer la aplicación.</span>
+      <div class="flex flex-wrap gap-space-sm">
+        <a class="h-10 px-space-md rounded-lg bg-primary text-on-primary font-label-md text-label-md font-bold flex items-center" href="/ingenieria/mis-variables?nueva=1">Crear mi primer proceso</a>
+        <button class="h-10 px-space-md rounded-lg bg-surface-container-lowest hover:bg-surface-container text-primary font-label-md text-label-md font-semibold" id="bd-cargar-demo" type="button">Cargar demostración</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="xl:col-span-7 bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+    <div class="flex flex-wrap items-baseline justify-between gap-space-sm">
+      <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Respaldos</h2>
+      <span class="font-body-sm text-body-sm text-on-surface-variant">Se guardan los últimos 20</span>
+    </div>
+    <div class="overflow-x-auto"><table class="w-full text-left font-body-md text-body-md">
+      <thead><tr class="border-b border-outline-variant font-body-sm text-body-sm text-on-surface-variant">
+        <th class="py-space-xs pr-space-sm font-normal">Fecha</th><th class="py-space-xs pr-space-sm font-normal">Motivo</th>
+        <th class="py-space-xs pr-space-sm font-normal text-right">Tamaño</th><th class="py-space-xs font-normal text-right">Acciones</th></tr></thead>
+      <tbody class="divide-y divide-surface-container" id="bd-respaldos"></tbody>
+    </table></div>
+    <div class="flex flex-col gap-space-xs pt-space-sm border-t border-outline-variant/40">
+      <span class="font-body-md text-body-md font-semibold">Restaurar desde un archivo</span>
+      <span class="font-body-sm text-body-sm text-on-surface-variant">Reemplaza todos los datos por los de una copia descargada antes (.db). La base actual se respalda primero, así que el cambio se puede deshacer.</span>
+      <label class="self-start h-11 px-space-md rounded-lg bg-surface-container-low hover:bg-surface-container text-primary font-label-md text-label-md font-semibold flex items-center gap-space-xs cursor-pointer">
+        <span class="material-symbols-outlined text-lg">upload_file</span>Elegir archivo .db<input accept=".db" class="sr-only" id="bd-archivo" type="file"/></label>
+    </div>
+  </section>
+</div>
+{% endblock %}
+{% block scripts %}<script src="/static/js/ing_base_datos.js"></script>{% endblock %}

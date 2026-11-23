@@ -6,6 +6,7 @@ Arranque: `run.bat` / `run.sh`, o bien
 
 from __future__ import annotations
 
+import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -23,10 +24,15 @@ WEB = Path(__file__).resolve().parent / "web"
 
 @asynccontextmanager
 async def ciclo_de_vida(_app: FastAPI):
-    """Al iniciar: crea las tablas y carga los datos de demostración si la base está vacía."""
+    """Al iniciar: crea las tablas y carga los datos de demostración si la base está vacía.
+
+    En el programa de escritorio (CEP_SIN_DEMO=1) la base arranca vacía: la demostración se carga
+    a pedido desde la interfaz (POST /api/sistema/demo).
+    """
     sesion.crear_tablas()
-    with sesion.SesionLocal() as db:
-        sembrar(db)
+    if os.environ.get("CEP_SIN_DEMO") != "1":
+        with sesion.SesionLocal() as db:
+            sembrar(db)
     yield
 
 
@@ -56,4 +62,5 @@ async def revalidar_estaticos(request, call_next):
 
 @app.get("/api/salud", tags=["Sistema"], summary="Estado del servidor")
 def salud():
-    return {"estado": "ok", "base_de_datos": sesion.engine.url.database}
+    return {"estado": "ok", "base_de_datos": sesion.engine.url.database, "app": "CEP",
+            "modo": os.environ.get("CEP_MODO", "servidor")}

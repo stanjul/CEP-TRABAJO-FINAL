@@ -100,7 +100,8 @@
         ("diseno", "/ingenieria/diseno", "tune", "Plan de muestreo (ARL)"),
         ("muestreo", "/ingenieria/muestreo", "verified_user", "Muestreo Aceptación (OC)"),
         ("configuracion", "/ingenieria/configuracion", "settings_input_component", "Límites & Reglas"),
-        ("reportes", "/ingenieria/reportes", "receipt_long", "Reportes y Auditoría")] %}
+        ("reportes", "/ingenieria/reportes", "receipt_long", "Reportes y Auditoría"),
+        ("base_datos", "/ingenieria/base-de-datos", "database", "Base de datos y respaldos")] %}
     <a data-con-variable href="{{ url }}" {% if pagina == id %}aria-current="page"{% endif %}
        class="flex items-center justify-between gap-space-sm px-space-md py-2.5 rounded-lg transition-all {{ nav_activo if pagina == id else nav_inactivo }}">
       <span class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-xl">{{ icono }}</span><span class="font-body-md text-body-md">{{ texto }}</span></span>

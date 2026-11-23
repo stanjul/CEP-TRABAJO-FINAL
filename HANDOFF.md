@@ -107,7 +107,14 @@ Montserrat en Excel (si no está instalada, Excel usa otra). Ver CLAUDE.md «Pla
 - Verificado con Excel 16 (COM): abre sin reparar, fórmulas correctas, ámbar solo en valores fuera
   de lo aceptado. No se pudo verificar la paginación de impresión en este equipo (Excel exporta
   páginas de 842×204 pt también sin la configuración nueva: problema del entorno, sin impresora).
-- Pendiente del usuario: escritorio/instalador (PyInstaller + pywebview + Inno Setup).
+- **Programa de escritorio e instalador (hecho, 2026-11-23):** decisiones del usuario: una base para
+  todo, solo este equipo, instalador. `CEP-Setup-1.0.0.exe` (68,8 MB, instala 205 MB por usuario sin
+  admin). Verificado: build, programa empaquetado (pantallas, demo, PDF LaTeX, plantilla Excel),
+  ventana WebView2 real (pantalla de carga, base vacía, instancia única, diálogo «Guardar como» en
+  descargas) e instalación/desinstalación silenciosa (conserva Documentos\CEP). Arranque: ~50 s la
+  primera vez (Defender + caché de fuentes de matplotlib), ~10 s después; la ventana aparece al
+  instante con pantalla de carga. Ver CLAUDE.md «Programa de escritorio» y la skill `construir-cep`.
+  No probado: Windows 10 sin WebView2 y un equipo limpio distinto de este.
 - **Git (2026-11-23):** instalado con winget (2.56.1). Repositorio local en la carpeta del proyecto,
   rama `main`, primer commit `a689e30`. `Programa/` queda **fuera** (pedido del usuario), igual que
   `.venv/`, `data/*.db`, `data/reportes/` y `respaldos/`. Autor: identidad global ya configurada

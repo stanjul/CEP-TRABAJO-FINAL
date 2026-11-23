@@ -29,6 +29,7 @@ PANTALLAS = {
     "/ingenieria/muestreo": ("ing_muestreo.html", "ingenieria", "muestreo", "Muestreo de Aceptación"),
     "/ingenieria/configuracion": ("ing_configuracion.html", "ingenieria", "configuracion", "Configuración y Auditoría"),
     "/ingenieria/reportes": ("ing_reportes.html", "ingenieria", "reportes", "Reportes"),
+    "/ingenieria/base-de-datos": ("ing_base_datos.html", "ingenieria", "base_datos", "Base de datos y respaldos"),
 }
 
 

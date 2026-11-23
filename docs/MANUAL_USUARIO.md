@@ -296,6 +296,23 @@ la carta explicando por qué**. Las variables sin muestras se pueden eliminar.
 
 ---
 
+## 11b. Ingeniería · Base de datos y respaldos
+
+Todos los procesos se guardan en un único archivo (`Documentos\CEP\cep.db` en el programa de
+escritorio). En esta pantalla:
+
+- **Tus datos:** cuántos procesos, variables y muestras hay, dónde está la base y su tamaño.
+- **Respaldar ahora:** guarda una copia en `respaldos\`. Además, el programa hace un respaldo cada
+  vez que se abre (se conservan los últimos 20).
+- **Volver a este:** devuelve la base al estado de un respaldo. Antes guarda un respaldo de la base
+  actual, así que siempre se puede deshacer.
+- **Descargar una copia / Restaurar desde un archivo:** para guardar los datos aparte o pasarlos a
+  otro equipo.
+- **Cargar demostración:** solo con la base vacía; carga un proceso de envasado y los ejemplos del
+  libro de Montgomery.
+
+---
+
 ## 12. Ingeniería · 8. Reportes
 ![Reportes](capturas/11_reportes.png)
 

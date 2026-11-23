@@ -1,8 +1,58 @@
 # Instalación y puesta en marcha
 
 Aplicación de Control Estadístico de Procesos (CEP) — trabajo final. Corre en una sola
-computadora: servidor local (FastAPI) + base SQLite + interfaz web en el navegador. No requiere
-internet una vez instalada.
+computadora: servidor local (FastAPI) + base SQLite + interfaz propia. No requiere internet.
+
+Hay dos formas de usarla:
+
+| Forma | Para quién | Qué se necesita |
+|---|---|---|
+| **Programa de escritorio** (`CEP-Setup-1.0.0.exe`) | Quien solo va a usar la aplicación | Windows 10/11 de 64 bits. Nada más. |
+| **Desde el código** (`run.bat` / `run.sh`) | Quien la desarrolla o la revisa por dentro | Python 3.11+ (ver §1 en adelante) |
+
+## 0. Programa de escritorio (recomendado)
+
+1. Doble clic en **`CEP-Setup-1.0.0.exe`** (unos 70 MB). No pide permisos de administrador: se
+   instala para el usuario actual. Si Windows muestra «Windows protegió su PC» (el programa no
+   está firmado digitalmente), elegir **Más información → Ejecutar de todas formas**.
+2. Abrir **CEP** desde el menú Inicio o el acceso directo del escritorio. Se abre en su propia
+   ventana (sin navegador). La primera vez puede tardar hasta un minuto mientras Windows revisa
+   el programa; las siguientes, unos segundos.
+3. La base arranca **vacía**: crear el primer proceso con el asistente, o cargar los datos de
+   demostración desde **Ingeniería → Base de datos y respaldos**.
+
+**Dónde quedan los datos:** `Documentos\CEP\`
+
+| Archivo / carpeta | Contenido |
+|---|---|
+| `cep.db` | La base de datos con todos los procesos |
+| `reportes\` | Informes PDF y Excel generados |
+| `respaldos\` | Copia automática de la base cada vez que se abre el programa (las últimas 20) |
+| `registro.log` | Registro de errores (para diagnosticar problemas) |
+
+Desinstalar (Configuración → Aplicaciones) **no borra** esta carpeta. Para pasar los datos a otro
+equipo: en **Base de datos y respaldos**, «Descargar una copia» y, en el otro equipo,
+«Restaurar desde un archivo».
+
+Para los informes PDF con LaTeX instalar además MiKTeX (opcional, ver §1); sin él, el PDF se genera
+con el formato de respaldo.
+
+### Construir el instalador (desarrolladores)
+
+Con el entorno de desarrollo listo (§2) e Inno Setup 6 (`winget install --id JRSoftware.InnoSetup -e`):
+
+```bat
+construir.bat
+```
+
+Instala PyInstaller y pywebview (`requirements-build.txt`), corre las pruebas, empaqueta con
+PyInstaller (`instalador\cep.spec`, unos 4 minutos) y arma el instalador con Inno Setup
+(`instalador\cep.iss`). Resultado: `instalador\salida\CEP-Setup-1.0.0.exe`. La construcción
+intermedia va a `%USERPROFILE%\.cep-construccion` (fuera de OneDrive y de AppData: el Python de la
+Microsoft Store redirige en silencio lo que se escribe en AppData).
+
+Para probar el programa de escritorio sin empaquetar: `.venv\Scripts\python.exe -m app.escritorio`
+(requiere `pip install pywebview`).
 
 ## 1. Requisitos
 

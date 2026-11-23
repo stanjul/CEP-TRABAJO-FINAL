@@ -240,7 +240,13 @@
       const t = turnoActual(turnos);
       document.getElementById("hdr-turno").textContent = t ? `${t.nombre} | ${t.inicio} - ${t.fin}` : "Fuera de turno";
     } catch (e) { /* el header no bloquea la pantalla */ }
-    if (!variable) return;
+    if (!variable) {
+      // Base vacía: no hay proceso que evaluar (no mostrar «Va bien»).
+      const est = document.getElementById("hdr-estado");
+      est.className = "flex items-center gap-space-xs px-space-sm py-1 rounded bg-primary text-primary-fixed font-label-sm text-label-sm font-semibold";
+      est.innerHTML = '<span class="material-symbols-outlined text-sm">hourglass_empty</span><span>Sin datos</span>';
+      return;
+    }
     try {
       const c = await api(`/alarmas/contador?variable_id=${variable.id}`);
       const badge = document.getElementById("hdr-alarmas");
@@ -271,10 +277,12 @@
     }
     CEP.ctx = ctx;
     pintarEstado(ctx.variable);
-    if (!ctx.variable && !["mis_variables", "plantilla"].includes(document.body.dataset.pagina)) {
-      // Base vacía: en lugar de pantallas en blanco, se invita a crear la primera variable.
+    if (!ctx.variable && !["mis_variables", "plantilla", "base_datos"].includes(document.body.dataset.pagina)) {
+      // Base vacía: en lugar de pantallas en blanco, se invita a crear la primera variable
+      // (o a cargar la demostración desde «Base de datos y respaldos»).
       avisoPantalla(document.querySelector("main > div"), "Todavía no hay variables",
-        "Para empezar, crea la variable que quieres controlar: el asistente te guía en cuatro pasos.",
+        "Para empezar, crea la variable que quieres controlar: el asistente te guía en cuatro pasos. "
+        + 'También puedes <a class="text-primary underline" href="/ingenieria/base-de-datos">cargar los datos de demostración</a> para conocer la aplicación.',
         ["/ingenieria/mis-variables?nueva=1", "Crear la primera variable"]);
       return;
     }

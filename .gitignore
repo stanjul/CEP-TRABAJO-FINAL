@@ -11,6 +11,11 @@ data/reportes/
 respaldos/
 *.log
 
+# Programa de escritorio: salida de PyInstaller e instalador generado
+build/
+dist/
+instalador/salida/
+
 # Proyecto anterior (Vite/Preact), fuera de este repositorio a pedido del usuario
 Programa/
 
