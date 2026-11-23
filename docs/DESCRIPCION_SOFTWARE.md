@@ -38,7 +38,7 @@ qué fracción del producto se espera fuera de ella y con qué plan de muestreo 
 └───────────────────────────────┬──────────────────────────────────────────┘
                                 │ HTTP/JSON (127.0.0.1)
 ┌───────────────────────────────┴──────────────────────────────────────────┐
-│ app/api — FastAPI: 67 operaciones REST en 16 grupos (routers por módulo) │
+│ app/api — FastAPI: 67 operaciones REST en 15 grupos (routers por módulo) │
 │   servicios.py: orquesta base de datos + núcleo (sin fórmulas propias)   │
 └──────────────┬───────────────────────────────────────┬───────────────────┘
                │                                       │

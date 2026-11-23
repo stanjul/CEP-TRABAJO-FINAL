@@ -1,0 +1,596 @@
+% Descripción técnica del software CEP. Compilar con:
+%   pdflatex DESCRIPCION_SOFTWARE.tex   (dos pasadas)
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[spanish,es-noshorthands,es-tabla,es-nodecimaldot]{babel}
+\usepackage[margin=2.4cm]{geometry}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{booktabs,tabularx,longtable,array}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{needspace}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{primario}{HTML}{0F4C5C}
+\definecolor{gristexto}{HTML}{40484C}
+\definecolor{fondo}{HTML}{EEF4F5}
+\definecolor{borde}{HTML}{BFC8CB}
+
+\titleformat{\section}{\needspace{6\baselineskip}\Large\bfseries\color{primario}}{\thesection.}{0.6em}{}
+\titleformat{\subsection}{\needspace{5\baselineskip}\large\bfseries\color{primario}}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}{\needspace{4\baselineskip}\normalsize\bfseries}{}{0em}{}
+\titlespacing*{\section}{0pt}{1.6em}{0.7em}
+\titlespacing*{\subsection}{0pt}{1.2em}{0.5em}
+\titlespacing*{\subsubsection}{0pt}{1em}{0.3em}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.55em}
+\setlist{itemsep=0.25em,topsep=0.3em,leftmargin=1.4em}
+\renewcommand{\arraystretch}{1.25}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{gristexto}CEP — Control Estadístico de Procesos}
+\fancyhead[R]{\small\color{gristexto}Descripción técnica del software}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\newcommand{\bs}{\textbackslash{}}
+\newcommand{\ruta}[1]{\texttt{#1}}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+\begin{document}
+
+% ---------------------------------------------------------------- portada
+\begin{titlepage}
+\vspace*{3cm}
+{\color{primario}\rule{\linewidth}{1.2pt}}\par\vspace{1.2em}
+{\fontsize{30}{36}\selectfont\bfseries\color{primario} CEP\par}
+\vspace{0.4em}
+{\LARGE Control Estadístico de Procesos\par}
+\vspace{1.5em}
+{\Large Descripción técnica del software\par}
+\vspace{1.2em}
+{\color{primario}\rule{\linewidth}{1.2pt}}\par
+\vspace{2em}
+{\large Versión 1.0.0 \hfill Noviembre de 2026\par}
+\vfill
+\begin{minipage}{\linewidth}\color{gristexto}
+Programa de escritorio para Windows (y aplicación web local) que implementa el control
+estadístico de procesos de punta a punta: captura de datos, cartas de control en Fase~I y
+Fase~II, validación de supuestos, capacidad, diseño de cartas por ARL/ATS, muestreo de
+aceptación y reportes con trazabilidad.
+
+\medskip
+Este documento describe qué hace el software y cómo está construido. El uso paso a paso está
+en el manual de usuario y la instalación en la guía de instalación.
+\end{minipage}
+\end{titlepage}
+
+{\setlength{\parskip}{0pt}\tableofcontents}
+\newpage
+
+% ---------------------------------------------------------------- 1
+\section{Propósito y alcance}
+
+CEP convierte las mediciones o conteos de un proceso productivo en información para decidir:
+si el proceso es estable (está bajo control estadístico), si es capaz de cumplir la
+especificación, qué fracción del producto se espera fuera de ella y con qué plan de muestreo
+conviene vigilarlo.
+
+\begin{tabularx}{\linewidth}{@{}P{3cm}L@{}}
+\toprule
+\textbf{Aspecto} & \textbf{Alcance}\\
+\midrule
+Datos & Variables continuas (mediciones) y atributos (unidades defectuosas o defectos por unidad).\\
+Fases & Fase~I (estimación de límites con depuración de causas asignables) y Fase~II (monitoreo con límites congelados).\\
+Usuarios & Dos perfiles: \textbf{Operario} (registro y lectura del proceso en palabras simples) e \textbf{Ingeniería} (análisis completo).\\
+Despliegue & Un solo equipo: servidor local en \texttt{127.0.0.1}, base SQLite, sin internet ni servicios externos.\\
+Base teórica & Montgomery, \emph{Introduction to Statistical Quality Control}. Los resultados del núcleo estadístico se validan con sus ejemplos resueltos.\\
+\bottomrule
+\end{tabularx}
+
+% ---------------------------------------------------------------- 2
+\section{Arquitectura}
+
+\subsection{Capas}
+
+\begin{center}
+\begin{tikzpicture}[
+  caja/.style={draw=borde, fill=fondo, rounded corners=2pt, align=center,
+               inner sep=6pt, font=\small},
+  flecha/.style={-{Stealth[length=2.2mm]}, draw=primario, thick}]
+\node[caja, text width=0.86\linewidth] (web) {%
+  \textbf{Interfaz} — ventana propia (WebView2 vía pywebview) o navegador en modo servidor\\
+  16 pantallas Jinja2 + JavaScript por pantalla + Plotly.js (todo local)};
+\node[caja, text width=0.86\linewidth, below=0.9cm of web] (api) {%
+  \textbf{\texttt{app/api}} — FastAPI: 67 operaciones REST en 15 grupos (un router por módulo)\\
+  \texttt{servicios.py}: combina base de datos y núcleo, sin fórmulas propias};
+\node[caja, text width=0.39\linewidth, below left=0.9cm and -0.43\linewidth of api] (db) {%
+  \textbf{\texttt{app/db}} — SQLAlchemy 2\\SQLite (un archivo \texttt{cep.db})\\migraciones y respaldos};
+\node[caja, text width=0.39\linewidth, below right=0.9cm and -0.43\linewidth of api] (core) {%
+  \textbf{\texttt{app/core}} — núcleo estadístico puro\\listas/arrays $\rightarrow$ \texttt{dict} JSON\\sin dependencias de web ni de BD};
+\draw[flecha] (web) -- node[right, font=\footnotesize, color=gristexto]{HTTP/JSON (127.0.0.1)} (api);
+\draw[flecha] (api.south -| db.north) -- (db.north);
+\draw[flecha] (api.south -| core.north) -- (core.north);
+\end{tikzpicture}
+\end{center}
+
+\textbf{Regla de dependencias.} \texttt{app/core} no importa FastAPI, SQLAlchemy ni nada de las
+otras capas. Cada función recibe datos y devuelve diccionarios serializables, y documenta en su
+docstring la fórmula que implementa. Esto permite probar la estadística de forma aislada y
+reutilizarla en la API, los reportes y la consola (\texttt{datos\_prueba/demo\_core.py}).
+
+\subsection{Tecnologías}
+
+\begin{tabularx}{\linewidth}{@{}P{3.4cm}L@{}}
+\toprule
+\textbf{Capa} & \textbf{Tecnología (versión instalada)}\\
+\midrule
+Lenguaje & Python 3.11\\
+Cálculo & NumPy 2.4, SciPy 1.17, pandas 3.1, statsmodels 0.15\\
+API y servidor & FastAPI 0.165, Uvicorn 0.54, Pydantic (validación de entradas)\\
+Persistencia & SQLAlchemy 2.1 sobre SQLite\\
+Interfaz & Jinja2 3.1, JavaScript sin framework, Tailwind CSS (local), Plotly.js 2.35 (local)\\
+Reportes & LaTeX (\texttt{pdflatex}, MiKTeX/TeX Live) + Jinja2; respaldo con ReportLab 5.1; Excel con openpyxl 3.1; figuras con Matplotlib 3.11\\
+Escritorio & pywebview 6.2 (Microsoft Edge WebView2), PyInstaller 6.22, Inno Setup 6\\
+Pruebas & pytest (278 pruebas automáticas)\\
+\bottomrule
+\end{tabularx}
+
+Todos los recursos de la interfaz (Tailwind, Plotly, tipografías League Spartan y Montserrat,
+íconos Material Symbols) se sirven desde la propia aplicación: no hay solicitudes a internet
+durante la ejecución.
+
+\subsection{Tamaño del código propio}
+
+\begin{tabularx}{\linewidth}{@{}Lrr@{}}
+\toprule
+\textbf{Capa} & \textbf{Archivos} & \textbf{Líneas}\\
+\midrule
+\texttt{app/core} (estadística, reportes, plantilla) & 15 & $\approx$ 4\,000\\
+\texttt{app/api} (endpoints y servicios) & 19 & $\approx$ 2\,200\\
+\texttt{app/db} (modelos, sesión, semilla, respaldos) & 5 & $\approx$ 400\\
+\texttt{app/web} (plantillas HTML y JavaScript) & 39 & $\approx$ 5\,800\\
+\texttt{tests} & 23 & $\approx$ 1\,900\\
+\bottomrule
+\end{tabularx}
+
+% ---------------------------------------------------------------- 3
+\section{Modos de uso}
+
+\subsection{Programa de escritorio (distribución a usuarios)}
+\begin{itemize}
+\item \textbf{Instalador:} \texttt{CEP-Setup-1.0.0.exe} ($\approx$ 69~MB). Instala por usuario,
+  sin permisos de administrador ($\approx$ 205~MB instalados), crea accesos directos y un
+  desinstalador.
+\item \textbf{Ejecución:} \texttt{CEP.exe} levanta el servidor en \texttt{127.0.0.1} en un puerto
+  libre (8000--8099) y abre una ventana propia con WebView2. Al cerrar la ventana se detiene el
+  servidor. Se impide una segunda instancia (mutex de Windows).
+\item \textbf{Datos:} \ruta{C:\bs Users\bs <usuario>\bs CEP\bs} (fuera de OneDrive):
+  \texttt{cep.db}, \texttt{reportes\bs}, \texttt{respaldos\bs} y \texttt{registro.log}.
+  Desinstalar o actualizar no borra esta carpeta.
+\item \textbf{Primer arranque:} base vacía; los datos de demostración se cargan a pedido.
+\item \textbf{Respaldo automático} de la base en cada apertura (se conservan los últimos 20).
+\end{itemize}
+
+\subsection{Modo servidor (desarrollo y revisión)}
+\texttt{run.bat} (Windows) o \texttt{run.sh} (Linux/macOS) crean el entorno virtual, instalan
+dependencias, siembran los datos de demostración y abren el navegador en
+\texttt{http://127.0.0.1:8000}. La base queda en \texttt{data/cep.db}.
+
+\subsection{API REST}
+Toda la funcionalidad está disponible como API JSON con documentación interactiva (OpenAPI) en
+\texttt{/docs}. La interfaz no tiene lógica estadística propia: consume esta API.
+
+\subsection{Perfiles de la interfaz}
+
+\begin{tabularx}{\linewidth}{@{}P{2.2cm}P{4.6cm}L@{}}
+\toprule
+\textbf{Perfil} & \textbf{Pantallas} & \textbf{Enfoque}\\
+\midrule
+Operario & Registrar muestra, Cómo va el proceso, Alertas, Historial de muestras &
+  Lenguaje simple: estado del proceso en palabras («El proceso va bien», «Revisar», «Detener y
+  avisar»), qué hacer, una sola gráfica y alertas explicadas sin códigos de reglas.\\
+Ingeniería & 12 pantallas (ver sección~\ref{sec:interfaz}) &
+  Análisis completo, configuración, diseño, reportes y administración de la base.\\
+\bottomrule
+\end{tabularx}
+
+No hay inicio de sesión: el nombre del usuario se indica en el encabezado y viaja con cada
+acción registrada (trazabilidad).
+
+% ---------------------------------------------------------------- 4
+\section{Modelo de datos}
+
+Una sola base SQLite guarda todos los procesos de la planta.
+
+\begin{tabularx}{\linewidth}{@{}P{4.2cm}L@{}}
+\toprule
+\textbf{Tabla} & \textbf{Contenido}\\
+\midrule
+\texttt{procesos} & Proceso o línea productiva (nombre, planta, línea, descripción).\\
+\texttt{variables} & Característica de calidad y su configuración: tipo de carta, tamaño de muestra $n$, frecuencia, especificaciones (LEI, objetivo, LES), ancho de límites $k$, estimador de $\sigma$, $\sigma$ fijada por el ingeniero, reglas activas, fase, decimales y versión.\\
+\texttt{subgrupos} & Cada muestra: número, fecha y hora, fase (\texttt{I}, \texttt{II}, \texttt{archivo}, \texttt{anulado}), conteo y tamaño (atributos), operario, lote, origen (manual, importado, plantilla, semilla) y exclusión con causa y acción.\\
+\texttt{mediciones} & Valores individuales de cada subgrupo (variables).\\
+\texttt{limites\_carta} & Límites congelados para la Fase~II, con historial (uno activo).\\
+\texttt{alarmas} & Violaciones de reglas y eventos manuales (parada, retención, anomalía), con explicación en palabras, severidad, estado, causa y acción.\\
+\texttt{cambios\_configuracion} & Historial de auditoría: parámetro, valor anterior y nuevo, usuario, justificación, versión y SHA-256 de la configuración.\\
+\texttt{lotes\_inspeccion} & Lotes evaluados por muestreo de aceptación y su dictamen.\\
+\texttt{reportes} & Reportes generados con su huella SHA-256.\\
+\texttt{ajustes} & Ajustes globales (turnos, modo demostración, identificadores de plantillas).\\
+\bottomrule
+\end{tabularx}
+
+Las columnas agregadas en versiones posteriores se crean automáticamente al abrir una base
+anterior (migración incorporada).
+
+% ---------------------------------------------------------------- 5
+\section{Módulos funcionales}
+
+Los módulos 1 a 8 corresponden al alcance técnico pedido para el trabajo. Para cada uno se
+indican los métodos implementados.
+
+\subsection{Módulo 1 — Gestión de datos}
+\begin{itemize}
+\item \textbf{Plantilla de carga paramétrica (recomendada).} La aplicación genera un libro Excel
+  a la medida del proceso: una hoja por variable, muestras prenumeradas en dos bloques («para
+  establecer los límites» = Fase~I, «monitoreo» = Fase~II), fecha y hora sugeridas según la
+  frecuencia, columnas según el tipo de dato, columnas calculadas (promedio, rango,
+  \% defectuosas), validación de datos en Excel (solo números, conteos enteros, defectuosas
+  $\le$ revisadas), formato condicional para valores fuera de especificación, protección de la
+  estructura y una descripción oculta que permite leerla sin mapeos. Al subirla se muestra un
+  informe de revisión (errores y avisos por hoja y muestra) antes de guardar; las cargas
+  repetidas no duplican muestras y cada muestra entra en su fase.
+\item \textbf{Importación de CSV/Excel genéricos:} detección de delimitador y codificación,
+  formato largo (una fila por medición) o ancho (una fila por subgrupo), perfilado de columnas,
+  mapeo sugerido automáticamente y conversión numérica con coma o punto decimal.
+\item \textbf{Limpieza:} valores faltantes (descartar, imputar con la media del subgrupo o
+  bloquear la importación) y atípicos (criterio de Tukey con rango intercuartílico, criterio de
+  $\pm k\sigma$ o ninguno), con informe de lo modificado.
+\item \textbf{Subgrupos racionales:} formación por columna de subgrupo o por tamaño $n$
+  consecutivo.
+\item \textbf{Tablas resumen:} media, mediana, desviación estándar, mínimo, máximo, cuartiles y
+  estadísticos por subgrupo; exportación del conjunto depurado.
+\item \textbf{Variables a controlar:} alta de procesos y variables con un asistente de cuatro
+  pasos que recomienda la carta según cómo se registra el dato y el tamaño de muestra, y explica
+  el porqué.
+\end{itemize}
+
+\subsection{Módulo 2 — Cartas de control por variables}
+
+\begin{tabularx}{\linewidth}{@{}P{3cm}L@{}}
+\toprule
+\textbf{Carta} & \textbf{Límites ($k=3$) y estimador de $\sigma$}\\
+\midrule
+$\bar{X}$-R \newline ($2\le n\le 10$) & $\bar{\bar{x}} \pm A_2\bar{R}$; \quad R: $[D_3\bar{R},\ D_4\bar{R}]$; \quad $\hat\sigma=\bar{R}/d_2$\\
+$\bar{X}$-S \newline ($n>10$ o $n$ variable) & $\bar{\bar{x}} \pm A_3\bar{s}$; \quad S: $[B_3\bar{s},\ B_4\bar{s}]$; \quad $\hat\sigma=\bar{s}/c_4$. Con $n$ variable, límites por subgrupo y $\bar{s}$ combinada.\\
+I-MR ($n=1$) & $\bar{x} \pm k\,\overline{MR}/1{,}128$; \quad MR: $\text{LCS}=D_4(2)\,\overline{MR}$\\
+\bottomrule
+\end{tabularx}
+
+\begin{itemize}
+\item Ancho de límites $k$ configurable (fórmulas generales cuando $k\neq 3$) y \textbf{$\sigma$
+  fijada por el ingeniero} (límites con estándar dado):
+  \[
+  \bar{X}:\ \mu \pm k\frac{\sigma}{\sqrt{n}},\qquad
+  R:\ (d_2 \pm k\,d_3)\,\sigma,\qquad
+  S:\ \bigl(c_4 \pm k\sqrt{1-c_4^2}\bigr)\,\sigma .
+  \]
+\item \textbf{Fase~I:} cálculo con los subgrupos incluidos, exclusión de subgrupos con causa
+  asignable obligatoria, simulación del efecto de excluir antes de confirmar, recálculo
+  iterativo y congelamiento de límites (advierte si quedan señales o hay menos de 20 subgrupos).
+\item \textbf{Fase~II:} cada subgrupo nuevo se evalúa contra los límites congelados y genera
+  alarmas.
+\item Constantes $A_2$, $A_3$, $B_3$, $B_4$, $D_3$, $D_4$, $d_2$, $d_3$ y $c_4$ para $n=2$ a $25$.
+\end{itemize}
+
+\subsection{Módulo 3 — Cartas de control por atributos}
+\begin{itemize}
+\item \textbf{p} (fracción defectuosa, $n$ constante o variable con límites por muestra),
+  \textbf{np} (número de defectuosos, $n$ constante), \textbf{c} (defectos por muestra) y
+  \textbf{u} (defectos por unidad, tamaño variable).
+\item Límites, recortados a $[0,1]$ o a $0$:
+  \[
+  p:\ \bar{p} \pm k\sqrt{\frac{\bar{p}(1-\bar{p})}{n_i}},\qquad
+  c:\ \bar{c} \pm k\sqrt{\bar{c}},\qquad
+  u:\ \bar{u} \pm k\sqrt{\frac{\bar{u}}{n_i}} .
+  \]
+\item \textbf{Selección justificada:} un asistente elige la carta según el tipo de dato (unidad
+  buena/mala frente a conteo de fallas) y si el tamaño de muestra es constante, con la
+  explicación en palabras.
+\item Mismo flujo de Fase~I y Fase~II que en variables.
+\end{itemize}
+
+\subsection{Reglas de detección (comunes a ambos tipos de carta)}
+
+Se usan las reglas de Nelson N1--N8 y la variante Western Electric WE4, evaluadas sobre el valor
+estandarizado $z=(x-\text{LC})/\sigma$ del estadístico graficado, con dos conjuntos predefinidos
+(«Nelson» y «Western Electric»).
+
+\begin{tabularx}{\linewidth}{@{}P{1.4cm}L@{}}
+\toprule
+\textbf{Regla} & \textbf{Patrón}\\
+\midrule
+N1 & 1 punto fuera de los límites de control\\
+N2 & 9 puntos seguidos del mismo lado de la línea central\\
+N3 & 6 puntos seguidos crecientes o decrecientes\\
+N4 & 14 puntos seguidos alternando arriba y abajo\\
+N5 & 2 de 3 puntos más allá de $2\sigma$ del mismo lado\\
+N6 & 4 de 5 puntos más allá de $1\sigma$ del mismo lado\\
+N7 & 15 puntos seguidos dentro de $\pm1\sigma$ (estratificación)\\
+N8 & 8 puntos seguidos fuera de $\pm1\sigma$ a ambos lados (mezcla)\\
+WE4 & 8 puntos seguidos del mismo lado de la línea central\\
+\bottomrule
+\end{tabularx}
+
+Las cartas de dispersión (R, S, MR) evalúan solo N1. Cada violación genera una alarma con
+severidad (crítica, advertencia, alerta) y una explicación en palabras simples para el operario;
+una racha no genera alarmas repetidas.
+
+\subsection{Módulo 4 — Validación de supuestos}
+
+\begin{tabularx}{\linewidth}{@{}P{3.6cm}L@{}}
+\toprule
+\textbf{Supuesto} & \textbf{Métodos}\\
+\midrule
+Normalidad & Shapiro-Wilk, Anderson-Darling, Lilliefors; gráfico Q-Q con bandas de confianza al 95\,\%; asimetría y curtosis.\\
+Independencia & Función de autocorrelación (ACF) con bandas $\pm1{,}96/\sqrt{N}$, prueba de Ljung-Box, estadístico de Durbin-Watson.\\
+Aleatoriedad y estabilidad & Prueba de rachas sobre la mediana; tendencia por $\tau$ de Kendall.\\
+Transformación & Box-Cox con $\lambda$ estimado e intervalo de confianza.\\
+\bottomrule
+\end{tabularx}
+
+Se emite un veredicto global de aptitud para cartas de Shewhart. Las causas especiales se
+identifican con las reglas de detección y se justifican al excluir subgrupos (causa y acción
+obligatorias, registradas en el historial).
+
+\subsection{Módulo 5 — Capacidad del proceso}
+\begin{itemize}
+\item \textbf{Índices:}
+  \[
+  C_p=\frac{\text{LES}-\text{LEI}}{6\hat\sigma},\qquad
+  C_{pu}=\frac{\text{LES}-\hat\mu}{3\hat\sigma},\qquad
+  C_{pl}=\frac{\hat\mu-\text{LEI}}{3\hat\sigma},\qquad
+  C_{pk}=\min(C_{pu},C_{pl}).
+  \]
+  Con especificación unilateral se informa el índice del lado especificado.
+\item $\hat\sigma$ dentro de subgrupos ($\bar{R}/d_2$, $\bar{s}/c_4$ o $\overline{MR}/1{,}128$) o
+  $\sigma$ fijada por el ingeniero.
+\item \textbf{Fracción no conforme esperada} bajo normalidad, por lado (debajo del mínimo y
+  encima del máximo), en porcentaje y en piezas por millón; \textbf{fracción observada} en los
+  datos, por lado.
+\item Comparación con la especificación mediante un histograma con curva normal y líneas de
+  mínimo, máximo, ideal y promedio.
+\item \textbf{Veredicto:} capaz ($C_{pk}\ge 1{,}33$), marginal ($1{,}00\le C_{pk}<1{,}33$) o no
+  capaz ($C_{pk}<1{,}00$), con advertencia si el proceso no está bajo control.
+\item Para atributos, la capacidad se expresa como el nivel medio de defectos ($\bar{p}$,
+  $\bar{c}$ o $\bar{u}$).
+\end{itemize}
+
+\subsection{Módulo 6 — Diseño de cartas y plan de muestreo}
+\begin{itemize}
+\item \textbf{Carta $\bar{X}$ / I}, para un corrimiento de la media de $\delta$ desviaciones
+  estándar:
+  \begin{gather*}
+  \alpha = 2\Phi(-k),\qquad
+  \beta = \Phi(k-\delta\sqrt{n})-\Phi(-k-\delta\sqrt{n}),\\
+  \text{ARL}_0=\frac{1}{\alpha},\qquad
+  \text{ARL}_1=\frac{1}{1-\beta},\qquad
+  \text{ATS}=\text{ARL}\cdot h,
+  \end{gather*}
+  donde $h$ es el intervalo entre muestras; también se informan la desviación estándar de la
+  longitud de corrida y la potencia.
+\item \textbf{Cartas de atributos:} ARL exacto con la distribución discreta (binomial para p y
+  np, Poisson para c y u), con el nivel habitual de defectos y el nivel que se quiere detectar.
+\item \textbf{Curva ARL$_1$ (o ATS$_1$) frente al corrimiento $\delta$} para comparar varios
+  tamaños de muestra, tabla de desempeño para $\delta=0$ a $3$ y muestras necesarias para
+  detectar con 90\,\% de probabilidad.
+\item \textbf{Simulación de Monte Carlo} del ARL, con intervalo de confianza y error relativo
+  frente al valor teórico.
+\item \textbf{Plan de muestreo aplicado a la variable:} se ajustan $n$, frecuencia, $k$ y
+  $\sigma$, y se compara el plan vigente con el propuesto en tiempo para detectar un cambio,
+  frecuencia de falsas alarmas y \textbf{carga muestral} (unidades por hora y por turno), con
+  explicación en palabras. Al guardar el plan en Fase~II, los límites se recalculan con el centro
+  y la $\sigma$ congelados; un cambio de $n$ archiva las muestras de monitoreo tomadas con el
+  tamaño anterior.
+\end{itemize}
+
+\subsection{Módulo 7 — Muestreo de aceptación}
+\begin{itemize}
+\item \textbf{Planes simples $(n,c)$:} probabilidad de aceptación
+  $P_a=P(d\le c)$ con modelos binomial, hipergeométrico (lote finito $N$) y Poisson.
+\item \textbf{Curva característica de operación (OC), calidad media de salida (AOQ) y su máximo
+  (AOQL), inspección total media (ATI):}
+  \[
+  \text{AOQ}=\frac{P_a\,p\,(N-n)}{N},\qquad
+  \text{ATI}=n+(1-P_a)(N-n).
+  \]
+\item \textbf{Diseño del plan} a partir de AQL, LTPD y los riesgos $\alpha$ y $\beta$, por
+  búsqueda exacta de $n$ y $c$.
+\item \textbf{Dictamen de un lote:} aceptar si $d\le c$, con la fracción defectuosa estimada y su
+  intervalo de confianza de Wilson; registro histórico de lotes inspeccionados.
+\end{itemize}
+
+\subsection{Módulo 8 — Reportes}
+\begin{itemize}
+\item \textbf{Informe PDF compilado con LaTeX} (fuente predeterminada de LaTeX), escrito para
+  lectores no especialistas y \textbf{solo descriptivo} (no incluye recomendaciones): estado
+  general en una frase, hallazgos, indicadores con su significado, carta de control con guía de
+  lectura, muestras fuera de lo normal, cumplimiento de la especificación, verificación de
+  supuestos, plan de muestreo, alertas, lotes, historial de cambios, anexo técnico y glosario.
+  Cuatro plantillas (integral, capacidad, control, trazabilidad) y selección de secciones.
+\item \textbf{Formato de respaldo:} si el equipo no tiene LaTeX, el PDF se genera con ReportLab
+  y la pantalla lo informa.
+\item \textbf{Libro Excel} con una hoja por sección y los datos numéricos reales (subgrupos,
+  límites, capacidad, supuestos, diseño, lotes, historial y gráficos).
+\item Cada archivo se guarda con su \textbf{huella SHA-256} y puede verificarse después (detecta
+  cualquier modificación).
+\end{itemize}
+
+\subsection{Componentes transversales}
+\begin{itemize}
+\item \textbf{Vista Operario:} captura con resultado en vivo (promedio y si está dentro de lo
+  normal), aviso de valor probablemente mal escrito (a más de $5\sigma$ del centro habitual o muy
+  lejos de la especificación), \textbf{deshacer} el último registro durante 10 minutos (queda como
+  «anulado», con motivo), cuenta regresiva a la próxima muestra según la frecuencia, resumen del
+  turno y reporte manual de problemas.
+\item \textbf{Alarmas:} seguimiento con estados (sin revisar, en revisión, resuelta); para
+  resolver se exigen causa y acción.
+\item \textbf{Configuración y auditoría:} especificaciones, reglas, turnos y parámetros con
+  versión, motivo obligatorio y SHA-256 de la configuración; historial filtrable y exportable.
+\item \textbf{Base de datos y respaldos:} respaldo manual y automático, restauración a un
+  respaldo (con respaldo previo automático), copia descargable de la base, restauración desde
+  archivo y carga de los datos de demostración en una base vacía.
+\end{itemize}
+
+% ---------------------------------------------------------------- 6
+\section{Interfaz}\label{sec:interfaz}
+
+\begin{tabularx}{\linewidth}{@{}P{2.1cm}P{4.4cm}L@{}}
+\toprule
+\textbf{Vista} & \textbf{Pantalla} & \textbf{Función principal}\\
+\midrule
+Operario & Registrar muestra & Estado del proceso, captura, deshacer, gráfica de las últimas 25 muestras, alertas y turno\\
+ & Cómo va el proceso & Gráfica ampliada con guía de lectura y muestras para revisar\\
+ & Alertas & Seguimiento de alarmas y eventos\\
+ & Historial de muestras & Todas las muestras (incluidas archivadas y anuladas), exportable a CSV\\
+\midrule
+Ingeniería & Variables a controlar & Procesos y variables; asistente de alta\\
+ & Plantilla de carga & Generación y carga de la plantilla Excel paramétrica\\
+ & Datos y carga CSV & Importación, limpieza y subgrupos\\
+ & Gráficos por variables & Cartas en Fase~I y II, depuración y congelamiento\\
+ & Gráficos por atributos & Cartas p, np, c y u en Fase~I y II\\
+ & Validación de supuestos & Normalidad, independencia, rachas, Box-Cox\\
+ & Capacidad & Índices, fracción no conforme, histograma y veredicto\\
+ & Plan de muestreo (ARL) & Diseño de la carta y plan aplicado a la variable\\
+ & Muestreo de aceptación & Curvas OC, AOQ, ATI, diseño de planes y dictamen de lotes\\
+ & Límites y reglas & Configuración, reglas, turnos, historial de auditoría y modo demostración\\
+ & Reportes & Vista previa, PDF, Excel e historial con verificación SHA-256\\
+ & Base de datos y respaldos & Ubicación, respaldos, restauración y demostración\\
+\bottomrule
+\end{tabularx}
+
+Convenciones de diseño: paleta del diseño original (Google Stitch), colores de semáforo
+reservados para el estado del proceso, números con coma decimal también en los gráficos y
+textos sin jerga en la vista Operario.
+
+% ---------------------------------------------------------------- 7
+\needspace{16\baselineskip}
+\section{API REST}
+
+La API tiene 67 operaciones bajo el prefijo \texttt{/api}, documentadas en \texttt{/docs}:
+
+\begin{center}
+\begin{tabular}{@{}lr@{\qquad\qquad}lr@{}}
+\toprule
+\textbf{Grupo} & \textbf{Operaciones} & \textbf{Grupo} & \textbf{Operaciones}\\
+\midrule
+Procesos y variables & 9 & Plantilla de carga & 4\\
+Configuración & 9 & Cartas de control & 4\\
+Sistema y respaldos & 9 & Diseño ARL/ATS & 3\\
+Reportes & 6 & Atributos & 2\\
+Subgrupos & 5 & Operario & 1\\
+Muestreo de aceptación & 5 & Supuestos & 1\\
+Alarmas & 4 & Capacidad & 1\\
+Datos & 4 & & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Las respuestas son JSON; los valores no numéricos (NaN, $\pm\infty$) se convierten en
+\texttt{null}. Las entradas se validan con esquemas Pydantic y los errores se devuelven con
+mensajes en español que indican cómo corregirlos.
+
+% ---------------------------------------------------------------- 8
+\section{Trazabilidad e integridad}
+\begin{itemize}
+\item Toda modificación de configuración, exclusión de subgrupos, congelamiento o regreso a
+  Fase~I, cambio de plan, importación y anulación de registros queda en el historial con usuario,
+  fecha, valor anterior y nuevo, motivo, versión y \textbf{SHA-256 de la configuración
+  resultante}.
+\item Las muestras no se borran: se excluyen (con causa), se archivan (al reiniciar la Fase~I o
+  cambiar $n$) o se anulan (error de captura), y conservan su número.
+\item Los reportes y las plantillas importadas se identifican por su huella SHA-256.
+\end{itemize}
+
+% ---------------------------------------------------------------- 9
+\section{Validación y calidad}
+\begin{itemize}
+\item \textbf{278 pruebas automáticas} (pytest): cada módulo del núcleo tiene su archivo de
+  pruebas, además de pruebas de la API con base temporal, de las pantallas y de la generación de
+  archivos.
+\item \textbf{Valores de referencia de Montgomery:} cartas $\bar{X}$-R (anillos de pistón), I-MR
+  (préstamos), p (jugo de naranja), c (circuitos), u (computadoras), capacidad, ARL y muestreo de
+  aceptación. Cuando el libro redondea valores intermedios, la prueba verifica el valor exacto
+  con tolerancia y reproduce el redondeo del libro.
+\item \textbf{Verificación visual} de las pantallas con Microsoft Edge en modo automático, de la
+  plantilla Excel abriéndola en Excel y de los PDF página por página.
+\item \textbf{Programa empaquetado} probado de extremo a extremo: instalación, arranque,
+  pantallas, descargas, informe con LaTeX y desinstalación.
+\end{itemize}
+
+% ---------------------------------------------------------------- 10
+\section{Requisitos}
+
+\begin{tabularx}{\linewidth}{@{}P{5cm}L@{}}
+\toprule
+\textbf{Uso} & \textbf{Requisitos}\\
+\midrule
+Programa de escritorio & Windows 10 u 11 de 64 bits; Microsoft Edge WebView2 (incluido en Windows~11); $\approx$ 205~MB de disco.\\
+Informe PDF con LaTeX (opcional) & MiKTeX (Windows) o TeX Live; sin él se usa el formato de respaldo.\\
+Modo servidor / desarrollo & Python 3.11 o superior; $\approx$ 400~MB para el entorno virtual.\\
+Construcción del instalador & \texttt{construir.bat} con PyInstaller e Inno Setup 6.\\
+\bottomrule
+\end{tabularx}
+
+% ---------------------------------------------------------------- 11
+\section{Limitaciones y decisiones de alcance}
+\begin{itemize}
+\item \textbf{Un solo equipo:} el servidor escucha solo en \texttt{127.0.0.1}; no hay acceso
+  desde otros equipos de la red ni inicio de sesión (el usuario se identifica por nombre).
+\item \textbf{Capacidad:} solo índices $C_p$, $C_{pk}$, $C_{pu}$ y $C_{pl}$ (no se calculan
+  $P_p$ ni $P_{pk}$); la fracción no conforme esperada supone distribución normal (por eso se
+  informa también la observada y se valida la normalidad).
+\item \textbf{Cartas:} Shewhart por variables y atributos; no se incluyen CUSUM ni EWMA.
+\item \textbf{Fuera de alcance:} letra código y niveles de inspección de ISO 2859, planes dobles
+  y múltiples, ajustes de distribuciones no normales (Johnson, Weibull) e índices no
+  paramétricos, firma digital e integración con balanzas o sistemas SCADA.
+\item \textbf{Distribución:} el instalador no está firmado digitalmente, por lo que Windows
+  muestra una advertencia la primera vez.
+\end{itemize}
+
+% ---------------------------------------------------------------- 12
+\section{Organización del código}
+
+{\small
+\begin{verbatim}
+app/
+  core/              nucleo estadistico puro
+    constantes.py    constantes de cartas (n = 2...25)
+    datos.py         lectura, limpieza y subgrupos
+    plantilla.py     plantilla Excel parametrica
+    graficos_variables.py, graficos_atributos.py, reglas.py
+    supuestos.py, capacidad.py, diseno_arl.py, muestreo_aceptacion.py
+    reportes.py, reporte_latex.py, figuras.py, plantillas/reporte.tex
+  api/               FastAPI: un router por modulo + servicios.py
+  db/                modelos, sesion, migraciones, demostracion, respaldos
+  web/               pantallas, plantillas Jinja2, JavaScript, recursos locales
+  escritorio.py      programa de escritorio (ventana + servidor local)
+  iniciar.py         arranque en modo servidor
+instalador/          receta de PyInstaller, script de Inno Setup e icono
+tests/               pruebas automaticas
+datos_prueba/        conjuntos de datos de ejemplo y generador
+docs/                instalacion, manual, esta descripcion y capturas
+\end{verbatim}
+}
+
+\end{document}
