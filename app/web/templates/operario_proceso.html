@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{# Cómo va el proceso (Operario, rediseño 2026-11 Fase C): gráfica grande en palabras simples, guía
+   para leerla, resumen de las últimas muestras y muestras para revisar. Lógica: operario_proceso.js #}
+{% block head %}<script src="/static/vendor/plotly.min.js"></script>{% endblock %}
+{% block contenido %}
+<section class="rounded-xl shadow-sm p-space-lg flex flex-col lg:flex-row lg:items-center justify-between gap-space-lg bg-surface-container-lowest" id="estado" aria-live="polite">
+  <div class="flex items-center gap-space-md min-w-0">
+    <span class="w-16 h-16 shrink-0 rounded-full flex items-center justify-center bg-outline text-on-secondary" id="est-circulo">
+      <span class="material-symbols-outlined text-4xl" id="est-icono">hourglass_empty</span></span>
+    <div class="flex flex-col gap-1 min-w-0">
+      <span class="font-body-md text-body-md text-on-surface-variant" id="est-variable">—</span>
+      <h1 class="font-headline-lg text-headline-lg font-bold text-on-surface" id="est-titulo">Cargando…</h1>
+      <p class="font-body-lg text-body-lg text-on-surface max-w-2xl" id="est-que-hacer">—</p>
+    </div>
+  </div>
+  <a class="h-12 px-space-lg shrink-0 rounded-lg bg-primary hover:bg-primary-container text-on-primary font-label-lg text-label-lg font-bold flex items-center gap-space-xs self-start lg:self-center" data-con-variable href="/operario#captura">
+    <span class="material-symbols-outlined">edit_note</span>Registrar muestra</a>
+</section>
+
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-space-lg items-start">
+  <section class="xl:col-span-8 bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+    <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface" id="graf-titulo">Últimas muestras</h2>
+    <div class="grafico" id="graf-1"></div>
+    <ul class="grid grid-cols-1 md:grid-cols-3 gap-space-sm" id="resumen-ventana"></ul>
+  </section>
+  <aside class="xl:col-span-4 flex flex-col gap-space-lg">
+    <section class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-sm">
+      <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Cómo leer la gráfica</h2>
+      <ul class="flex flex-col gap-space-sm font-body-md text-body-md text-on-surface" id="guia"></ul>
+    </section>
+    <section class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-sm">
+      <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Muestras para revisar</h2>
+      <ul class="flex flex-col gap-space-sm" id="para-revisar"></ul>
+    </section>
+  </aside>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/graficos.js"></script>
+<script src="/static/js/operario_comun.js"></script>
+<script src="/static/js/operario_proceso.js"></script>
+{% endblock %}

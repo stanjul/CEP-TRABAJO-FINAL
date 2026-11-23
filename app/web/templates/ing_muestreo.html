@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{# Módulo 7 — Muestreo de aceptación (plan simple). Derivada de Stitch "muestreo_de_aceptaci_n_curvas_oc".
+   Fuera de alcance (deshabilitado): letra código ISO 2859, conmutación normal/severa/reducida y
+   plan doble/ASN; su tarjeta se reemplazó por el diseño del plan a partir de AQL/LTPD/α/β. #}
+{% block head %}<script src="/static/vendor/plotly.min.js"></script>{% endblock %}
+{% block contenido %}
+<!-- Barra de mando -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col xl:flex-row xl:items-center justify-between gap-space-md">
+  <div class="flex flex-col gap-space-xs">
+    <div class="flex items-center gap-space-xs font-label-sm text-label-sm text-outline">
+      <span>Módulo Analítico</span><span>/</span><span class="text-on-surface font-bold">Control de Recepción & Muestreo de Aceptación</span>
+      <span class="px-1.5 py-0.5 rounded bg-surface-container text-primary">Plan simple (N, n, c)</span></div>
+    <div class="flex flex-wrap items-center gap-space-sm">
+      <span class="material-symbols-outlined text-primary">inventory_2</span>
+      <input class="h-9 w-44 rounded border-outline-variant font-label-md text-label-md font-bold" id="lote-codigo" placeholder="Código de lote" value="MP-2026-001"/>
+      <input class="h-9 w-72 rounded border-outline-variant font-body-sm text-body-sm" id="lote-desc" placeholder="Descripción / proveedor" value="Materia prima — Proveedor A"/>
+    </div>
+  </div>
+  <div class="flex flex-wrap items-center gap-space-sm">
+    <div class="flex items-center bg-surface-container-low p-1 rounded-lg opacity-60" title="Conmutación ISO 2859-1: fuera del alcance de este trabajo">
+      <span class="px-space-md py-1 rounded bg-primary text-on-primary font-label-sm text-label-sm flex items-center gap-1"><span class="material-symbols-outlined text-sm">shield</span>Normal</span>
+      <span class="px-space-md py-1 font-label-sm text-label-sm text-outline">Severa</span><span class="px-space-md py-1 font-label-sm text-label-sm text-outline">Reducida</span>
+    </div>
+    <button class="h-10 px-space-md bg-surface-container-low hover:bg-surface-container text-primary rounded-lg font-label-md text-label-md font-semibold flex items-center gap-space-xs" id="btn-csv" type="button">
+      <span class="material-symbols-outlined text-sm">download</span>Exportar Curvas (CSV)</button>
+  </div>
+</div>
+
+<!-- Parámetros del plan -->
+<section class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-space-md">
+  {% for id, t, icono, val, paso in [("N", "Tamaño Lote (N)", "widgets", 10000, 1), ("n", "Muestra (n)", "colorize", 89, 1), ("c", "Número de aceptación (c)", "rule", 2, 1), ("aql", "AQL (%)", "thumb_up", 1.0, 0.05), ("ltpd", "LTPD (%)", "warning", 6.0, 0.1)] %}
+  <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-xs">
+    <div class="flex items-center justify-between"><span class="font-label-sm text-label-sm text-outline">{{ t }}</span>
+      <span class="material-symbols-outlined text-outline text-base">{{ icono }}</span></div>
+    <input class="h-12 w-full bg-surface-container-low rounded px-space-sm font-metric-display-mobile text-headline-sm font-bold text-primary text-right focus:outline-none focus:bg-surface-container-highest" id="p-{{ id }}" min="0" step="{{ paso }}" type="number" value="{{ val }}"/>
+    <span class="font-label-sm text-label-sm text-on-surface-variant" id="p-{{ id }}-sub">—</span>
+  </div>
+  {% endfor %}
+  <!-- Diseño del plan (reemplaza la tarjeta de plan doble) -->
+  <div class="bg-primary-container text-on-primary p-space-md rounded-xl shadow-sm flex flex-col gap-space-xs">
+    <span class="font-label-sm text-label-sm text-primary-fixed">Diseñar plan</span>
+    <div class="flex items-center gap-space-xs font-label-sm text-label-sm">
+      <label class="flex flex-col">α<input class="h-8 w-16 rounded bg-primary text-on-primary border-0 font-label-md text-label-md" id="p-alfa" step="0.01" type="number" value="0.05"/></label>
+      <label class="flex flex-col">β<input class="h-8 w-16 rounded bg-primary text-on-primary border-0 font-label-md text-label-md" id="p-beta" step="0.01" type="number" value="0.10"/></label>
+    </div>
+    <button class="mt-auto h-9 rounded bg-secondary-fixed text-on-secondary-fixed font-label-md text-label-md font-bold flex items-center justify-center gap-1" id="btn-disenar" type="button">
+      <span class="material-symbols-outlined text-sm">auto_fix_high</span>Calcular n y c</button>
+  </div>
+</section>
+
+<!-- Curvas -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md">
+  <div class="lg:col-span-8 bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+    <div class="flex flex-wrap items-center justify-between gap-space-sm">
+      <div><span class="font-headline-sm text-label-lg font-bold text-on-surface">Curva Característica de Operación (Curva OC)</span>
+        <p class="font-body-sm text-body-sm text-on-surface-variant">Probabilidad de aceptación Pₐ vs. fracción defectuosa del lote p.</p></div>
+      <div class="flex items-center gap-space-sm font-label-sm text-label-sm" id="oc-modelos">
+        <label class="flex items-center gap-1"><input checked class="rounded" data-modelo="binomial" type="checkbox"/>Binomial (tipo B)</label>
+        <label class="flex items-center gap-1"><input checked class="rounded" data-modelo="hipergeometrica" type="checkbox"/>Hipergeométrica (tipo A)</label>
+        <label class="flex items-center gap-1"><input class="rounded" data-modelo="poisson" type="checkbox"/>Poisson</label>
+      </div>
+    </div>
+    <div class="grafico" id="graf-oc"></div>
+    <div class="flex flex-wrap items-center justify-between gap-space-sm font-label-sm text-label-sm text-on-surface-variant border-t border-outline-variant/40 pt-space-xs">
+      <span id="oc-pie">—</span><span id="oc-p50">—</span></div>
+  </div>
+  <div class="lg:col-span-4 flex flex-col gap-space-md">
+    <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-xs">
+      <div class="flex items-center justify-between"><div><span class="font-label-lg text-label-lg font-bold">Curva AOQ</span>
+        <p class="font-body-sm text-body-sm text-on-surface-variant">Calidad de salida promedio (rectificación 100 %)</p></div>
+        <span class="px-space-xs py-0.5 rounded bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold" id="aoql-chip">AOQL —</span></div>
+      <div class="grafico" id="graf-aoq"></div>
+    </div>
+    <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-xs">
+      <div class="flex items-center justify-between"><div><span class="font-label-lg text-label-lg font-bold">Curva ATI</span>
+        <p class="font-body-sm text-body-sm text-on-surface-variant">Inspección total promedio por lote</p></div>
+        <span class="px-space-xs py-0.5 rounded bg-surface-container font-label-sm text-label-sm font-bold" id="ati-chip">—</span></div>
+      <div class="grafico" id="graf-ati"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Simulador de decisión + tabla de desempeño -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md">
+  <div class="lg:col-span-7 bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-md">
+    <div class="flex items-center justify-between"><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary">fact_check</span>
+      <span class="font-headline-sm text-label-lg font-bold">Ensayo y Decisión del Lote Actual</span></div>
+      <span class="font-label-sm text-label-sm text-outline">Aceptar si d ≤ c</span></div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-space-md items-center">
+      <div class="flex flex-col"><span class="font-label-sm text-label-sm text-outline">Muestra tomada (n)</span>
+        <span class="font-metric-display text-metric-display font-bold text-primary" id="dec-n">—</span></div>
+      <div class="flex flex-col gap-1"><span class="font-label-sm text-label-sm text-outline">Defectuosos hallados (d)</span>
+        <div class="flex items-center gap-space-xs">
+          <button class="w-12 h-12 rounded-lg bg-surface-container hover:bg-surface-container-high font-headline-sm text-headline-sm" id="btn-dec" type="button">−</button>
+          <input class="w-20 h-12 rounded-lg text-center font-metric-display-mobile text-headline-sm font-bold border-outline-variant" id="dec-d" min="0" type="number" value="2"/>
+          <button class="w-12 h-12 rounded-lg bg-surface-container hover:bg-surface-container-high font-headline-sm text-headline-sm" id="btn-inc" type="button">+</button></div>
+        <span class="font-label-sm text-label-sm text-on-surface-variant" id="dec-limites">—</span></div>
+      <div class="p-space-sm rounded-lg flex flex-col gap-1" id="dec-veredicto">
+        <span class="font-label-sm text-label-sm">Dictamen inmediato</span>
+        <span class="font-headline-sm text-headline-sm font-bold flex items-center gap-1" id="dec-titulo">—</span>
+        <span class="font-label-sm text-label-sm" id="dec-condicion">—</span></div>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-space-sm bg-surface-container-low p-space-sm rounded-lg font-label-md text-label-md">
+      <div class="flex flex-col"><span class="font-label-sm text-label-sm text-outline">Estimación puntual p̂</span><b id="dec-p">—</b></div>
+      <div class="flex flex-col"><span class="font-label-sm text-label-sm text-outline">IC 95 % Wilson</span><b id="dec-ic">—</b></div>
+      <div class="flex flex-col"><span class="font-label-sm text-label-sm text-outline">Pₐ con p = p̂</span><b id="dec-pa">—</b></div>
+      <div class="flex flex-col"><span class="font-label-sm text-label-sm text-outline">Destino del lote</span><b id="dec-destino">—</b></div>
+    </div>
+    <button class="h-12 rounded-lg bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md font-bold flex items-center justify-center gap-space-xs" id="btn-registrar-lote" type="button">
+      <span class="material-symbols-outlined">verified</span>Registrar Dictamen del Lote</button>
+  </div>
+  <div class="lg:col-span-5 bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+    <span class="font-headline-sm text-label-lg font-bold">Riesgos y desempeño del plan</span>
+    <table class="w-full font-label-md text-label-md">
+      <thead><tr class="bg-surface-container-high font-label-sm text-label-sm"><th class="py-1.5 px-space-xs text-left">Punto</th><th class="py-1.5 px-space-xs text-right">p</th>
+        <th class="py-1.5 px-space-xs text-right">Pₐ binom.</th><th class="py-1.5 px-space-xs text-right">Pₐ hiperg.</th><th class="py-1.5 px-space-xs text-right">AOQ</th><th class="py-1.5 px-space-xs text-right">ATI</th></tr></thead>
+      <tbody class="divide-y divide-surface-container" id="tabla-riesgos"></tbody>
+    </table>
+    <ul class="flex flex-col gap-1" id="conclusiones"></ul>
+  </div>
+</div>
+
+<!-- Historial de lotes -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+  <div class="flex flex-wrap items-center justify-between gap-space-sm">
+    <div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary">history</span>
+      <span class="font-headline-sm text-label-lg font-bold">Historial de Lotes Inspeccionados</span></div>
+    <span class="font-label-sm text-label-sm text-outline" id="hist-resumen">—</span>
+  </div>
+  <div class="overflow-x-auto"><table class="w-full text-left">
+    <thead><tr class="bg-surface-container-high font-label-sm text-label-sm">
+      <th class="py-2 px-space-sm">ID Lote</th><th class="py-2 px-space-sm">Fecha</th><th class="py-2 px-space-sm text-right">Lote (N)</th><th class="py-2 px-space-sm text-right">Muestra (n)</th>
+      <th class="py-2 px-space-sm text-right">Acept. (c)</th><th class="py-2 px-space-sm text-right">Defect. (d)</th><th class="py-2 px-space-sm text-right">p estimado</th><th class="py-2 px-space-sm">Dictamen</th><th class="py-2 px-space-sm">Usuario</th></tr></thead>
+    <tbody class="divide-y divide-surface-container" id="tabla-lotes"></tbody>
+  </table></div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/graficos.js"></script>
+<script src="/static/js/ing_muestreo.js"></script>
+{% endblock %}

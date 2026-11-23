@@ -1,0 +1,42 @@
+/* Estilos base exportados de Stitch (bloque <style> original) + utilidades mínimas de la app. */
+@layer base {
+  html, body { margin: 0; padding: 0; }
+  body { overscroll-behavior: none; }
+  main > :first-child { margin-top: 0 !important; }
+  main > :last-child { margin-bottom: 0 !important; }
+}
+::-webkit-scrollbar { display: none; }
+
+/* DESIGN.md: cifras tabulares habilitadas por defecto. */
+body { font-feature-settings: "tnum" 1; }
+
+/* Campos de formulario: Tailwind (sin el plugin de forms) les quita el borde. Los que declaran
+   un color de borde del sistema de diseño lo recuperan con 1 px y un margen interno. */
+input[class*="border-outline-variant"], select[class*="border-outline-variant"], textarea[class*="border-outline-variant"] {
+  border-width: 1px; border-style: solid; padding-left: .5rem; padding-right: .5rem; background-color: #fff;
+}
+input[class*="border-outline-variant"]:focus, select[class*="border-outline-variant"]:focus {
+  outline: 2px solid rgba(15, 76, 92, .35); outline-offset: 1px; border-color: #0f4c5c;
+}
+
+/* Estado de carga de los paneles que esperan datos de la API. */
+.cargando { position: relative; }
+.cargando::after {
+  content: ""; position: absolute; inset: 0; background: rgba(248, 249, 255, .6);
+  border-radius: inherit; pointer-events: none;
+}
+
+/* Contenedores de Plotly: ocupan el ancho del card. */
+.grafico { width: 100%; }
+.grafico .modebar { display: none !important; }
+
+/* Animación del aviso (toast). */
+@keyframes cep-entrar { from { transform: translateY(12px); opacity: 0; } to { transform: none; opacity: 1; } }
+.cep-toast { animation: cep-entrar .18s ease-out; }
+
+/* Impresión: se ocultan header y sidebar. */
+@media print {
+  header, aside { display: none !important; }
+  .pl-64 { padding-left: 0 !important; }
+  main { padding-top: 0 !important; }
+}

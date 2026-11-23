@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{# Módulo 4 — Validación de supuestos. Derivada de Stitch "validaci_n_de_supuestos_q_q_plot".
+   Cambios acordados: la tarjeta Ryan-Joiner se reemplaza por Ljung-Box; Durbin-Watson usa la
+   regla práctica 1.5–2.5; Johnson/Weibull/no paramétricas quedan fuera de alcance. #}
+{% block head %}<script src="/static/vendor/plotly.min.js"></script>{% endblock %}
+{% block contenido %}
+<div class="flex flex-col gap-space-md" id="pantalla">
+<!-- Barra de contexto -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+  <div class="flex flex-col gap-space-xs">
+    <div class="flex items-center gap-space-xs font-label-sm text-label-sm text-outline">
+      <span>Módulo Analítico Avanzado</span><span>•</span><span>Normalidad · Independencia · Rachas</span></div>
+    <h1 class="font-headline-md text-headline-md font-bold text-on-surface">Validación de Supuestos Estadísticos</h1>
+    <div class="flex flex-wrap items-center gap-x-space-md gap-y-1 font-body-sm text-body-sm text-on-surface-variant">
+      <span>Variable: <strong class="text-on-surface" id="ctx-variable">—</strong></span><span>•</span>
+      <span>Muestras: <strong class="text-on-surface" id="ctx-N">—</strong></span><span>•</span>
+      <span>Subgrupos: <strong class="text-on-surface" id="ctx-k">—</strong></span><span>•</span>
+      <span>Significancia: <strong class="text-on-surface" id="ctx-alfa">—</strong></span>
+    </div>
+  </div>
+  <div class="flex flex-wrap items-center gap-space-sm">
+    <select class="h-10 rounded border-outline-variant font-label-md text-label-md" id="sel-fase" title="Datos analizados">
+      <option value="">Automático (base Fase I)</option><option value="I">Fase I (sin excluidos)</option><option value="II">Fase II</option></select>
+    <select class="h-10 rounded border-outline-variant font-label-md text-label-md" id="sel-alfa" title="Nivel de significancia">
+      <option value="0.01">α = 0.01</option><option selected value="0.05">α = 0.05</option><option value="0.10">α = 0.10</option></select>
+    <a class="h-10 px-space-md bg-primary text-on-primary rounded-lg font-label-md text-label-md font-semibold flex items-center gap-space-xs" data-con-variable href="/ingenieria/reportes">
+      <span class="material-symbols-outlined text-sm">picture_as_pdf</span>Exportar Informe</a>
+  </div>
+</div>
+
+<!-- Veredicto ejecutivo -->
+<div class="p-space-md rounded-xl shadow-sm flex flex-col md:flex-row md:items-center gap-space-md" id="veredicto">
+  <span class="material-symbols-outlined text-4xl" id="ver-icono">hourglass_empty</span>
+  <div class="flex-1 flex flex-col gap-1">
+    <div class="flex flex-wrap items-center gap-space-sm">
+      <span class="font-headline-sm text-label-lg font-bold" id="ver-titulo">Calculando…</span>
+      <span class="px-space-xs py-0.5 rounded font-label-sm text-label-sm font-bold" id="ver-chip">—</span>
+    </div>
+    <p class="font-body-md text-body-md" id="ver-texto">—</p>
+  </div>
+  <div class="flex flex-col gap-1 font-label-md text-label-md" id="ver-cifras"></div>
+</div>
+
+<!-- Batería de pruebas -->
+<section class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-space-md" id="tarjetas-pruebas"></section>
+
+<!-- Q-Q + Histograma -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md">
+  <div class="lg:col-span-7 bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+    <div class="flex items-start justify-between gap-space-sm">
+      <div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary">insights</span>
+        <h2 class="font-headline-sm text-label-lg font-bold text-on-surface">Gráfico de Probabilidad Normal (Q-Q Plot)</h2></div>
+        <p class="font-body-sm text-body-sm text-on-surface-variant">Cuantiles empíricos vs. teóricos N(0,1) (posiciones de Blom) con bandas puntuales del 95 %.</p></div>
+      <span class="px-space-xs py-0.5 rounded bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-bold whitespace-nowrap" id="qq-chip">—</span>
+    </div>
+    <div class="grafico" id="graf-qq"></div>
+    <div class="flex flex-wrap items-center justify-between gap-space-sm font-label-sm text-label-sm text-on-surface-variant">
+      <div class="flex items-center gap-space-md">
+        <span class="flex items-center gap-1"><span class="w-3 h-0.5 bg-primary"></span>Ajuste teórico normal</span>
+        <span class="flex items-center gap-1"><span class="w-3 h-0.5 border-b-2 border-dashed border-primary-container"></span>Intervalo 95 %</span>
+        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full border-2 border-secondary"></span>Cuantiles empíricos</span></div>
+      <span>Criterio: puntos dentro de bandas ⇒ no rechazar normalidad</span>
+    </div>
+  </div>
+  <div class="lg:col-span-5 bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+    <div class="flex items-start justify-between">
+      <div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary">bar_chart</span>
+        <h2 class="font-headline-sm text-label-lg font-bold text-on-surface">Histograma con Curva Gaussiana</h2></div>
+        <p class="font-body-sm text-body-sm text-on-surface-variant" id="hist-texto">—</p></div>
+      <span class="px-space-xs py-0.5 rounded bg-surface-container font-label-sm text-label-sm" id="hist-bins">—</span>
+    </div>
+    <div class="grafico" id="graf-hist"></div>
+    <div class="grid grid-cols-3 gap-space-xs text-center">
+      <div class="p-space-xs bg-surface-container-low rounded"><span class="font-label-sm text-label-sm text-outline block">Media (x̄)</span><span class="font-label-lg text-label-lg font-bold" id="hist-media">—</span></div>
+      <div class="p-space-xs bg-surface-container-low rounded"><span class="font-label-sm text-label-sm text-outline block">Desv. Est. (s)</span><span class="font-label-lg text-label-lg font-bold" id="hist-s">—</span></div>
+      <div class="p-space-xs bg-surface-container-low rounded"><span class="font-label-sm text-label-sm text-outline block">r Q-Q</span><span class="font-label-lg text-label-lg font-bold text-secondary" id="hist-r">—</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Independencia y aleatoriedad -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md">
+  <div class="lg:col-span-7 bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+    <div class="flex items-start justify-between gap-space-sm">
+      <div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary">timeline</span>
+        <h2 class="font-headline-sm text-label-lg font-bold text-on-surface">Correlograma ACF (Autocorrelación Serial)</h2></div>
+        <p class="font-body-sm text-body-sm text-on-surface-variant" id="acf-texto">—</p></div>
+      <span class="px-space-xs py-0.5 rounded font-label-sm text-label-sm font-bold whitespace-nowrap" id="acf-chip">—</span>
+    </div>
+    <div class="grafico" id="graf-acf"></div>
+    <div class="flex flex-wrap items-center justify-between gap-space-sm font-label-sm text-label-sm text-on-surface-variant">
+      <span id="acf-lags">—</span><span id="acf-fuera">—</span></div>
+  </div>
+  <div class="lg:col-span-5 bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-md">
+    <div class="flex items-start justify-between">
+      <div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary">sync_alt</span>
+        <h2 class="font-headline-sm text-label-lg font-bold text-on-surface">Independencia Serial & Rachas</h2></div>
+        <p class="font-body-sm text-body-sm text-on-surface-variant">Durbin-Watson, prueba de rachas (Wald-Wolfowitz) y tendencia (Kendall).</p></div>
+      <span class="px-space-xs py-0.5 rounded font-label-sm text-label-sm font-bold" id="rachas-chip">—</span>
+    </div>
+    <!-- Medidor Durbin-Watson (0 a 4, ideal 2) -->
+    <div class="flex flex-col gap-1">
+      <div class="flex items-center justify-between font-label-sm text-label-sm"><span class="text-outline font-semibold">Estadístico Durbin-Watson (d)</span>
+        <span class="font-bold text-primary" id="dw-valor">—</span></div>
+      <div class="relative h-6 rounded overflow-hidden flex">
+        <div class="h-full bg-error-container/60" style="width:37.5%"></div>
+        <div class="h-full bg-secondary-container flex items-center justify-center font-label-sm text-label-sm text-on-secondary-container" style="width:25%">Independencia</div>
+        <div class="h-full bg-error-container/60" style="width:37.5%"></div>
+        <div class="absolute top-0 bottom-0 w-1 bg-primary" id="dw-aguja" style="left:50%"></div>
+      </div>
+      <div class="flex justify-between font-label-sm text-label-sm text-outline"><span>0 (positiva)</span><span>1.5</span><span>2.0 (ideal)</span><span>2.5</span><span>4 (negativa)</span></div>
+    </div>
+    <div class="flex flex-col rounded-lg bg-surface-container-low p-space-sm gap-1 font-body-sm text-body-sm" id="tabla-rachas"></div>
+    <div class="flex items-center gap-space-xs font-body-sm text-body-sm" id="ind-conclusion"></div>
+  </div>
+</div>
+
+<!-- Asistente de transformación -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-md">
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-space-sm">
+    <div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary">auto_fix_high</span>
+      <h2 class="font-headline-sm text-label-lg font-bold text-on-surface">Asistente de Transformación de Datos</h2></div>
+      <p class="font-body-sm text-body-sm text-on-surface-variant">Protocolo de remediación aplicable cuando se rechaza la normalidad (p &lt; α).</p></div>
+    <span class="px-space-sm py-1 rounded bg-surface-container font-label-sm text-label-sm" id="bc-estado">—</span>
+  </div>
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md">
+    <div class="lg:col-span-7 flex flex-col gap-space-sm">
+      <div class="flex items-center justify-between font-label-md text-label-md">
+        <span>Transformación de Box-Cox: <b>y(λ) = (x^λ − 1)/λ</b> · ln x si λ = 0</span>
+        <span class="text-primary font-bold" id="bc-lambda">λ̂ = —</span></div>
+      <!-- Escala de λ entre −5 y 5 con el IC y la marca de λ = 1 -->
+      <div class="relative h-10 rounded bg-surface-container-low">
+        <div class="absolute top-2 bottom-2 bg-primary-fixed rounded" id="bc-ic"></div>
+        <div class="absolute top-0 bottom-0 w-0.5 bg-secondary" style="left:60%" title="λ = 1 (sin transformación)"></div>
+        <div class="absolute top-1 bottom-1 w-1.5 rounded bg-primary" id="bc-punto"></div>
+      </div>
+      <div class="flex justify-between font-label-sm text-label-sm text-outline"><span>−5</span><span>−2 (1/x²)</span><span>0 (ln x)</span><span class="text-secondary font-bold">1 (sin cambio)</span><span>2 (x²)</span><span>5</span></div>
+      <p class="font-body-sm text-body-sm text-on-surface-variant bg-surface-container-low p-space-sm rounded" id="bc-texto">—</p>
+    </div>
+    <div class="lg:col-span-5 flex flex-col gap-space-xs">
+      <span class="font-label-sm text-label-sm font-semibold text-outline">Alternativas para procesos no normales (fuera del alcance del trabajo)</span>
+      {% for t, s in [("Sistema de curvas de Johnson", "SU, SB o SL"), ("Modelado Weibull / Gamma", "Desgaste, fatiga o tiempos de ciclo"), ("Cartas no paramétricas", "Signos o rangos con signo de Wilcoxon")] %}
+      <div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-low opacity-60 cursor-not-allowed" title="Fuera del alcance de este trabajo">
+        <div class="flex flex-col"><span class="font-label-md text-label-md font-semibold">{{ t }}</span><span class="font-body-sm text-body-sm text-outline">{{ s }}</span></div>
+        <span class="material-symbols-outlined text-outline">lock</span></div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- Pie técnico -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm px-space-sm font-label-sm text-label-sm text-outline">
+  <span>Motor de cálculo: <strong>SciPy / statsmodels</strong> (Shapiro-Wilk, normal_ad, lilliefors, acorr_ljungbox, durbin_watson)</span>
+  <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">verified_user</span>Cálculo reproducible desde app/core/supuestos.py</span>
+</div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/graficos.js"></script>
+<script src="/static/js/ing_supuestos.js"></script>
+{% endblock %}

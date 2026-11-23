@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{# Módulo 1 — Datos: carga CSV/Excel, mapeo de columnas, subgrupos racionales, limpieza y
+   descriptivos. Derivada de Stitch "vista_ingenier_a_datos_y_carga_csv". Lógica: ing_datos.js. #}
+{% block head %}<script src="/static/vendor/plotly.min.js"></script>{% endblock %}
+{% block contenido %}
+<!-- 1. Encabezado de Sección: Ingesta y Limpieza de Datos -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+  <div class="flex flex-col gap-space-xs">
+    <div class="flex items-center gap-space-xs font-label-sm text-label-sm text-outline">
+      <span>Módulo Analítico</span><span>/</span><span class="text-on-surface font-bold">Ingesta y Limpieza de Datos</span>
+    </div>
+    <div class="flex flex-wrap items-center gap-space-md">
+      <div class="flex items-center gap-space-xs">
+        <span class="material-symbols-outlined text-primary">description</span>
+        <span class="font-label-md text-label-md font-bold text-on-surface" id="arch-nombre">Ningún archivo cargado</span>
+        <span class="font-label-sm text-label-sm text-outline" id="arch-detalle"></span>
+      </div>
+      <div class="hidden items-center gap-space-xs px-space-xs py-0.5 rounded bg-secondary-container text-on-secondary-container font-label-sm text-label-sm" id="arch-estado">
+        <span class="material-symbols-outlined text-sm">verified</span><span id="arch-estado-txt"></span>
+      </div>
+    </div>
+  </div>
+  <div class="flex items-center gap-space-sm">
+    <a class="h-12 px-space-md bg-surface-container-low hover:bg-surface-container text-primary rounded-lg font-label-md text-label-md font-semibold flex items-center gap-space-xs" download href="/static/plantilla_datos.csv">
+      <span class="material-symbols-outlined text-lg">download</span>Plantilla CSV simple</a>
+    <a class="h-12 px-space-md bg-primary hover:bg-primary-container text-on-primary rounded-lg font-label-md text-label-md font-semibold flex items-center gap-space-xs" data-con-variable href="/ingenieria/plantilla">
+      <span class="material-symbols-outlined text-lg">table_view</span>Plantilla Excel (recomendada)</a>
+    <label class="h-12 px-space-lg bg-primary hover:bg-primary-container text-on-primary rounded-lg font-label-md text-label-md font-bold flex items-center gap-space-xs cursor-pointer shadow-sm">
+      <span class="material-symbols-outlined text-lg">upload_file</span>Cargar Nuevo Dataset (CSV/XLSX)
+      <input accept=".csv,.txt,.dat,.xlsx,.xls" class="hidden" id="inp-archivo" type="file"/></label>
+  </div>
+</div>
+
+<!-- 2. Carga y opciones de lectura | Arquitectura de muestreo -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md">
+  <div class="lg:col-span-5 bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-md">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary">drive_folder_upload</span>
+        <span class="font-headline-sm text-label-lg font-bold text-on-surface">Carga y Deserialización</span></div>
+      <span class="font-label-sm text-label-sm text-outline">pandas · openpyxl</span>
+    </div>
+    <label class="flex flex-col items-center justify-center gap-space-xs p-space-xl border-2 border-dashed border-outline-variant rounded-xl bg-surface-container-low hover:bg-surface-container hover:border-primary-container transition-colors cursor-pointer text-center" id="zona-arrastre">
+      <div class="w-14 h-14 rounded-full bg-primary-fixed flex items-center justify-center"><span class="material-symbols-outlined text-primary text-3xl">cloud_upload</span></div>
+      <p class="font-body-lg text-body-lg font-semibold text-on-surface">Arrastre y suelte el archivo de mediciones</p>
+      <p class="font-body-sm text-body-sm text-on-surface-variant">Soporta .CSV, .TXT, .DAT y .XLSX (hasta 50 MB). Formato largo (una fila por medición) o ancho (M1…Mn).</p>
+      <span class="font-label-sm text-label-sm text-primary underline">O examine sus carpetas locales</span>
+      <input accept=".csv,.txt,.dat,.xlsx,.xls" class="hidden" id="inp-archivo-2" type="file"/>
+    </label>
+    <div class="grid grid-cols-2 gap-space-sm">
+      <label class="flex flex-col gap-1"><span class="font-label-sm text-label-sm text-outline font-semibold">Delimitador</span>
+        <select class="h-10 rounded border-outline-variant font-body-md text-body-md" id="opt-delim">
+          <option value="">Detectar automáticamente</option><option value=",">Coma (,)</option><option value=";">Punto y coma (;)</option>
+          <option value="&#9;">Tabulador (\t)</option><option value=" ">Espacio ( )</option></select></label>
+      <label class="flex flex-col gap-1"><span class="font-label-sm text-label-sm text-outline font-semibold">Codificación</span>
+        <select class="h-10 rounded border-outline-variant font-body-md text-body-md" id="opt-cod">
+          <option value="utf-8">UTF-8</option><option value="iso-8859-1">ISO-8859-1</option><option value="cp1252">Windows-1252</option></select></label>
+      <label class="flex items-center gap-space-xs font-body-md text-body-md"><input checked class="w-4 h-4 rounded text-primary" id="opt-encabezado" type="checkbox"/>Fila 1: Cabeceras</label>
+    </div>
+  </div>
+
+  <div class="lg:col-span-7 bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-md">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary">schema</span>
+        <span class="font-headline-sm text-label-lg font-bold text-on-surface">Arquitectura de Muestreo CEP</span></div>
+      <span class="font-label-sm text-label-sm text-secondary font-semibold bg-secondary-container/30 px-2 py-0.5 rounded">Subgrupos Racionales</span>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+      <label class="flex flex-col gap-1"><span class="font-label-sm text-label-sm text-outline font-semibold">Variable de destino</span>
+        <select class="h-10 rounded border-outline-variant font-body-md text-body-md" id="opt-destino"></select>
+        <span class="font-body-sm text-body-sm text-on-surface-variant" id="opt-destino-txt">—</span></label>
+      <label class="flex flex-col gap-1"><span class="font-label-sm text-label-sm text-outline font-semibold">Tamaño del subgrupo racional (n)</span>
+        <input class="h-10 rounded border-outline-variant font-label-md text-label-md" id="opt-n" min="1" type="number"/>
+        <span class="font-body-sm text-body-sm text-on-surface-variant" id="opt-n-txt">Se usa si no hay columna de subgrupo (n consecutivas).</span></label>
+      <label class="flex flex-col gap-1"><span class="font-label-sm text-label-sm text-outline font-semibold">Tratamiento de faltantes</span>
+        <select class="h-10 rounded border-outline-variant font-body-md text-body-md" id="opt-faltantes">
+          <option value="descartar">Descartar fila incompleta</option><option value="imputar_media_subgrupo">Imputar por media de subgrupo</option>
+          <option value="bloquear">Alerta estricta (bloquear lote)</option></select></label>
+      <label class="flex flex-col gap-1"><span class="font-label-sm text-label-sm text-outline font-semibold">Filtro de atípicos</span>
+        <select class="h-10 rounded border-outline-variant font-body-md text-body-md" id="opt-atipicos">
+          <option value="iqr">Regla Tukey 1.5×IQR (Recomendado)</option><option value="sigma">Umbral 3.0σ (Desviación Típica)</option>
+          <option value="ninguno">Sin filtro preliminar</option></select>
+        <label class="flex items-center gap-space-xs font-body-sm text-body-sm"><input class="w-4 h-4 rounded text-primary" id="opt-excluir-atipicos" type="checkbox"/>Eliminar los atípicos detectados</label></label>
+    </div>
+    <div class="flex items-center justify-between bg-surface-container-low p-space-sm rounded-lg font-label-sm text-label-sm">
+      <span class="text-on-surface" id="resumen-config">Cargue un archivo para comenzar.</span>
+      <span class="flex items-center gap-space-xs text-secondary font-semibold" id="resumen-ok"></span>
+    </div>
+  </div>
+</div>
+
+<!-- 3. Motor de mapeo de columnas -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-md">
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-space-sm">
+    <div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-primary text-2xl">hub</span>
+      <div><h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Motor de Mapeo de Columnas</h2>
+        <p class="font-body-sm text-body-sm text-on-surface-variant">Asigne cada columna del archivo a su rol estadístico. Varias columnas con rol «Valor» = formato ancho (una fila por subgrupo).</p></div></div>
+    <div class="flex items-center gap-space-sm">
+      <span class="font-label-sm text-label-sm px-2 py-1 rounded bg-surface-container text-primary font-semibold" id="map-contador">0/0 columnas asignadas</span>
+      <button class="h-10 px-space-md bg-surface-container-low hover:bg-surface-container text-primary rounded-lg font-label-md text-label-md font-semibold flex items-center gap-space-xs" id="btn-redetectar" type="button">
+        <span class="material-symbols-outlined text-sm">auto_fix_high</span>Re-detectar</button>
+    </div>
+  </div>
+  <div class="overflow-x-auto"><table class="w-full text-left">
+    <thead><tr class="bg-surface-container-high text-on-surface font-label-sm text-label-sm">
+      <th class="py-2.5 px-space-sm">Columna Origen</th><th class="py-2.5 px-space-sm">Tipo Inferido</th><th class="py-2.5 px-space-sm">Asignación al Modelo CEP</th>
+      <th class="py-2.5 px-space-sm">Rango / Muestra</th><th class="py-2.5 px-space-sm">Nulos</th><th class="py-2.5 px-space-sm">Estado</th></tr></thead>
+    <tbody class="divide-y divide-surface-container" id="tabla-mapeo">
+      <tr><td class="py-space-md px-space-sm text-outline font-body-md" colspan="6">Sin archivo.</td></tr></tbody>
+  </table></div>
+</div>
+
+<!-- 4 y 5. Vista previa + limpieza | Resumen descriptivo -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md">
+  <div class="lg:col-span-8 bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-md">
+    <div class="flex flex-wrap items-center justify-between gap-space-sm">
+      <div class="flex items-center gap-1 bg-surface-container-low p-1 rounded-lg">
+        <button class="px-space-md py-1 rounded bg-surface-container-lowest text-primary font-label-sm text-label-sm font-bold shadow-sm" data-pestana="previa" type="button">Primeras filas</button>
+        <button class="px-space-md py-1 rounded text-on-surface-variant font-label-sm text-label-sm" data-pestana="subgrupos" type="button">Subgrupos formados</button>
+        <button class="px-space-md py-1 rounded text-on-surface-variant font-label-sm text-label-sm" data-pestana="limpieza" type="button">Informe de limpieza</button>
+      </div>
+      <span class="flex items-center gap-space-xs font-label-sm text-label-sm text-on-surface-variant"><span class="material-symbols-outlined text-sm">format_image_left</span><span id="previa-atipicos">—</span></span>
+    </div>
+    <div class="overflow-x-auto max-h-[420px] overflow-y-auto rounded-lg border border-outline-variant/40" id="previa"></div>
+    <div class="flex flex-wrap items-center justify-between gap-space-sm pt-space-xs border-t border-outline-variant/40">
+      <span class="font-body-sm text-body-sm text-on-surface-variant" id="previa-pie">—</span>
+      <div class="flex items-center gap-space-sm">
+        <button class="h-12 px-space-md bg-surface-container-low hover:bg-surface-container text-primary rounded-lg font-label-md text-label-md font-semibold flex items-center gap-space-xs disabled:opacity-40" disabled id="btn-exportar" type="button">
+          <span class="material-symbols-outlined text-lg">file_download</span>Exportar Dataset Depurado</button>
+        <button class="h-12 px-space-lg bg-primary hover:bg-primary-container text-on-primary rounded-lg font-label-md text-label-md font-bold flex items-center gap-space-xs shadow-sm disabled:opacity-40" disabled id="btn-importar" type="button">
+          <span class="material-symbols-outlined text-lg">insights</span>Guardar Mapeo e Importar a la Variable</button>
+      </div>
+    </div>
+  </div>
+  <div class="lg:col-span-4 flex flex-col gap-space-md">
+    <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+      <div class="flex items-center justify-between"><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary">query_stats</span>
+        <span class="font-headline-sm text-label-lg font-bold text-on-surface">Resumen Descriptivo</span></div>
+        <span class="font-label-sm text-label-sm text-outline" id="desc-ctq">—</span></div>
+      <p class="font-body-sm text-body-sm text-on-surface-variant">Verificación preliminar antes del trazado de cartas.</p>
+      <div class="grid grid-cols-2 gap-space-xs" id="desc-tarjetas">
+        {% for id, t in [("N", "Total Lecturas (N)"), ("media", "Media General (x̄)"), ("s", "Desv. Estándar (s)"), ("r_barra", "Rango Promedio (R̄)"), ("mediana", "Mediana"), ("rango", "Mín – Máx")] %}
+        <div class="p-space-xs bg-surface-container-low rounded-lg flex flex-col"><span class="font-label-sm text-label-sm text-outline">{{ t }}</span>
+          <span class="font-headline-sm text-headline-sm font-bold text-on-surface" id="desc-{{ id }}">—</span>
+          <span class="font-label-sm text-label-sm text-on-surface-variant" id="desc-{{ id }}-sub"></span></div>
+        {% endfor %}
+      </div>
+      <div class="flex flex-col gap-1">
+        <div class="flex items-center justify-between"><span class="font-label-sm text-label-sm text-outline font-semibold">Histograma y curva normal</span>
+          <span class="font-label-sm text-label-sm text-primary" id="desc-ad">—</span></div>
+        <div class="grafico" id="graf-hist"></div>
+      </div>
+    </div>
+    <div class="bg-primary-fixed/30 p-space-md rounded-xl flex gap-space-sm">
+      <span class="material-symbols-outlined text-primary">info</span>
+      <div><span class="font-label-md text-label-md font-bold text-on-surface">Recomendación (Montgomery, cap. 6)</span>
+        <p class="font-body-sm text-body-sm text-on-surface-variant">Para estimar límites de prueba en Fase I se recomiendan 20–25 subgrupos. Los datos se importan a la Fase I de la variable; luego depure y congele los límites en «Gráficos».</p></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/graficos.js"></script>
+<script src="/static/js/ing_datos.js"></script>
+{% endblock %}

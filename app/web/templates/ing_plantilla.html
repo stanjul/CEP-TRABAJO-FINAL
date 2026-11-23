@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{# Plantilla de carga: genera un Excel paramétrico (variables, muestras para establecer límites y de
+   monitoreo) y revisa/carga el archivo llenado. Lógica: ing_plantilla.js · API: /api/plantillas/* #}
+{% block contenido %}
+<section class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-xs">
+  <h1 class="font-headline-md text-headline-md font-bold text-on-surface">Plantilla de carga</h1>
+  <p class="font-body-md text-body-md text-on-surface-variant max-w-3xl">
+    Descarga una planilla Excel hecha a la medida de tu proceso: con las variables, las muestras ya numeradas y
+    controles que avisan si un dato está mal escrito. Llénala en Excel y súbela aquí: antes de guardar verás un
+    informe con lo que se cargará.</p>
+</section>
+
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-space-lg items-start">
+  <!-- ===================== 1. ARMAR ===================== -->
+  <form class="xl:col-span-7 bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-lg" id="pl-form" autocomplete="off">
+    <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">1. Arma la plantilla</h2>
+
+    <div class="flex flex-col gap-space-xs">
+      <label class="font-body-md text-body-md font-semibold" for="pl-proceso">Proceso</label>
+      <select class="h-12 rounded-lg border-outline-variant font-body-md text-body-md" id="pl-proceso"></select>
+      <div class="hidden grid-cols-1 sm:grid-cols-2 gap-space-sm" id="pl-proceso-nuevo">
+        <input class="h-12 rounded-lg border-outline-variant font-body-md text-body-md" id="pl-proc-nombre" placeholder="Nombre del proceso nuevo" maxlength="120"/>
+        <input class="h-12 rounded-lg border-outline-variant font-body-md text-body-md" id="pl-proc-linea" placeholder="Línea o máquina (opcional)" maxlength="120"/>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-space-sm">
+      <div class="flex flex-wrap items-end justify-between gap-space-sm">
+        <div class="flex flex-col">
+          <span class="font-body-md text-body-md font-semibold">Variables y cantidad de muestras</span>
+          <span class="font-body-sm text-body-sm text-on-surface-variant">«Para establecer los límites» son las primeras muestras (Fase I; se recomiendan 20 a 25).
+            «Monitoreo» son las que se comparan con los límites ya fijados (Fase II).</span>
+        </div>
+        <button class="h-10 px-space-md rounded-lg bg-surface-container-low hover:bg-surface-container text-primary font-label-md text-label-md font-semibold flex items-center gap-space-xs" id="pl-agregar" type="button">
+          <span class="material-symbols-outlined text-lg">add</span>Agregar variable nueva</button>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left font-body-md text-body-md">
+          <thead><tr class="border-b border-outline-variant font-body-sm text-body-sm text-on-surface-variant">
+            <th class="py-space-xs pr-space-sm font-normal w-8"></th><th class="py-space-xs pr-space-sm font-normal">Variable</th>
+            <th class="py-space-xs pr-space-sm font-normal text-center w-36">Para establecer los límites</th>
+            <th class="py-space-xs font-normal text-center w-28">Monitoreo</th></tr></thead>
+          <tbody class="divide-y divide-surface-container" id="pl-existentes"></tbody>
+        </table>
+      </div>
+      <div class="flex flex-col gap-space-sm" id="pl-nuevas"></div>
+    </div>
+
+    <fieldset class="flex flex-col gap-space-xs">
+      <legend class="font-body-md text-body-md font-semibold pb-space-xs">Columnas adicionales</legend>
+      <div class="flex flex-wrap gap-space-md">
+        {% for id, t in [("lote", "Lote"), ("operario", "Operario"), ("observaciones", "Observaciones")] %}
+        <label class="flex items-center gap-space-xs h-10 px-space-md rounded-lg bg-surface-container-low cursor-pointer">
+          <input checked class="w-4 h-4" id="pl-op-{{ id }}" type="checkbox"/>{{ t }}</label>
+        {% endfor %}
+      </div>
+      <span class="font-body-sm text-body-sm text-on-surface-variant">Las observaciones (por ejemplo «cambio de bobina») se guardan con la muestra y ayudan a encontrar causas.</span>
+    </fieldset>
+
+    <label class="flex flex-col gap-space-xs max-w-xs">
+      <span class="font-body-md text-body-md font-semibold">Fecha y hora de la primera muestra</span>
+      <input class="h-12 rounded-lg border-outline-variant font-body-md text-body-md" id="pl-inicio" type="datetime-local"/>
+      <span class="font-body-sm text-body-sm text-on-surface-variant">Se usa para sugerir la fecha y la hora de cada muestra según la frecuencia. Las variables que ya tienen datos siguen desde su último registro.</span>
+    </label>
+
+    <p class="hidden px-space-md py-space-sm rounded-lg bg-error-container text-on-error-container font-body-md text-body-md" id="pl-error" role="alert"></p>
+    <div class="flex justify-end">
+      <button class="h-12 px-space-lg rounded-lg bg-primary hover:bg-primary-container text-on-primary font-label-lg text-label-lg font-bold flex items-center gap-space-xs disabled:opacity-50" id="pl-descargar" type="submit">
+        <span class="material-symbols-outlined">download</span>Descargar plantilla</button>
+    </div>
+  </form>
+
+  <!-- ===================== VISTA PREVIA ===================== -->
+  <aside class="xl:col-span-5 flex flex-col gap-space-lg">
+    <section class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-sm">
+      <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Así quedará</h2>
+      <p class="font-body-sm text-body-sm text-on-surface-variant" id="pl-resumen">—</p>
+      <div class="flex flex-col gap-space-md" id="pl-previa"></div>
+    </section>
+    <section class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-sm">
+      <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Qué controla la planilla</h2>
+      <ul class="flex flex-col gap-space-xs font-body-md text-body-md">
+        {% for i, t in [("pin", "Solo se puede escribir en las celdas de datos; los números de muestra y los cálculos quedan bloqueados."),
+                        ("123", "Acepta solo números (con coma decimal) y conteos enteros; las defectuosas no pueden superar las revisadas."),
+                        ("palette", "Los valores fuera de lo aceptado se pintan de ámbar al escribirlos."),
+                        ("functions", "Calcula sola el promedio y el rango (o el % de defectuosas) de cada muestra."),
+                        ("verified", "Al subirla, la aplicación revisa todo otra vez y no duplica muestras ya cargadas.")] %}
+        <li class="flex items-start gap-space-sm"><span class="material-symbols-outlined text-primary-container">{{ i }}</span><span>{{ t }}</span></li>
+        {% endfor %}
+      </ul>
+    </section>
+  </aside>
+</div>
+
+<!-- ===================== 2. SUBIR ===================== -->
+<section class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+  <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">2. Sube la plantilla llenada</h2>
+  <label class="flex flex-col items-center justify-center gap-space-xs p-space-xl rounded-xl border-2 border-dashed border-outline-variant hover:border-primary-container hover:bg-primary-fixed/20 cursor-pointer text-center transition-colors" id="pl-zona">
+    <span class="material-symbols-outlined text-4xl text-primary-container">upload_file</span>
+    <span class="font-body-lg text-body-lg font-semibold text-on-surface">Arrastra aquí el archivo o haz clic para elegirlo</span>
+    <span class="font-body-sm text-body-sm text-on-surface-variant">Solo plantillas .xlsx descargadas desde esta pantalla. Nada se guarda hasta que confirmes.</span>
+    <input accept=".xlsx" class="sr-only" id="pl-archivo" type="file"/>
+  </label>
+  <div class="hidden flex-col gap-space-md" id="pl-informe"></div>
+</section>
+{% endblock %}
+{% block scripts %}<script src="/static/js/ing_plantilla.js"></script>{% endblock %}

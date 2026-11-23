@@ -1,0 +1,264 @@
+%% Plantilla del informe del proceso (LaTeX + Jinja2). La completa app/core/reporte_latex.py.
+%% Los delimitadores de Jinja2 están adaptados a LaTeX para no chocar con las llaves: ver
+%% reporte_latex._entorno (no se escriben aquí porque Jinja2 los interpretaría).
+%% Todos los textos llegan ya escapados para LaTeX desde Python.
+%% Fuente: la predeterminada de LaTeX (Latin Modern = Computer Modern vectorial).
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{textcomp}
+\usepackage[spanish,es-noshorthands,es-tabla]{babel}
+\usepackage[a4paper,margin=2.2cm,top=2.6cm,bottom=2.4cm,headheight=14pt]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage[table]{xcolor}
+\usepackage{amsmath,amssymb}
+\usepackage{microtype}
+\usepackage{parskip}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{needspace}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{petroleo}{HTML}{0F4C5C}
+\definecolor{tinta}{HTML}{0B1C30}
+\definecolor{gris}{HTML}{40484B}
+\definecolor{grisclaro}{HTML}{EFF4FF}
+\definecolor{verde}{HTML}{15803D}
+\definecolor{ambar}{HTML}{B45309}
+\definecolor{rojo}{HTML}{B91C1C}
+\definecolor{neutro}{HTML}{70787C}
+\definecolor{fondoverde}{HTML}{E7F6EC}
+\definecolor{fondoambar}{HTML}{FEF3C7}
+\definecolor{fondorojo}{HTML}{FDE8E8}
+\definecolor{fondoneutro}{HTML}{EEF0F1}
+
+%% Cada título reserva espacio para unas líneas: nunca queda solo al pie de la página.
+\titleformat{\section}{\needspace{8\baselineskip}\Large\bfseries\color{petroleo}}{}{0pt}{}
+\titleformat{\subsection}{\needspace{6\baselineskip}\large\bfseries\color{tinta}}{}{0pt}{}
+%% Las figuras flotan (se ubican donde caben) para no dejar huecos.
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\floatpagefraction}{0.75}
+\titlespacing*{\section}{0pt}{16pt}{6pt}
+\setlist{itemsep=2pt,topsep=2pt}
+\renewcommand{\arraystretch}{1.25}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{gris}<< proceso >> \textperiodcentered{} << variable >>}
+\fancyhead[R]{\small\color{gris}<< fecha >>}
+\fancyfoot[L]{\small\color{gris}<< folio >>}
+\fancyfoot[R]{\small\color{gris}Página \thepage{} de \pageref{LastPage}}
+\renewcommand{\headrulewidth}{0.4pt}
+
+%% \textcolor (no \color) para que el texto arranque en la primera línea de la celda.
+\newcommand{\nota}[1]{\textcolor{gris}{\small #1}}
+
+\begin{document}
+
+%% ---------------------------------------------------------------- Portada / encabezado
+{\color{petroleo}\rule{\linewidth}{2pt}}\par\vspace{4pt}
+{\fontsize{24}{28}\selectfont\bfseries\color{tinta} << titulo >>\par}
+\vspace{2pt}
+{\large\color{gris} << proceso >> \textperiodcentered{} << variable >>\par}
+\vspace{8pt}
+\begin{tabularx}{\linewidth}{@{}l X l X@{}}
+\nota{Fecha del informe} & << fecha >> & \nota{Folio} & << folio >> \\
+\nota{Período analizado} & << periodo >> & \nota{Generado por} & << usuario >> \\
+\end{tabularx}
+
+%% ---------------------------------------------------------------- Estado general
+\vspace{6pt}
+\noindent\colorbox{<< estado.fondo >>}{\begin{minipage}{\dimexpr\linewidth-2\fboxsep\relax}
+\vspace{6pt}
+{\Large\bfseries\color{<< estado.color >>} << estado.titulo >>\par}
+\vspace{2pt}
+<< estado.texto >>\par
+\vspace{6pt}
+\end{minipage}}
+
+<% if hallazgos %>
+\section*{En pocas palabras}
+\begin{itemize}
+<% for h in hallazgos %>  \item << h >>
+<% endfor %>\end{itemize}
+<% endif %>
+
+<% if indicadores %>
+\section*{Indicadores principales}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{4.0cm} >{\raggedright\arraybackslash}p{4.4cm} >{\raggedright\arraybackslash}p{7.8cm}@{}}
+\toprule
+\textbf{Indicador} & \textbf{Valor} & \textbf{Qué significa} \\
+\midrule
+\endhead
+<% for fila in indicadores %><< fila[0] >> & \textbf{<< fila[1] >>} & \nota{<< fila[2] >>} \\
+<% endfor %>\bottomrule
+\end{longtable}
+<% endif %>
+
+%% ---------------------------------------------------------------- Comportamiento del proceso
+<% if carta %>
+\section*{Cómo se comportó el proceso}
+<< carta.intro >>
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{carta.png}\par
+\begin{minipage}{\linewidth}
+\nota{Cómo leer la gráfica: cada punto es << carta.punto >>. La franja sombreada, entre las líneas rojas,
+es la zona normal del proceso. <% if carta.con_espec %>Las líneas punteadas grises son los valores que
+acepta el cliente. <% endif %>Los puntos rojos marcados con «!» son muestras fuera de lo normal.}
+\end{minipage}
+\end{figure}
+
+<% if carta.revisar %>
+\subsection*{Muestras fuera de lo normal}
+\begin{longtable}{@{}l l l >{\raggedright\arraybackslash}p{8.2cm}@{}}
+\toprule
+\textbf{Muestra} & \textbf{Fecha y hora} & \textbf{Valor} & \textbf{Qué se observó} \\
+\midrule
+\endhead
+<% for r in carta.revisar %><< r[0] >> & << r[1] >> & << r[2] >> & << r[3] >> \\
+<% endfor %>\bottomrule
+\end{longtable}
+<% else %>
+\nota{No hubo muestras fuera de lo normal en el período analizado.}
+<% endif %>
+<% if carta.excluidas %>
+
+\nota{<< carta.excluidas >>}
+<% endif %>
+<% endif %>
+
+%% ---------------------------------------------------------------- Cumplimiento de la especificación
+<% if capacidad %>
+\section*{Cumplimiento de lo que acepta el cliente}
+<< capacidad.intro >>
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{histograma.png}
+\end{figure}
+
+\begin{tabularx}{\linewidth}{@{}X r r r@{}}
+\toprule
+\textbf{Dónde} & \textbf{Esperado} & \textbf{Piezas por millón} & \textbf{Observado} \\
+\midrule
+<% for fila in capacidad.tabla %><< fila[0] >> & << fila[1] >> & << fila[2] >> & << fila[3] >> \\
+<% endfor %>\bottomrule
+\end{tabularx}
+
+\nota{«Esperado» se calcula con el promedio y la variabilidad del proceso suponiendo una distribución
+normal; «Observado» es lo que efectivamente salió en las muestras.}
+
+\subsection*{Índices de capacidad}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{4.6cm} >{\raggedright\arraybackslash}p{2.2cm} >{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Índice} & \textbf{Valor} & \textbf{Qué significa} \\
+\midrule
+<% for fila in capacidad.indices %><< fila[0] >> & \textbf{<< fila[1] >>} & \nota{<< fila[2] >>} \\
+<% endfor %>\bottomrule
+\end{tabularx}
+<% endif %>
+
+%% ---------------------------------------------------------------- Supuestos
+<% if supuestos %>
+\section*{Verificación de los datos}
+<< supuestos.intro >>
+
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{5.4cm} >{\raggedright\arraybackslash}p{3.0cm} >{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Pregunta} & \textbf{Resultado} & \textbf{Detalle técnico} \\
+\midrule
+<% for fila in supuestos.filas %><< fila[0] >> & \textbf{<< fila[1] >>} & \nota{<< fila[2] >>} \\
+<% endfor %>\bottomrule
+\end{tabularx}
+<% endif %>
+
+%% ---------------------------------------------------------------- Plan de muestreo
+<% if plan %>
+\section*{Plan de muestreo}
+<< plan.intro >>
+\begin{itemize}
+<% for t in plan.textos %>  \item << t >>
+<% endfor %>\end{itemize}
+<% endif %>
+
+%% ---------------------------------------------------------------- Alertas
+<% if alertas is not none %>
+\section*{Alertas registradas}
+<% if alertas %>
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.3cm} l >{\raggedright\arraybackslash}p{6.0cm} >{\raggedright\arraybackslash}p{4.4cm}@{}}
+\toprule
+\textbf{Fecha} & \textbf{Muestra} & \textbf{Qué pasó} & \textbf{Estado y anotaciones} \\
+\midrule
+\endhead
+<% for a in alertas %><< a[0] >> & << a[1] >> & << a[2] >> & << a[3] >> \\
+<% endfor %>\bottomrule
+\end{longtable}
+<% else %>
+No se registraron alertas.
+<% endif %>
+<% endif %>
+
+%% ---------------------------------------------------------------- Lotes
+<% if lotes %>
+\section*{Inspección de lotes (muestreo de aceptación)}
+\begin{longtable}{@{}l l r r r r l@{}}
+\toprule
+\textbf{Lote} & \textbf{Fecha} & \textbf{Tamaño} & \textbf{Revisadas} & \textbf{Acepta hasta} & \textbf{Defectuosas} & \textbf{Dictamen} \\
+\midrule
+\endhead
+<% for l in lotes %><< l[0] >> & << l[1] >> & << l[2] >> & << l[3] >> & << l[4] >> & << l[5] >> & << l[6] >> \\
+<% endfor %>\bottomrule
+\end{longtable}
+<% endif %>
+
+%% ---------------------------------------------------------------- Historial
+<% if historial is not none %>
+\section*{Historial de cambios}
+<% if historial %>
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.3cm} >{\raggedright\arraybackslash}p{2.4cm} >{\raggedright\arraybackslash}p{2.8cm} >{\raggedright\arraybackslash}p{3.4cm} >{\raggedright\arraybackslash}p{4.0cm}@{}}
+\toprule
+\textbf{Fecha} & \textbf{Quién} & \textbf{Qué cambió} & \textbf{Antes $\rightarrow$ después} & \textbf{Motivo} \\
+\midrule
+\endhead
+<% for h in historial %><< h[0] >> & << h[1] >> & << h[2] >> & << h[3] >> & << h[4] >> \\
+<% endfor %>\bottomrule
+\end{longtable}
+<% else %>
+No hay cambios registrados.
+<% endif %>
+<% endif %>
+
+%% ---------------------------------------------------------------- Anexos
+<% if tecnico %>
+\section*{Anexo: datos técnicos}
+\begin{tabularx}{\linewidth}{@{}X r r r@{}}
+\toprule
+\textbf{Gráfica} & \textbf{Límite inferior} & \textbf{Línea central} & \textbf{Límite superior} \\
+\midrule
+<% for fila in tecnico.limites %><< fila[0] >> & << fila[1] >> & << fila[2] >> & << fila[3] >> \\
+<% endfor %>\bottomrule
+\end{tabularx}
+
+\nota{<< tecnico.nota >>}
+<% endif %>
+
+\section*{Glosario}
+\begin{description}[style=nextline,leftmargin=0pt,font=\normalfont\bfseries]
+<% for g in glosario %>  \item[<< g[0] >>] << g[1] >>
+<% endfor %>\end{description}
+
+\vspace{10pt}
+\nota{Este informe describe los datos registrados en la aplicación; no incluye recomendaciones.
+La integridad del archivo puede verificarse en la aplicación (pantalla Reportes) con su huella SHA-256.}
+
+\end{document}

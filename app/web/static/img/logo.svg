@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 32" fill="none">
+  <!-- Logotipo CEP: mini carta de control con LCS / LC / LCI -->
+  <rect x="1" y="1" width="30" height="30" rx="4" fill="#003441" stroke="#87bbce" stroke-width="1.5"/>
+  <line x1="5" y1="9" x2="27" y2="9" stroke="#ffdad6" stroke-width="1.2" stroke-dasharray="2 1.5"/>
+  <line x1="5" y1="16" x2="27" y2="16" stroke="#87bbce" stroke-width="1.2"/>
+  <line x1="5" y1="23" x2="27" y2="23" stroke="#ffdad6" stroke-width="1.2" stroke-dasharray="2 1.5"/>
+  <polyline points="6,17 10,13 14,18 18,14 22,19 26,11" stroke="#a1f2e2" stroke-width="2" fill="none" stroke-linejoin="round"/>
+  <text x="36" y="22" font-family="League Spartan, sans-serif" font-size="14" font-weight="700" fill="#ffffff">CEP</text>
+</svg>

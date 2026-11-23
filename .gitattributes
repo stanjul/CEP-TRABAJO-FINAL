@@ -1,0 +1,11 @@
+# Saltos de línea: el repositorio guarda LF; los scripts conservan el formato de su sistema.
+* text=auto
+*.sh text eol=lf
+*.bat text eol=crlf
+
+# Binarios (no se comparan como texto)
+*.png binary
+*.woff2 binary
+*.xlsx binary
+*.pdf binary
+*.db binary

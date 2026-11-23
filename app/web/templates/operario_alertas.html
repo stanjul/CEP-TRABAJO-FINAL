@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{# Alertas de control (Operario). No existe en Stitch: usa las tarjetas de alarma de la vista de
+   operario y los estilos de tabla del diseño. Lógica: operario_alertas.js #}
+{% block contenido %}
+<section class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+  <div class="flex flex-col gap-space-xs">
+    <div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-error text-2xl">notifications_active</span>
+      <h1 class="font-headline-sm text-headline-sm font-bold text-on-surface">Alertas</h1></div>
+    <p class="font-body-md text-body-md text-on-surface-variant" id="al-sub">—</p>
+  </div>
+  <div class="flex flex-wrap items-center gap-space-sm">
+    <div class="flex items-center bg-surface-container-low p-1 rounded-lg" id="filtro-estado">
+      {% for v, t in [("pendientes", "Sin resolver"), ("resuelta", "Resueltas"), ("", "Todas")] %}
+      <button class="h-10 px-space-md rounded font-label-md text-label-md" data-estado="{{ v }}" type="button">{{ t }}</button>
+      {% endfor %}
+    </div>
+    <label class="flex items-center gap-space-xs font-label-sm text-label-sm"><input class="w-5 h-5 rounded text-primary" id="todas-variables" type="checkbox"/>Todas las variables</label>
+    <button class="h-10 px-space-md bg-error text-on-error rounded-lg font-label-md text-label-md font-bold flex items-center gap-space-xs" id="btn-evento" type="button">
+      <span class="material-symbols-outlined text-lg">report_problem</span>Reportar un problema</button>
+  </div>
+</section>
+<section class="grid grid-cols-2 md:grid-cols-4 gap-space-md">
+  {% for id, t, c in [("pend", "Sin resolver", "text-error"), ("crit", "Graves sin resolver", "text-error"), ("inv", "En revisión", "text-[#B45309]"), ("res", "Resueltas", "text-secondary")] %}
+  <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col"><span class="font-body-md text-body-md font-semibold text-on-surface-variant">{{ t }}</span>
+    <span class="font-metric-display text-metric-display font-bold {{ c }}" id="c-{{ id }}">—</span></div>
+  {% endfor %}
+</section>
+<section class="grid grid-cols-1 xl:grid-cols-2 gap-space-md" id="lista"></section>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/alarmas_ui.js"></script>
+<script src="/static/js/operario_alertas.js"></script>
+{% endblock %}

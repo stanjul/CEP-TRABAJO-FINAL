@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{# Módulo 2 — Cartas por variables (X̄-R, X̄-S, I-MR). Derivada de Stitch
+   "vista_ingenier_a_gr_ficos_de_control_por_variables". Lógica en static/js/carta_ing.js. #}
+{% from "_carta_comun.html" import barra_superior, panel_reglas, tabla_depuracion %}
+{% block head %}<script src="/static/vendor/plotly.min.js"></script>{% endblock %}
+{% block contenido %}
+<div class="flex flex-col gap-space-md" id="pantalla">
+{{ barra_superior("Cartas de Control Shewhart por Variables",
+   [("xbar_r", "stacked_line_chart", "X̄ - R (Rangos)"), ("xbar_s", "ssid_chart", "X̄ - S (Desv. Estándar)"), ("imr", "show_chart", "I - MR (Individuales)")]) }}
+
+<!-- 2. Tarjetas de Parámetros y Límites Calculados -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-md">
+  <div class="flex flex-col justify-between p-space-md bg-surface-container-lowest rounded-xl shadow-sm relative overflow-hidden">
+    <div class="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-primary/5 pointer-events-none"></div>
+    <div class="flex items-center justify-between pb-space-xs">
+      <div class="flex items-center gap-space-xs"><span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+        <span class="font-label-sm text-label-sm text-outline" id="k1-titulo">Carta X̄ (Medias)</span></div>
+      <span class="font-label-sm text-label-sm font-semibold text-primary px-1.5 py-0.5 rounded bg-surface-container-low" id="k1-n">n = —</span>
+    </div>
+    <div class="flex items-baseline gap-space-xs my-space-xs">
+      <span class="font-metric-display text-metric-display text-on-surface tracking-tight" id="k1-lc">—</span>
+      <span class="font-label-md text-label-md text-outline" id="k1-unidad">(LC)</span>
+    </div>
+    <div class="grid grid-cols-2 gap-space-xs pt-space-xs mt-space-xs bg-surface-container-low p-space-xs rounded-lg">
+      <div class="flex flex-col"><span class="font-label-sm text-label-sm text-error font-medium" id="k1-lcs">LCS: —</span><span class="font-label-sm text-label-sm text-error font-medium" id="k1-lci">LCI: —</span></div>
+      <div class="flex flex-col text-right"><span class="font-label-sm text-label-sm text-outline font-medium" id="k1-les">LES: —</span><span class="font-label-sm text-label-sm text-outline font-medium" id="k1-lei">LEI: —</span></div>
+    </div>
+  </div>
+  <div class="flex flex-col justify-between p-space-md bg-surface-container-lowest rounded-xl shadow-sm relative overflow-hidden">
+    <div class="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-secondary/5 pointer-events-none"></div>
+    <div class="flex items-center justify-between pb-space-xs">
+      <div class="flex items-center gap-space-xs"><span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
+        <span class="font-label-sm text-label-sm text-outline" id="k2-titulo">Carta R (Rangos)</span></div>
+      <span class="font-label-sm text-label-sm font-semibold text-secondary px-1.5 py-0.5 rounded bg-secondary-container/40" id="k2-formula">—</span>
+    </div>
+    <div class="flex items-baseline gap-space-xs my-space-xs">
+      <span class="font-metric-display text-metric-display text-on-surface tracking-tight" id="k2-lc">—</span>
+      <span class="font-label-md text-label-md text-outline" id="k2-unidad">—</span>
+    </div>
+    <div class="grid grid-cols-2 gap-space-xs pt-space-xs mt-space-xs bg-surface-container-low p-space-xs rounded-lg">
+      <div class="flex flex-col"><span class="font-label-sm text-label-sm text-error font-medium" id="k2-lcs">LCS: —</span><span class="font-label-sm text-label-sm text-secondary font-medium" id="k2-lci">LCI: —</span></div>
+      <div class="flex flex-col text-right justify-center"><span class="font-label-sm text-label-sm text-on-surface-variant font-medium" id="k2-sigma-t">σ̂</span><span class="font-label-md text-label-md font-bold text-primary" id="k2-sigma">—</span></div>
+    </div>
+  </div>
+  <div class="flex flex-col justify-between p-space-md bg-surface-container-lowest rounded-xl shadow-sm">
+    <div class="flex items-center justify-between pb-space-xs">
+      <div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-outline text-base">functions</span>
+        <span class="font-label-sm text-label-sm text-outline">Constantes Factores</span></div>
+      <span class="font-label-sm text-label-sm text-primary font-bold">Montgomery Ap. VI</span>
+    </div>
+    <div class="flex flex-wrap gap-1.5 my-space-xs" id="k3-constantes"></div>
+    <div class="flex items-center justify-between pt-space-xs bg-surface-container-low p-space-xs rounded-lg font-label-sm text-label-sm">
+      <span class="text-on-surface-variant">Capacidad Cpk actual:</span><span class="font-bold text-secondary text-label-md" id="k3-cpk">—</span>
+    </div>
+  </div>
+  {% include "_tarjeta_diagnostico.html" %}
+</section>
+
+<!-- 3. Gráficos + panel de reglas y capacidad -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md">
+  <div class="lg:col-span-8 flex flex-col gap-space-md">
+    <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col relative">
+      <div class="flex items-center justify-between pb-space-sm">
+        <div class="flex items-center gap-space-sm">
+          <span class="font-headline-sm text-label-lg font-bold text-on-surface" id="g1-titulo">CARTA DE MEDIAS (X̄)</span>
+          <span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-surface-container-low text-primary font-medium" id="g1-sub">—</span>
+        </div>
+        <div class="hidden sm:flex items-center gap-space-md font-label-sm text-label-sm">
+          <div class="flex items-center gap-1"><span class="w-3 h-0.5 bg-error"></span><span class="text-outline">LCS / LCI</span></div>
+          <div class="flex items-center gap-1"><span class="w-3 h-0.5 bg-primary"></span><span class="text-outline">LC</span></div>
+          <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-error"></span><span class="text-error font-semibold">Señal</span></div>
+          <div class="flex items-center gap-1"><span class="text-outline font-bold">×</span><span class="text-outline">Excluido</span></div>
+        </div>
+      </div>
+      <div class="grafico" id="graf-1"></div>
+    </div>
+    <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col relative" id="caja-g2">
+      <div class="flex items-center justify-between pb-space-sm">
+        <div class="flex items-center gap-space-sm">
+          <span class="font-headline-sm text-label-lg font-bold text-on-surface" id="g2-titulo">CARTA DE DISPERSIÓN (R)</span>
+          <span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-surface-container-low text-secondary font-medium" id="g2-sub">—</span>
+        </div>
+        <div class="flex items-center gap-space-md font-label-sm text-label-sm" id="g2-leyenda"></div>
+      </div>
+      <div class="grafico" id="graf-2"></div>
+    </div>
+  </div>
+  <div class="lg:col-span-4 flex flex-col gap-space-md">
+    {{ panel_reglas() }}
+    <!-- Métricas de Capacidad (Cp / Cpk / Cpu-Cpl / fracción no conforme) -->
+    <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col">
+      <div class="flex items-center justify-between pb-space-xs">
+        <span class="font-headline-sm text-label-lg font-bold text-on-surface">Índices de Capacidad</span>
+        <a class="font-label-sm text-label-sm text-primary hover:underline" data-con-variable href="/ingenieria/capacidad">Estudio completo →</a>
+      </div>
+      <div class="grid grid-cols-2 gap-space-sm mt-space-xs" id="panel-capacidad">
+        <div class="p-space-xs bg-surface-container-low rounded-lg flex flex-col"><span class="font-label-sm text-label-sm text-outline">Cp (Potencial)</span>
+          <span class="font-metric-display-mobile text-metric-display-mobile text-primary font-bold" id="cap-cp">—</span><span class="font-body-sm text-body-sm text-secondary font-medium" id="cap-cp-t">—</span></div>
+        <div class="p-space-xs bg-surface-container-low rounded-lg flex flex-col"><span class="font-label-sm text-label-sm text-outline">Cpk (Real)</span>
+          <span class="font-metric-display-mobile text-metric-display-mobile text-secondary font-bold" id="cap-cpk">—</span><span class="font-body-sm text-body-sm text-on-surface-variant font-medium" id="cap-k">—</span></div>
+        <div class="p-space-xs bg-surface-container-low rounded-lg flex flex-col"><span class="font-label-sm text-label-sm text-outline">Cpu / Cpl</span>
+          <span class="font-label-lg text-label-lg text-on-surface font-bold" id="cap-lados">—</span><span class="font-body-sm text-body-sm text-outline" id="cap-sg">—</span></div>
+        <div class="p-space-xs bg-surface-container-low rounded-lg flex flex-col"><span class="font-label-sm text-label-sm text-outline">Fracción no conforme</span>
+          <span class="font-label-lg text-label-lg text-on-surface font-bold" id="cap-nc">—</span><span class="font-body-sm text-body-sm text-outline" id="cap-ppm">—</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{ tabla_depuracion(["Media (X̄)", "Dispersión"]) }}
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/graficos.js"></script>
+<script src="/static/js/carta_ing.js"></script>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{# Vista Operario (rediseño 2026-11, Fase C): pensada para personas no expertas.
+   1) Estado del proceso en palabras + qué hacer + próxima muestra.
+   2) Registrar muestra (acción principal) con aviso de valor sospechoso y "Deshacer".
+   3) Una sola gráfica (últimas 25 muestras) con resumen en palabras.
+   4) Alertas y resumen del turno.  Lógica: static/js/operario.js #}
+{% block head %}<script src="/static/vendor/plotly.min.js"></script>{% endblock %}
+{% block contenido %}
+
+<!-- 1. ESTADO DEL PROCESO -->
+<section class="rounded-xl shadow-sm p-space-lg flex flex-col lg:flex-row lg:items-center justify-between gap-space-lg bg-surface-container-lowest" id="estado" aria-live="polite">
+  <div class="flex items-center gap-space-md min-w-0">
+    <span class="w-16 h-16 shrink-0 rounded-full flex items-center justify-center bg-outline text-on-secondary" id="est-circulo">
+      <span class="material-symbols-outlined text-4xl" id="est-icono">hourglass_empty</span></span>
+    <div class="flex flex-col gap-1 min-w-0">
+      <span class="font-body-md text-body-md text-on-surface-variant" id="est-variable">—</span>
+      <h1 class="font-headline-lg text-headline-lg font-bold text-on-surface" id="est-titulo">Cargando…</h1>
+      <p class="font-body-lg text-body-lg text-on-surface max-w-2xl" id="est-que-hacer">—</p>
+    </div>
+  </div>
+  <div class="flex flex-wrap items-center gap-space-md lg:justify-end shrink-0">
+    <div class="flex flex-col items-start lg:items-end">
+      <span class="font-body-md text-body-md text-on-surface-variant">Próxima muestra</span>
+      <span class="font-metric-display text-metric-display font-bold text-primary" id="spc-countdown">--:--</span>
+      <span class="font-body-sm text-body-sm text-on-surface-variant" id="op-plan">—</span>
+    </div>
+    <button class="h-12 px-space-md rounded-lg border-2 border-error text-error hover:bg-error-container font-label-md text-label-md font-bold flex items-center gap-space-xs" id="btn-problema" type="button">
+      <span class="material-symbols-outlined">report_problem</span>Reportar un problema</button>
+  </div>
+</section>
+
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+  <!-- 2. REGISTRAR MUESTRA -->
+  <form class="lg:col-span-5 bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md" id="captura" autocomplete="off" novalidate>
+    <div class="flex flex-col gap-1">
+      <h2 class="font-headline-md text-headline-md font-bold text-on-surface" id="cap-titulo">Registrar muestra</h2>
+      <p class="font-body-md text-body-md text-on-surface-variant" id="cap-instruccion">—</p>
+    </div>
+    <div class="flex flex-col gap-space-sm" id="sample-inputs-group"></div>
+    <label class="flex items-center gap-space-sm">
+      <span class="w-28 font-body-md text-body-md text-on-surface-variant">Lote <span class="font-body-sm text-body-sm">(opcional)</span></span>
+      <input class="h-12 flex-1 rounded-lg border-outline-variant font-body-lg text-body-lg" id="cap-lote" type="text" maxlength="80"/>
+    </label>
+    <!-- Resultado en vivo -->
+    <div class="hidden items-start gap-space-sm p-space-md rounded-lg bg-surface-container-low" id="cap-vivo" aria-live="polite">
+      <span class="material-symbols-outlined text-primary-container" id="cap-vivo-icono">info</span>
+      <p class="font-body-md text-body-md text-on-surface" id="cap-vivo-texto">—</p>
+    </div>
+    <p class="hidden px-space-md py-space-sm rounded-lg bg-error-container text-on-error-container font-body-md text-body-md" id="cap-error" role="alert"></p>
+    <button class="min-h-[56px] w-full px-space-lg bg-primary hover:bg-primary-container text-on-primary rounded-xl font-label-lg text-label-lg font-bold flex items-center justify-center gap-space-sm shadow-md active:translate-y-0.5 transition-all disabled:opacity-60" id="btn-submit-subgroup" type="submit">
+      <span class="material-symbols-outlined text-2xl">check_circle</span>Guardar muestra</button>
+    <!-- Deshacer -->
+    <div class="hidden items-center justify-between gap-space-sm p-space-md rounded-lg bg-primary-fixed/40" id="deshacer">
+      <span class="font-body-md text-body-md text-on-surface" id="deshacer-texto">—</span>
+      <button class="h-10 px-space-md rounded-lg bg-surface-container-lowest hover:bg-surface-container text-primary font-label-md text-label-md font-bold flex items-center gap-1 shrink-0" id="btn-deshacer" type="button">
+        <span class="material-symbols-outlined text-sm">undo</span>Deshacer</button>
+    </div>
+    <!-- Modo demostración -->
+    <div class="hidden flex-col gap-space-xs pt-space-sm border-t border-outline-variant/40" id="demo">
+      <span class="font-body-sm text-body-sm text-on-surface-variant">Modo demostración</span>
+      <div class="flex items-center gap-space-xs">
+        <button class="min-h-[44px] flex-1 px-space-md bg-surface-container-low hover:bg-surface-container text-primary font-label-md text-label-md font-semibold rounded-lg flex items-center justify-center gap-space-xs" id="btn-simular" type="button">
+          <span class="material-symbols-outlined text-lg">science</span>Completar con valores simulados</button>
+        <select class="min-h-[44px] rounded-lg border-outline-variant font-label-md text-label-md" id="sel-delta" title="Corrimiento simulado de la media">
+          <option value="0">Proceso normal</option><option value="1">Corrido +1σ</option>
+          <option value="1.5" selected>Corrido +1,5σ</option><option value="-1.5">Corrido −1,5σ</option><option value="3">Corrido +3σ</option>
+        </select>
+      </div>
+    </div>
+  </form>
+
+  <!-- 3. CÓMO VAN LAS ÚLTIMAS MUESTRAS -->
+  <section class="lg:col-span-7 bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+    <div class="flex flex-wrap items-baseline justify-between gap-space-sm">
+      <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface" id="graf-titulo">Últimas muestras</h2>
+      <a class="font-label-md text-label-md text-primary hover:underline" data-con-variable href="/operario/proceso">Ver más detalle</a>
+    </div>
+    <div class="grafico" id="graf-1"></div>
+    <ul class="grid grid-cols-1 md:grid-cols-3 gap-space-sm" id="resumen-ventana"></ul>
+  </section>
+</div>
+
+<!-- 4. ALERTAS Y TURNO -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+  <section class="lg:col-span-7 bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+    <div class="flex items-center justify-between gap-space-sm">
+      <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Alertas del turno</h2>
+      <a class="font-label-md text-label-md text-primary hover:underline" data-con-variable href="/operario/alertas">Ver todas</a>
+    </div>
+    <div class="flex flex-col gap-space-sm" id="lista-alarmas"></div>
+  </section>
+  <section class="lg:col-span-5 bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+    <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface" id="turno-titulo">Este turno</h2>
+    <dl class="flex flex-col divide-y divide-surface-container font-body-md text-body-md" id="turno-datos"></dl>
+  </section>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/graficos.js"></script>
+<script src="/static/js/alarmas_ui.js"></script>
+<script src="/static/js/operario_comun.js"></script>
+<script src="/static/js/operario.js"></script>
+{% endblock %}

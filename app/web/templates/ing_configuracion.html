@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{# Configuración por variable + historial de cambios. Derivada de Stitch
+   "configuraci_n_de_par_metros_y_auditor_a". Se quitaron: desbloqueo MOC, firma FDA/NTP y el
+   recálculo automático; la versión y el hash SHA-256 son reales (ver servicios.registrar_cambio). #}
+{% block contenido %}
+<div class="flex flex-col gap-space-md" id="pantalla">
+<!-- Barra superior -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+  <div class="flex flex-col gap-space-xs">
+    <div class="flex items-center gap-space-xs font-label-sm text-label-sm text-outline">
+      <span>Ingeniería & Metrología</span><span>/</span><span class="text-on-surface font-bold">Gobernanza del Proceso</span></div>
+    <h1 class="font-headline-md text-headline-md font-bold text-on-surface">Configuración de Parámetros y Auditoría de Cambios</h1>
+    <div class="flex flex-wrap items-center gap-space-sm font-label-sm text-label-sm">
+      <span class="flex items-center gap-1 px-space-xs py-0.5 rounded bg-surface-container"><span class="material-symbols-outlined text-sm">precision_manufacturing</span><span id="ctx-proceso">—</span></span>
+      <span class="flex items-center gap-1 px-space-xs py-0.5 rounded bg-surface-container"><span class="material-symbols-outlined text-sm">scale</span><span id="ctx-variable">—</span></span>
+    </div>
+  </div>
+  <div class="flex items-center gap-space-sm">
+    <button class="h-12 px-space-md bg-surface-container-low hover:bg-surface-container text-primary rounded-lg font-label-md text-label-md font-semibold flex items-center gap-space-xs" id="btn-exportar" type="button">
+      <span class="material-symbols-outlined text-lg">download</span>Exportar Historial (CSV)</button>
+    <button class="h-12 px-space-lg bg-primary hover:bg-primary-container text-on-primary rounded-lg font-label-md text-label-md font-bold flex items-center gap-space-xs shadow-sm disabled:opacity-40" disabled id="btn-guardar" type="button">
+      <span class="material-symbols-outlined text-lg">verified_user</span><span id="btn-guardar-txt">Guardar Nueva Revisión</span></button>
+  </div>
+</div>
+
+<!-- Panel de versión -->
+<section class="bg-inverse-surface text-inverse-on-surface p-space-md rounded-xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+  <div class="flex items-center gap-space-md">
+    <span class="w-12 h-12 rounded-lg bg-primary-container flex items-center justify-center"><span class="material-symbols-outlined text-primary-fixed">lock</span></span>
+    <div class="flex flex-col">
+      <div class="flex items-center gap-space-sm"><span class="font-headline-sm text-headline-sm font-bold" id="rev-version">REV —</span>
+        <span class="px-space-xs py-0.5 rounded font-label-sm text-label-sm font-bold" id="rev-fase">—</span></div>
+      <span class="font-body-sm text-body-sm opacity-80" id="rev-detalle">—</span>
+    </div>
+  </div>
+  <div class="flex flex-col">
+    <span class="font-label-sm text-label-sm opacity-70">Integridad de la configuración (SHA-256)</span>
+    <span class="font-label-md text-label-md text-secondary-fixed" id="rev-hash">—</span>
+  </div>
+  <a class="h-10 px-space-md rounded-lg bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md flex items-center gap-space-xs" data-con-variable href="/ingenieria/variables">
+    <span class="material-symbols-outlined text-sm">history</span>Fases y límites congelados</a>
+</section>
+
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md">
+  <!-- Sección A: Especificaciones -->
+  <section class="lg:col-span-5 bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-md">
+    <div class="flex items-center justify-between"><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary">tune</span>
+      <h2 class="font-headline-sm text-label-lg font-bold">Especificaciones y Tolerancias</h2></div>
+      <span class="font-label-sm text-label-sm text-outline">Sección A</span></div>
+    <p class="font-body-sm text-body-sm text-on-surface-variant">Límites de especificación del cliente: se usan en Cp/Cpk y como referencia en las cartas. Deje vacío un límite para especificación unilateral.</p>
+    <div class="grid grid-cols-3 gap-space-sm">
+      {% for id, t in [("lei", "LEI (Inferior)"), ("objetivo", "Target (Nominal)"), ("les", "LES (Superior)")] %}
+      <label class="flex flex-col gap-1"><span class="font-label-sm text-label-sm font-semibold text-outline">{{ t }}</span>
+        <div class="flex items-center bg-surface-container-low rounded-lg p-1">
+          <input class="h-11 w-full bg-surface-container-lowest rounded px-space-sm font-label-lg text-label-lg text-right font-bold focus:outline-none" data-campo-config="{{ id }}" step="any" type="number"/>
+          <span class="px-space-xs font-label-sm text-label-sm text-outline" data-unidad></span></div></label>
+      {% endfor %}
+    </div>
+    <div class="grid grid-cols-2 gap-space-sm font-label-md text-label-md bg-surface-container-low p-space-sm rounded-lg">
+      <span class="text-on-surface-variant">Tolerancia total (ΔT):</span><b class="text-right" id="a-tol">—</b>
+      <span class="text-on-surface-variant">Cpk objetivo requerido:</span><b class="text-right">≥ 1.33</b>
+    </div>
+    <div class="flex flex-col gap-1">
+      <span class="font-label-sm text-label-sm font-semibold text-outline">Ventana de especificación</span>
+      <div class="relative h-8 rounded overflow-hidden flex font-label-sm text-label-sm" id="a-ventana"></div>
+      <div class="flex justify-between font-label-sm text-label-sm text-outline" id="a-ventana-ejes"></div>
+    </div>
+    <div class="grid grid-cols-2 gap-space-sm">
+      <label class="flex flex-col gap-1"><span class="font-label-sm text-label-sm font-semibold text-outline">Nombre de la variable</span>
+        <input class="h-10 rounded border-outline-variant font-body-md text-body-md" data-campo-config="nombre" type="text"/></label>
+      <div class="grid grid-cols-2 gap-space-xs">
+        <label class="flex flex-col gap-1"><span class="font-label-sm text-label-sm font-semibold text-outline">Unidad</span>
+          <input class="h-10 rounded border-outline-variant font-body-md text-body-md" data-campo-config="unidad" type="text"/></label>
+        <label class="flex flex-col gap-1"><span class="font-label-sm text-label-sm font-semibold text-outline">Decimales</span>
+          <input class="h-10 rounded border-outline-variant font-body-md text-body-md" data-campo-config="decimales" max="6" min="0" type="number"/></label>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección B: Muestreo y límites -->
+  <section class="lg:col-span-7 bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-md">
+    <div class="flex items-center justify-between"><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary">analytics</span>
+      <h2 class="font-headline-sm text-label-lg font-bold">Muestreo y Límites Estadísticos Shewhart</h2></div>
+      <span class="font-label-sm text-label-sm text-outline">Sección B</span></div>
+    <div class="flex flex-wrap gap-space-sm" id="b-modo"></div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-space-sm">
+      <label class="flex flex-col gap-1 bg-surface-container-low p-space-sm rounded-lg"><span class="font-label-sm text-label-sm font-semibold text-outline">Tipo de carta</span>
+        <select class="h-10 rounded border-outline-variant font-label-md text-label-md" data-campo-config="tipo_carta" data-estructural>
+          <option value="xbar_r">X̄-R</option><option value="xbar_s">X̄-S</option><option value="imr">I-MR</option>
+          <option value="p">p</option><option value="np">np</option><option value="c">c</option><option value="u">u</option></select></label>
+      <label class="flex flex-col gap-1 bg-surface-container-low p-space-sm rounded-lg"><span class="font-label-sm text-label-sm font-semibold text-outline">Subgrupo / muestra (n)</span>
+        <input class="h-10 rounded border-outline-variant font-label-lg text-label-lg font-bold" data-campo-config="n" data-estructural min="1" type="number"/>
+        <span class="font-label-sm text-label-sm text-outline" id="b-n-txt">—</span></label>
+      <label class="flex flex-col gap-1 bg-surface-container-low p-space-sm rounded-lg"><span class="font-label-sm text-label-sm font-semibold text-outline">Frecuencia (min)</span>
+        <input class="h-10 rounded border-outline-variant font-label-lg text-label-lg font-bold" data-campo-config="frecuencia_min" min="1" type="number"/>
+        <span class="font-label-sm text-label-sm text-outline" id="b-frec-txt">—</span></label>
+      <label class="flex flex-col gap-1 bg-surface-container-low p-space-sm rounded-lg"><span class="font-label-sm text-label-sm font-semibold text-outline">Ancho de límites (k)</span>
+        <input class="h-10 rounded border-outline-variant font-label-lg text-label-lg font-bold" data-campo-config="k_sigma" data-estructural max="6" min="0.5" step="0.1" type="number"/>
+        <span class="font-label-sm text-label-sm text-outline" id="b-k-txt">—</span></label>
+      <label class="flex flex-col gap-1 bg-surface-container-low p-space-sm rounded-lg col-span-2"><span class="font-label-sm text-label-sm font-semibold text-outline">Estimador de σ</span>
+        <select class="h-10 rounded border-outline-variant font-label-md text-label-md" data-campo-config="estimador_sigma" data-estructural>
+          <option value="rbar">Rango medio: R̄ / d₂ (carta X̄-R)</option><option value="sbar">Desviación estándar: s̄ / c₄ (carta X̄-S)</option>
+          <option value="mr">Rango móvil: MR̄ / d₂ (I-MR)</option></select></label>
+    </div>
+    <p class="hidden font-body-sm text-body-sm text-[#B45309] bg-[#FEF3C7] p-space-xs rounded" id="b-bloqueo">
+      Con límites congelados (Fase II), n, k y σ se cambian desde <a class="underline font-semibold" data-con-variable href="/ingenieria/diseno">Plan de muestreo</a>, que recalcula los límites.
+      El tipo de carta y el estimador de σ solo se cambian volviendo a la Fase I desde «Gráficos».</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-space-sm" id="b-limites"></div>
+  </section>
+</div>
+
+<!-- Sección C: Reglas -->
+<section class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-md">
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-space-sm">
+    <div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary">rule</span>
+      <h2 class="font-headline-sm text-label-lg font-bold">Reglas de Decisión y Detección de Causas Especiales (Nelson / WECO)</h2></div>
+      <p class="font-body-sm text-body-sm text-on-surface-variant">Las reglas activas se evalúan en cada subgrupo registrado y generan alarmas para el operario.</p></div>
+    <div class="flex items-center gap-space-sm">
+      <span class="font-label-sm text-label-sm text-outline">Sensibilidad: <b class="text-primary" id="c-sensibilidad">—</b></span>
+      <button class="h-9 px-space-sm rounded bg-surface-container-low hover:bg-surface-container font-label-sm text-label-sm font-semibold" data-preset="western_electric" type="button">Preset WE</button>
+      <button class="h-9 px-space-sm rounded bg-surface-container-low hover:bg-surface-container font-label-sm text-label-sm font-semibold" data-preset="nelson" type="button">Preset Nelson</button>
+    </div>
+  </div>
+  <div class="overflow-x-auto"><table class="w-full text-left">
+    <thead><tr class="bg-surface-container-high font-label-sm text-label-sm">
+      <th class="py-2 px-space-sm">Regla</th><th class="py-2 px-space-sm">Condición estadística</th><th class="py-2 px-space-sm text-right">Falsa alarma (α aprox.)</th>
+      <th class="py-2 px-space-sm">Severidad</th><th class="py-2 px-space-sm text-center">Estado</th></tr></thead>
+    <tbody class="divide-y divide-surface-container" id="tabla-reglas"></tbody>
+  </table></div>
+</section>
+
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md">
+  <!-- Sección D: Historial -->
+  <section class="lg:col-span-9 bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-md">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-space-sm">
+      <div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary">history_edu</span>
+        <h2 class="font-headline-sm text-label-lg font-bold">Historial de Cambios (Audit Trail)</h2></div>
+        <p class="font-body-sm text-body-sm text-on-surface-variant">Cada cambio queda registrado con usuario, justificación, versión y hash de la configuración resultante.</p></div>
+      <div class="flex items-center gap-space-sm">
+        <div class="flex items-center gap-1 bg-surface-container-low rounded-lg px-space-xs"><span class="material-symbols-outlined text-outline text-sm">search</span>
+          <input class="h-9 w-56 bg-transparent border-0 font-body-sm text-body-sm focus:ring-0" id="h-texto" placeholder="Filtrar por usuario, hash o motivo…" type="text"/></div>
+        <select class="h-9 rounded border-outline-variant font-body-sm text-body-sm" id="h-parametro">
+          <option value="">Todos los parámetros</option><option value="limites">Límites</option><option value="fase">Fase</option>
+          <option value="le">Especificaciones (LEI/LES)</option><option value="frecuencia">Frecuencia</option><option value="reglas">Reglas</option>
+          <option value="exclusion">Exclusiones</option><option value="importacion">Importaciones</option></select>
+      </div>
+    </div>
+    <div class="overflow-x-auto"><table class="w-full text-left">
+      <thead><tr class="bg-surface-container-high font-label-sm text-label-sm">
+        <th class="py-2 px-space-sm">Fecha</th><th class="py-2 px-space-sm">Usuario</th><th class="py-2 px-space-sm">Parámetro</th>
+        <th class="py-2 px-space-sm">Valor anterior</th><th class="py-2 px-space-sm">Valor nuevo</th><th class="py-2 px-space-sm">Justificación</th><th class="py-2 px-space-sm">Versión & sello</th></tr></thead>
+      <tbody class="divide-y divide-surface-container" id="tabla-historial"></tbody>
+    </table></div>
+    <div class="flex items-center justify-between font-label-sm text-label-sm text-outline">
+      <span id="h-resumen">—</span>
+      <div class="flex items-center gap-1"><button class="px-2 py-1 bg-surface-container-low rounded" id="h-ant" type="button">Anterior</button>
+        <span class="px-2 py-1 bg-primary text-on-primary rounded font-bold" id="h-pag">1</span>
+        <button class="px-2 py-1 bg-surface-container-low rounded" id="h-sig" type="button">Siguiente</button></div>
+    </div>
+  </section>
+  <!-- Turnos -->
+  <section class="lg:col-span-3 bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+    <div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary">schedule</span>
+      <h2 class="font-label-lg text-label-lg font-bold">Turnos de Trabajo</h2></div>
+    <p class="font-body-sm text-body-sm text-on-surface-variant">Se usan en el resumen del turno de la vista Operario (globales para la planta).</p>
+    <div class="flex flex-col gap-space-xs" id="turnos"></div>
+    <div class="flex gap-space-xs">
+      <button class="flex-1 h-9 rounded bg-surface-container-low hover:bg-surface-container font-label-sm text-label-sm" id="btn-turno-mas" type="button">+ Turno</button>
+      <button class="flex-1 h-9 rounded bg-primary text-on-primary font-label-sm text-label-sm font-bold" id="btn-turnos" type="button">Guardar turnos</button></div>
+    <div class="flex flex-col gap-space-xs pt-space-sm mt-space-xs border-t border-outline-variant/40">
+      <label class="flex items-start gap-space-sm cursor-pointer">
+        <input class="mt-1 w-5 h-5" id="modo-demo" type="checkbox"/>
+        <span class="flex flex-col"><span class="font-body-md text-body-md font-semibold text-on-surface">Modo demostración</span>
+          <span class="font-body-sm text-body-sm text-on-surface-variant">Muestra al operario el botón «Completar con valores simulados». Desactívalo al usar la app con datos reales.</span></span>
+      </label>
+    </div>
+  </section>
+</div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="/static/js/ing_configuracion.js"></script>{% endblock %}

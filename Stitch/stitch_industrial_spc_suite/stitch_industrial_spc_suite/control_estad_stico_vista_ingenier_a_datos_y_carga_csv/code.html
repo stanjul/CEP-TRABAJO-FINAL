@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+
+<html lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"surface-container-low":"#eff4ff","error-container":"#ffdad6","tertiary-fixed-dim":"#b6c4ff","on-error-container":"#93000a","on-error":"#ffffff","on-background":"#0b1c30","on-primary-fixed":"#001f28","surface-container-high":"#dce9ff","surface-variant":"#d3e4fe","error":"#ba1a1a","secondary":"#086a5f","on-secondary":"#ffffff","outline":"#70787c","on-tertiary-fixed":"#00164e","on-secondary-fixed-variant":"#005047","on-tertiary-container":"#9bb0ff","secondary-container":"#a1f2e2","primary":"#003441","tertiary-fixed":"#dce1ff","on-primary-container":"#87bbce","secondary-fixed-dim":"#85d5c6","surface-container-highest":"#d3e4fe","on-tertiary":"#ffffff","surface-container-lowest":"#ffffff","primary-fixed":"#b6ebfe","surface":"#f8f9ff","on-secondary-container":"#167164","on-surface":"#0b1c30","inverse-surface":"#213145","surface-tint":"#306576","tertiary":"#032879","primary-container":"#0f4c5c","surface-container":"#e5eeff","on-tertiary-fixed-variant":"#264191","primary-fixed-dim":"#9acee1","inverse-on-surface":"#eaf1ff","outline-variant":"#c0c8cb","surface-dim":"#cbdbf5","on-surface-variant":"#40484b","surface-bright":"#f8f9ff","on-primary":"#ffffff","tertiary-container":"#254090","secondary-fixed":"#a1f2e2","background":"#f8f9ff","on-secondary-fixed":"#00201c","on-primary-fixed-variant":"#114d5d","inverse-primary":"#9acee1"},borderRadius:{DEFAULT:"0.125rem",lg:"0.25rem",xl:"0.5rem",full:"0.75rem"},spacing:{"space-xl":"2rem","margin-desktop":"2rem","space-lg":"1.25rem","gutter-desktop":"1.5rem","space-md":"0.75rem",margin:"1rem",gutter:"1rem","space-xs":"0.25rem","space-sm":"0.5rem"},fontFamily:{"label-lg":["JetBrains Mono"],"headline-sm":["Inter"],"headline-lg-mobile":["Inter"],"label-sm":["JetBrains Mono"],"body-sm":["Inter"],"headline-lg":["Inter"],"label-md":["JetBrains Mono"],"headline-xl-mobile":["Inter"],"headline-xl":["Inter"],"headline-md":["Inter"],"metric-display-mobile":["JetBrains Mono"],"body-lg":["Inter"],"body-md":["Inter"],"metric-display":["JetBrains Mono"]},fontSize:{"label-lg":["16px",{lineHeight:"22px",letterSpacing:"0.02em",fontWeight:"600"}],"headline-sm":["20px",{lineHeight:"28px",fontWeight:"600"}],"headline-lg-mobile":["24px",{lineHeight:"32px",fontWeight:"700"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.04em",fontWeight:"500"}],"body-sm":["12px",{lineHeight:"16px",fontWeight:"400"}],"headline-lg":["32px",{lineHeight:"40px",letterSpacing:"-0.01em",fontWeight:"700"}],"label-md":["13px",{lineHeight:"18px",letterSpacing:"0.01em",fontWeight:"500"}],"headline-xl-mobile":["28px",{lineHeight:"36px",letterSpacing:"-0.01em",fontWeight:"700"}],"headline-xl":["40px",{lineHeight:"48px",letterSpacing:"-0.02em",fontWeight:"700"}],"headline-md":["24px",{lineHeight:"32px",fontWeight:"600"}],"metric-display-mobile":["26px",{lineHeight:"32px",letterSpacing:"-0.02em",fontWeight:"700"}],"body-lg":["16px",{lineHeight:"24px",fontWeight:"400"}],"body-md":["14px",{lineHeight:"20px",fontWeight:"400"}],"metric-display":["36px",{lineHeight:"40px",letterSpacing:"-0.03em",fontWeight:"700"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 h-16 bg-primary-container z-50 shadow-[0_2px_4px_rgba(0,0,0,0.18)]"><div class="h-16 w-full px-margin-desktop flex items-center justify-between text-on-primary"><div class="flex items-center gap-space-md"><img alt="CEP Pro Industrial Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/ALJJyrAgWzVbFQOlQ2O-vFZMy3_2mFP5wFWgPNWSuwXkSoLP6H9THzikTbkEKJffak5VAe2BfY7_l-H95B3DnfZxI6lOpzNZgsZw2we-Ud8HdZzc-5ypGeuESx86Jsxtg3CTFJ6T-NEl40RecR3JddMyrKN2zLw1b2Q0jfAM-h8CaWVp67wi97TucSSry-UKXyWUR95u-2A7JGW3Oj5MB7E7oGCTa1PNyiC1JmLCr94qZMSO"/><div class="h-6 w-px bg-outline/40"></div><div class="flex flex-col"><span class="font-label-sm text-label-sm uppercase text-primary-fixed">Estación de Control CEP</span><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-label-md font-bold tracking-tight text-on-primary">Planta Norte - Línea de Envasado L-04</span><div class="flex items-center gap-space-xs ml-space-xs px-space-xs py-0.5 rounded bg-secondary/30"><span class="w-2 h-2 rounded-full bg-secondary-fixed animate-pulse"></span><span class="font-label-sm text-label-sm uppercase text-secondary-fixed tracking-wider">Sincronizado</span></div></div></div></div><div class="flex items-center bg-primary p-1 rounded-lg"><button class="px-space-md py-1.5 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md transition-all shadow-[0_1px_2px_rgba(0,0,0,0.25)] flex items-center gap-space-xs" type="button"><span class="material-symbols-outlined text-sm">precision_manufacturing</span>Operario (Piso)</button><button class="px-space-md py-1.5 rounded-lg text-primary-fixed-dim hover:text-on-primary font-label-md text-label-md transition-all flex items-center gap-space-xs" type="button"><span class="material-symbols-outlined text-sm">analytics</span>Ingeniería (Analítica)</button></div><div class="flex items-center gap-space-lg"><div class="hidden xl:flex flex-col items-end"><span class="font-label-sm text-label-sm text-primary-fixed">Turno Mañana | 06:00 - 14:00</span><span class="font-label-md text-label-md text-on-primary font-medium">Lote Activo: #ENV-2024-884C</span></div><div class="flex items-center gap-space-xs px-space-sm py-1 rounded bg-secondary text-on-secondary font-label-sm text-label-sm uppercase font-semibold"><span class="material-symbols-outlined text-sm">check_circle</span>Planta Estable</div><button class="relative p-2 rounded-lg hover:bg-primary text-on-primary transition-colors" type="button"><span class="material-symbols-outlined">notifications</span><span class="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-error text-[10px] font-bold text-on-error font-label-sm">3</span></button><div class="flex items-center gap-space-sm pl-space-xs"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpG9tKU6rokg6bRRqaFAIeXviA0A7elh32jA-yebrfglil1VzMm8-c1-0d-3CKQHnW-_38p7kXW03BbhTVwY-jtQObbsK5aSYZc5sh3JgOUaRrevy6Rpb4ASYT0vj1vAHya7aXPSj9-XPy4aAOo8TdntUWSfe33HduWvGqqWQszMB2sfJfw57eoLuFgzJQX0pJWAokAor42vPCBYk1WxSLQU6_u-St9xWzTvJrwAU"/><div class="flex flex-col"><span class="font-body-sm text-body-sm font-semibold text-on-primary">Ing. M. Benítez</span><span class="font-label-sm text-label-sm text-primary-fixed">Calidad &amp; Procesos</span></div></div></div></div></header><aside class="fixed left-0 top-16 bottom-0 w-64 bg-surface-container-low z-40 flex flex-col justify-between shadow-[2px_0_8px_rgba(15,23,42,0.06)]"><div class="flex flex-col pt-space-md"><div class="px-space-md pb-space-sm"><span class="font-label-sm text-label-sm uppercase tracking-wider text-outline">Módulos de Planta</span></div><nav class="flex flex-col gap-1 px-space-sm" data-active-classes="bg-primary text-on-primary font-semibold shadow-[0_1px_3px_rgba(0,0,0,0.12)]"><a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="inspeccion-en-piso" href="#"><span class="material-symbols-outlined text-xl">fact_check</span><span class="font-body-md text-body-md">Inspección en Piso</span></a><a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="graficos-de-control" href="#"><span class="material-symbols-outlined text-xl">monitoring</span><span class="font-body-md text-body-md">Gráficos Shewhart</span></a><a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="capacidad-de-proceso" href="#"><span class="material-symbols-outlined text-xl">bar_chart</span><span class="font-body-md text-body-md">Capacidad (Cpk / Ppk)</span></a><a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="alertas-y-desviaciones" href="#"><span class="material-symbols-outlined text-xl">warning</span><span class="font-body-md text-body-md">Alertas de Control</span></a><a class="flex items-center gap-space-sm px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="registro-de-subgrupos" href="#"><span class="material-symbols-outlined text-xl">table_rows</span><span class="font-body-md text-body-md">Historial de Muestreo</span></a></nav></div><div class="p-space-md bg-surface-container-highest m-space-sm rounded-lg flex flex-col gap-space-xs"><div class="flex items-center justify-between"><span class="font-label-sm text-label-sm font-semibold uppercase text-on-surface">Frecuencia SPC</span><span class="font-label-sm text-label-sm text-secondary font-bold">15 MIN</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Próxima toma en 04:22 min para subgrupo N=5.</p><button class="mt-space-xs w-full py-2 bg-primary-container text-on-primary rounded font-label-md text-label-md hover:bg-primary transition-colors flex items-center justify-center gap-space-xs" type="button"><span class="material-symbols-outlined text-sm">input</span>Capturar Muestra</button></div></aside><div class="pl-64"><main class="relative pt-16 min-h-screen bg-surface w-full p-margin-desktop"><div class="flex flex-col w-full">
+<!-- Sub-navegación contextual de la Suite de Ingeniería -->
+<div class="flex items-center justify-between pb-space-md mb-space-md">
+<div class="flex items-center gap-space-xs overflow-x-auto p-1 bg-surface-container rounded-lg shadow-sm">
+<button class="flex items-center gap-space-xs px-space-md py-1.5 rounded bg-primary-container text-on-primary font-label-md text-label-md shadow-sm" type="button">
+<span class="material-symbols-outlined text-sm">database</span>
+<span>Datos &amp; Carga CSV (600 pts)</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-md py-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-md text-label-md transition-all" type="button">
+<span class="material-symbols-outlined text-sm">analytics</span>
+<span>Gráficos X̄-R / X̄-S</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-md py-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-md text-label-md transition-all" type="button">
+<span class="material-symbols-outlined text-sm">tune</span>
+<span>Reglas Nelson &amp; Western</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-md py-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-md text-label-md transition-all" type="button">
+<span class="material-symbols-outlined text-sm">stacked_line_chart</span>
+<span>Estudio Cp/Cpk/Ppk</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-md py-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-md text-label-md transition-all" type="button">
+<span class="material-symbols-outlined text-sm">history_edu</span>
+<span>Bitácora de Ajustes</span>
+</button>
+</div>
+<!-- Quick action buttons -->
+<div class="flex items-center gap-space-sm">
+<button class="h-10 px-space-md rounded bg-surface-container-lowest text-primary font-label-md text-label-md shadow-sm hover:bg-surface-container flex items-center gap-space-xs transition-colors" type="button">
+<span class="material-symbols-outlined text-sm">download</span>
+<span>Descargar Plantilla CSV</span>
+</button>
+<button class="h-10 px-space-md rounded bg-secondary text-on-secondary font-label-md text-label-md shadow-sm hover:opacity-90 flex items-center gap-space-xs transition-opacity" type="button">
+<span class="material-symbols-outlined text-sm">sync</span>
+<span>Sincronizar SCADA / BD</span>
+</button>
+</div>
+</div>
+<!-- 1. Encabezado de Sección: Ingesta y Limpieza de Datos -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm mb-space-lg">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline font-semibold">Módulo Analítico</span>
+<span class="text-outline text-xs">/</span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-primary font-bold">Ingesta y Limpieza de Datos</span>
+</div>
+<div class="flex items-center gap-space-md flex-wrap mt-0.5">
+<div class="flex items-center gap-space-xs px-space-sm py-1 bg-surface-container rounded">
+<span class="material-symbols-outlined text-primary text-base">description</span>
+<span class="font-label-md text-label-md font-bold text-on-surface">Lote_ENV-2024-884C_pesos.csv</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">(142 KB, Coma, UTF-8)</span>
+</div>
+<div class="flex items-center gap-space-xs px-space-sm py-1 bg-secondary-container/40 text-on-secondary-container rounded">
+<span class="material-symbols-outlined text-sm">verified</span>
+<span class="font-label-sm text-label-sm font-bold tracking-tight">Estructura válida (600 filas, 7 columnas, 0 nulos críticos)</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-space-sm">
+<button class="h-11 px-space-lg rounded bg-primary-container text-on-primary font-label-md text-label-md shadow-sm hover:bg-primary transition-all flex items-center gap-space-xs" type="button">
+<span class="material-symbols-outlined text-base">upload_file</span>
+<span>Cargar Nuevo Dataset (CSV/XLSX)</span>
+</button>
+</div>
+</div>
+</div>
+<!-- 2. Zona Superior de Configuración e Ingesta (2 Columnas Split) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg mb-space-lg">
+<!-- Columna Izquierda: Dropzone & Opciones de Parseo -->
+<div class="lg:col-span-6 bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between pb-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-lg">drive_folder_upload</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">Carga y Deserialización</span>
+</div>
+<span class="font-label-sm text-label-sm uppercase px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-bold">Parser v2.4</span>
+</div>
+<!-- Interactive Drag & Drop Box -->
+<div class="relative my-space-md p-space-lg rounded-lg bg-surface-container-low flex flex-col items-center justify-center text-center cursor-pointer transition-colors group">
+<div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center text-primary mb-space-sm group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-2xl">cloud_upload</span>
+</div>
+<p class="font-body-md text-body-md font-semibold text-on-surface mb-0.5">Arrastre y suelte el archivo de pesaje o telemetría</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-sm">Soporta extensiones .CSV, .XLSX, .DAT de balanzas automáticas (hasta 50 MB)</p>
+<span class="font-label-sm text-label-sm px-space-md py-1 rounded bg-surface-container-highest text-primary font-bold">O examine sus carpetas locales</span>
+</div>
+<!-- Quick parser toggles -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-space-sm pt-space-xs">
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Delimitador</label>
+<select class="h-10 px-2 rounded bg-surface-container-low text-on-surface font-label-md text-label-md focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary outline-none">
+<option selected="">Coma (,)</option>
+<option>Punto y coma (;)</option>
+<option>Tabulador (\t)</option>
+<option>Espacio ( )</option>
+</select>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Codificación</label>
+<select class="h-10 px-2 rounded bg-surface-container-low text-on-surface font-label-md text-label-md focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary outline-none">
+<option selected="">UTF-8</option>
+<option>ISO-8859-1</option>
+<option>Windows-1252</option>
+</select>
+</div>
+<div class="flex items-center gap-space-xs pt-5">
+<input checked="" class="w-4 h-4 rounded text-primary-container bg-surface-container focus:ring-0" id="headerCheck" type="checkbox"/>
+<label class="font-body-sm text-body-sm text-on-surface font-medium select-none cursor-pointer" for="headerCheck">Fila 1: Cabeceras</label>
+</div>
+<div class="flex items-center gap-space-xs pt-5">
+<input checked="" class="w-4 h-4 rounded text-primary-container bg-surface-container focus:ring-0" id="typeCheck" type="checkbox"/>
+<label class="font-body-sm text-body-sm text-on-surface font-medium select-none cursor-pointer" for="typeCheck">Auto-tipado</label>
+</div>
+</div>
+</div>
+<!-- Columna Derecha: Configuración de Muestreo y Subgrupos Racionales -->
+<div class="lg:col-span-6 bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between pb-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-lg">schema</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">Arquitectura de Muestreo CEP</span>
+</div>
+<span class="font-label-sm text-label-sm uppercase px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed font-bold">Subgrupos Racionales</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md my-space-sm">
+<div class="flex flex-col gap-1.5 p-space-sm rounded-lg bg-surface-container-low">
+<label class="font-label-sm text-label-sm text-on-surface-variant font-semibold">Tipo de Datos CEP</label>
+<div class="flex items-center gap-1 p-0.5 bg-surface-container rounded">
+<button class="w-1/2 py-1.5 rounded bg-surface-container-lowest text-primary font-label-md text-label-md font-bold shadow-sm" type="button">Variables (Continuas)</button>
+<button class="w-1/2 py-1.5 rounded text-on-surface-variant hover:text-on-surface font-label-md text-label-md" type="button">Atributos (p, np, c)</button>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Modelado continuo estándar para pesaje, volumen o espesor.</span>
+</div>
+<div class="flex flex-col gap-1.5 p-space-sm rounded-lg bg-surface-container-low">
+<label class="font-label-sm text-label-sm text-on-surface-variant font-semibold">Tamaño Subgrupo Racional (n)</label>
+<div class="flex items-center gap-space-xs">
+<select class="w-full h-10 px-space-sm rounded bg-surface-container-lowest text-on-surface font-label-md text-label-md font-bold focus:ring-1 focus:ring-primary outline-none">
+<option selected="">n = 5 muestras consecutivas (Estándar)</option>
+<option>n = 3 muestras rápidas</option>
+<option>n = 10 muestras de alta precisión</option>
+<option>Derivar de columna 'subgroup_id'</option>
+</select>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Genera k = 120 subgrupos para el dataset actual de 600 puntos.</span>
+</div>
+<div class="flex flex-col gap-1.5 p-space-sm rounded-lg bg-surface-container-low">
+<label class="font-label-sm text-label-sm text-on-surface-variant font-semibold">Frecuencia de Muestreo</label>
+<select class="h-10 px-space-sm rounded bg-surface-container-lowest text-on-surface font-label-md text-label-md focus:ring-1 focus:ring-primary outline-none">
+<option selected="">Cada 15 minutos (Automático)</option>
+<option>Cada 30 minutos</option>
+<option>Cada 1 hora</option>
+<option>Irregular / Registro por evento</option>
+</select>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Validación de delta temporal regular activada.</span>
+</div>
+<div class="flex flex-col gap-1.5 p-space-sm rounded-lg bg-surface-container-low">
+<label class="font-label-sm text-label-sm text-on-surface-variant font-semibold">Estimador de Dispersión (σ̂)</label>
+<select class="h-10 px-space-sm rounded bg-surface-container-lowest text-on-surface font-label-md text-label-md font-bold focus:ring-1 focus:ring-primary outline-none">
+<option selected="">Rango Medio: R̄ / d₂ (Carta X̄-R)</option>
+<option>Desviación Estándar: s̄ / c₄ (Carta X̄-S)</option>
+<option>Variabilidad móvil (MR/d2 para n=1)</option>
+</select>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Recomendado para n &lt; 9 con bajo coste computacional.</span>
+</div>
+</div>
+<!-- Quick status indicator bar -->
+<div class="flex items-center justify-between px-space-md py-2 bg-surface-container rounded-lg">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Configuración lista: 600 lecturas divididas en 120 subgrupos de 5.</span>
+<span class="font-label-sm text-label-sm font-bold text-secondary flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+          Parámetros consistentes
+        </span>
+</div>
+</div>
+</div>
+<!-- 3. Módulo Central: Asistente y Matriz de Mapeo de Columnas (Column Mapping Engine) -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm mb-space-lg">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between pb-space-md gap-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-xl">hub</span>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Motor de Mapeo Semántico (Schema Mapper)</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Asigne los campos de la telemetría CSV a las variables analíticas de control estadístico.</p>
+</div>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="px-space-sm py-1 rounded bg-secondary-container/50 text-on-secondary-container font-label-sm text-label-sm font-bold">7/7 Columnas Asignadas</span>
+<button class="h-9 px-space-sm rounded bg-surface-container text-on-surface hover:bg-surface-container-high font-label-md text-label-md transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-sm">auto_fix_high</span>
+<span>Re-detectar</span>
+</button>
+</div>
+</div>
+<!-- Mapping Table -->
+<div class="overflow-x-auto rounded-lg shadow-sm">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low text-on-surface font-label-sm text-label-sm uppercase">
+<th class="py-space-sm px-space-md">Columna Origen (CSV)</th>
+<th class="py-space-sm px-space-md">Tipo Inferido</th>
+<th class="py-space-sm px-space-md">Asignación al Modelo CEP</th>
+<th class="py-space-sm px-space-md">Rol Estadístico</th>
+<th class="py-space-sm px-space-md">Rango / Muestreo Rápido</th>
+<th class="py-space-sm px-space-md text-right">Estado</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container text-on-surface font-body-md text-body-md">
+<!-- Row 1: Timestamp -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-space-sm px-space-md font-label-md text-label-md font-bold text-primary">timestamp</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-xs">schedule</span>
+                Timestamp ISO
+              </span>
+</td>
+<td class="py-space-sm px-space-md">
+<select class="h-9 px-2.5 rounded bg-surface-container-low text-on-surface font-label-md text-label-md font-medium focus:ring-1 focus:ring-primary outline-none w-full max-w-xs">
+<option selected="">Fecha y Hora del Muestreo (Obligatorio)</option>
+<option>Identificador de Subgrupo</option>
+<option>Variable Crítica (CTQ)</option>
+<option>Ignorar columna</option>
+</select>
+</td>
+<td class="py-space-sm px-space-md">
+<span class="font-label-sm text-label-sm uppercase text-outline">Eje Temporal (X)</span>
+</td>
+<td class="py-space-sm px-space-md font-label-sm text-label-sm text-on-surface-variant">
+              2024-10-18T06:00:00Z a 2024-10-18T13:45:00Z
+            </td>
+<td class="py-space-sm px-space-md text-right">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-secondary-container/40 text-on-secondary-container font-label-sm text-label-sm font-bold">
+<span class="material-symbols-outlined text-xs">check_circle</span>
+                Mapeado OK
+              </span>
+</td>
+</tr>
+<!-- Row 2: subgroup_id -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-space-sm px-space-md font-label-md text-label-md font-bold text-primary">subgroup_id</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-xs">tag</span>
+                Entero (int32)
+              </span>
+</td>
+<td class="py-space-sm px-space-md">
+<select class="h-9 px-2.5 rounded bg-surface-container-low text-on-surface font-label-md text-label-md font-medium focus:ring-1 focus:ring-primary outline-none w-full max-w-xs">
+<option selected="">Identificador de Subgrupo Racional #</option>
+<option>Fecha y Hora</option>
+<option>Variable Crítica (CTQ)</option>
+<option>Ignorar columna</option>
+</select>
+</td>
+<td class="py-space-sm px-space-md">
+<span class="font-label-sm text-label-sm uppercase text-outline">Índice k [1..120]</span>
+</td>
+<td class="py-space-sm px-space-md font-label-sm text-label-sm text-on-surface-variant">
+              1 a 120 (sin saltos secuenciales)
+            </td>
+<td class="py-space-sm px-space-md text-right">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-secondary-container/40 text-on-secondary-container font-label-sm text-label-sm font-bold">
+<span class="material-symbols-outlined text-xs">check_circle</span>
+                Mapeado OK
+              </span>
+</td>
+</tr>
+<!-- Row 3: sample_index -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-space-sm px-space-md font-label-md text-label-md font-bold text-primary">sample_index</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-xs">pin</span>
+                Entero (1..5)
+              </span>
+</td>
+<td class="py-space-sm px-space-md">
+<select class="h-9 px-2.5 rounded bg-surface-container-low text-on-surface font-label-md text-label-md font-medium focus:ring-1 focus:ring-primary outline-none w-full max-w-xs">
+<option selected="">Posición dentro del subgrupo (1..n)</option>
+<option>Metadato Contextual</option>
+<option>Ignorar columna</option>
+</select>
+</td>
+<td class="py-space-sm px-space-md">
+<span class="font-label-sm text-label-sm uppercase text-outline">Partición n=5</span>
+</td>
+<td class="py-space-sm px-space-md font-label-sm text-label-sm text-on-surface-variant">
+              Repetición cíclica 1, 2, 3, 4, 5
+            </td>
+<td class="py-space-sm px-space-md text-right">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-secondary-container/40 text-on-secondary-container font-label-sm text-label-sm font-bold">
+<span class="material-symbols-outlined text-xs">check_circle</span>
+                Mapeado OK
+              </span>
+</td>
+</tr>
+<!-- Row 4: net_weight_g (CRITICAL VARIABLE) -->
+<tr class="bg-primary-container/5 hover:bg-primary-container/10 transition-colors">
+<td class="py-space-sm px-space-md font-label-md text-label-md font-bold text-primary flex items-center gap-1.5">
+<span class="material-symbols-outlined text-secondary text-sm">stars</span>
+              net_weight_g
+            </td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-primary-fixed/50 text-on-primary-fixed font-label-sm text-label-sm font-bold">
+<span class="material-symbols-outlined text-xs">decimal_increase</span>
+                Flotante (Float64)
+              </span>
+</td>
+<td class="py-space-sm px-space-md">
+<select class="h-9 px-2.5 rounded bg-primary-container text-on-primary font-label-md text-label-md font-bold focus:ring-1 focus:ring-primary outline-none w-full max-w-xs shadow-sm">
+<option selected="">Variable Crítica de Calidad (CTQ Primaria)</option>
+<option>Variable Auxiliar / Covariable</option>
+<option>Identificador</option>
+</select>
+</td>
+<td class="py-space-sm px-space-md">
+<span class="font-label-sm text-label-sm uppercase font-bold text-secondary">Eje Y (Carta X̄-R)</span>
+</td>
+<td class="py-space-sm px-space-md font-label-sm text-label-sm text-on-surface font-semibold">
+              Min: 496.20 | Máx: 503.80 | x̄: 500.12g
+            </td>
+<td class="py-space-sm px-space-md text-right">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-secondary text-on-secondary font-label-sm text-label-sm font-bold">
+<span class="material-symbols-outlined text-xs">verified</span>
+                CTQ Primaria
+              </span>
+</td>
+</tr>
+<!-- Row 5: line_operator -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-space-sm px-space-md font-label-md text-label-md font-bold text-primary">line_operator</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-xs">badge</span>
+                Texto / String
+              </span>
+</td>
+<td class="py-space-sm px-space-md">
+<select class="h-9 px-2.5 rounded bg-surface-container-low text-on-surface font-label-md text-label-md font-medium focus:ring-1 focus:ring-primary outline-none w-full max-w-xs">
+<option selected="">Metadato de Contexto / Operario</option>
+<option>Estratificación Secundario</option>
+<option>Ignorar columna</option>
+</select>
+</td>
+<td class="py-space-sm px-space-md">
+<span class="font-label-sm text-label-sm uppercase text-outline">Estratificación</span>
+</td>
+<td class="py-space-sm px-space-md font-label-sm text-label-sm text-on-surface-variant">
+              3 valores únicos: OP-104, OP-088, OP-219
+            </td>
+<td class="py-space-sm px-space-md text-right">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-sm text-label-sm font-medium">
+                Informativo
+              </span>
+</td>
+</tr>
+<!-- Row 6: ambient_temp -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-space-sm px-space-md font-label-md text-label-md font-bold text-primary">ambient_temp</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-xs">thermostat</span>
+                Flotante (Float32)
+              </span>
+</td>
+<td class="py-space-sm px-space-md">
+<select class="h-9 px-2.5 rounded bg-surface-container-low text-on-surface font-label-md text-label-md font-medium focus:ring-1 focus:ring-primary outline-none w-full max-w-xs">
+<option selected="">Variable Auxiliar / Causa Externa (Covariable)</option>
+<option>Variable Crítica CTQ</option>
+<option>Ignorar columna</option>
+</select>
+</td>
+<td class="py-space-sm px-space-md">
+<span class="font-label-sm text-label-sm uppercase text-outline">Covariable Térmica</span>
+</td>
+<td class="py-space-sm px-space-md font-label-sm text-label-sm text-on-surface-variant">
+              Min: 21.4°C | Máx: 24.8°C | Prom: 23.1°C
+            </td>
+<td class="py-space-sm px-space-md text-right">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-sm text-label-sm font-medium">
+                Informativo
+              </span>
+</td>
+</tr>
+<!-- Row 7: lot_code -->
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-space-sm px-space-md font-label-md text-label-md font-bold text-primary">lot_code</td>
+<td class="py-space-sm px-space-md">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-xs">inventory_2</span>
+                Texto / Categoría
+              </span>
+</td>
+<td class="py-space-sm px-space-md">
+<select class="h-9 px-2.5 rounded bg-surface-container-low text-on-surface font-label-md text-label-md font-medium focus:ring-1 focus:ring-primary outline-none w-full max-w-xs">
+<option selected="">Lote de Materia Prima</option>
+<option>Metadato Contextual</option>
+<option>Ignorar columna</option>
+</select>
+</td>
+<td class="py-space-sm px-space-md">
+<span class="font-label-sm text-label-sm uppercase text-outline">Trazabilidad</span>
+</td>
+<td class="py-space-sm px-space-md font-label-sm text-label-sm text-on-surface-variant">
+              MP-2024-OCT-A9
+            </td>
+<td class="py-space-sm px-space-md text-right">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-sm text-label-sm font-medium">
+                Informativo
+              </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- 4 & 5. Sección Inferior: Previsualización de Datos con Limpieza + Estadísticas Descriptivas Rápidas -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-space-lg mb-space-lg">
+<!-- Bloque Izquierdo/Central: Previsualización y Herramientas de Limpieza (8 cols) -->
+<div class="xl:col-span-8 bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between">
+<div>
+<!-- Pestañas de vista rápida y contador de anomalías -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between pb-space-sm gap-space-sm">
+<div class="flex items-center gap-space-xs p-1 bg-surface-container rounded-lg">
+<button class="px-space-md py-1 rounded bg-surface-container-lowest text-on-surface font-label-md text-label-md font-bold shadow-sm" type="button">
+              Primeras 10 filas de 600
+            </button>
+<button class="px-space-md py-1 rounded text-on-surface-variant hover:text-on-surface font-label-md text-label-md" type="button">
+              Filas con advertencias (0)
+            </button>
+<button class="px-space-md py-1 rounded text-on-surface-variant hover:text-on-surface font-label-md text-label-md" type="button">
+              Reglas de limpieza
+            </button>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-sm">format_image_left</span>
+<span class="font-label-sm text-label-sm text-secondary font-bold">0 atípicos severos (&gt;3σ) detectados</span>
+</div>
+</div>
+<!-- Tabla técnica de datos limpios -->
+<div class="overflow-x-auto rounded-lg shadow-sm mt-space-sm">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low text-on-surface font-label-sm text-label-sm uppercase">
+<th class="py-2 px-3 text-center"># Subg.</th>
+<th class="py-2 px-3">Timestamp</th>
+<th class="py-2 px-3 text-center">Muestra (i)</th>
+<th class="py-2 px-3 text-right">Peso Neto (g)</th>
+<th class="py-2 px-3">Operario</th>
+<th class="py-2 px-3 text-right">Temp (°C)</th>
+<th class="py-2 px-3">Lote MP</th>
+<th class="py-2 px-3 text-center">Estado</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container font-label-md text-label-md text-on-surface">
+<!-- Subgroup 1 (n=5) -->
+<tr class="hover:bg-surface-container-low/40">
+<td class="py-1.5 px-3 text-center font-bold text-primary">001</td>
+<td class="py-1.5 px-3 text-on-surface-variant font-label-sm text-label-sm">06:00:12</td>
+<td class="py-1.5 px-3 text-center">1</td>
+<td class="py-1.5 px-3 text-right font-bold text-on-surface">500.25</td>
+<td class="py-1.5 px-3 text-on-surface-variant font-body-sm text-body-sm">OP-104</td>
+<td class="py-1.5 px-3 text-right text-on-surface-variant">21.8</td>
+<td class="py-1.5 px-3 font-label-sm text-label-sm text-outline">A9-88</td>
+<td class="py-1.5 px-3 text-center">
+<span class="px-1.5 py-0.5 rounded bg-secondary-container/40 text-on-secondary-container font-label-sm text-[10px] font-bold">VÁLIDO</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/40">
+<td class="py-1.5 px-3 text-center font-bold text-primary">001</td>
+<td class="py-1.5 px-3 text-on-surface-variant font-label-sm text-label-sm">06:00:27</td>
+<td class="py-1.5 px-3 text-center">2</td>
+<td class="py-1.5 px-3 text-right font-bold text-on-surface">499.80</td>
+<td class="py-1.5 px-3 text-on-surface-variant font-body-sm text-body-sm">OP-104</td>
+<td class="py-1.5 px-3 text-right text-on-surface-variant">21.8</td>
+<td class="py-1.5 px-3 font-label-sm text-label-sm text-outline">A9-88</td>
+<td class="py-1.5 px-3 text-center">
+<span class="px-1.5 py-0.5 rounded bg-secondary-container/40 text-on-secondary-container font-label-sm text-[10px] font-bold">VÁLIDO</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/40">
+<td class="py-1.5 px-3 text-center font-bold text-primary">001</td>
+<td class="py-1.5 px-3 text-on-surface-variant font-label-sm text-label-sm">06:00:41</td>
+<td class="py-1.5 px-3 text-center">3</td>
+<td class="py-1.5 px-3 text-right font-bold text-on-surface">500.60</td>
+<td class="py-1.5 px-3 text-on-surface-variant font-body-sm text-body-sm">OP-104</td>
+<td class="py-1.5 px-3 text-right text-on-surface-variant">21.9</td>
+<td class="py-1.5 px-3 font-label-sm text-label-sm text-outline">A9-88</td>
+<td class="py-1.5 px-3 text-center">
+<span class="px-1.5 py-0.5 rounded bg-secondary-container/40 text-on-secondary-container font-label-sm text-[10px] font-bold">VÁLIDO</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/40">
+<td class="py-1.5 px-3 text-center font-bold text-primary">001</td>
+<td class="py-1.5 px-3 text-on-surface-variant font-label-sm text-label-sm">06:00:55</td>
+<td class="py-1.5 px-3 text-center">4</td>
+<td class="py-1.5 px-3 text-right font-bold text-on-surface">501.10</td>
+<td class="py-1.5 px-3 text-on-surface-variant font-body-sm text-body-sm">OP-104</td>
+<td class="py-1.5 px-3 text-right text-on-surface-variant">21.9</td>
+<td class="py-1.5 px-3 font-label-sm text-label-sm text-outline">A9-88</td>
+<td class="py-1.5 px-3 text-center">
+<span class="px-1.5 py-0.5 rounded bg-secondary-container/40 text-on-secondary-container font-label-sm text-[10px] font-bold">VÁLIDO</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/40">
+<td class="py-1.5 px-3 text-center font-bold text-primary">001</td>
+<td class="py-1.5 px-3 text-on-surface-variant font-label-sm text-label-sm">06:01:10</td>
+<td class="py-1.5 px-3 text-center">5</td>
+<td class="py-1.5 px-3 text-right font-bold text-on-surface">499.95</td>
+<td class="py-1.5 px-3 text-on-surface-variant font-body-sm text-body-sm">OP-104</td>
+<td class="py-1.5 px-3 text-right text-on-surface-variant">22.0</td>
+<td class="py-1.5 px-3 font-label-sm text-label-sm text-outline">A9-88</td>
+<td class="py-1.5 px-3 text-center">
+<span class="px-1.5 py-0.5 rounded bg-secondary-container/40 text-on-secondary-container font-label-sm text-[10px] font-bold">VÁLIDO</span>
+</td>
+</tr>
+<!-- Subgroup 2 (Sample first 5 rows) -->
+<tr class="hover:bg-surface-container-low/40 bg-surface-container-low/20">
+<td class="py-1.5 px-3 text-center font-bold text-primary">002</td>
+<td class="py-1.5 px-3 text-on-surface-variant font-label-sm text-label-sm">06:15:08</td>
+<td class="py-1.5 px-3 text-center">1</td>
+<td class="py-1.5 px-3 text-right font-bold text-on-surface">500.15</td>
+<td class="py-1.5 px-3 text-on-surface-variant font-body-sm text-body-sm">OP-104</td>
+<td class="py-1.5 px-3 text-right text-on-surface-variant">22.1</td>
+<td class="py-1.5 px-3 font-label-sm text-label-sm text-outline">A9-88</td>
+<td class="py-1.5 px-3 text-center">
+<span class="px-1.5 py-0.5 rounded bg-secondary-container/40 text-on-secondary-container font-label-sm text-[10px] font-bold">VÁLIDO</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/40 bg-surface-container-low/20">
+<td class="py-1.5 px-3 text-center font-bold text-primary">002</td>
+<td class="py-1.5 px-3 text-on-surface-variant font-label-sm text-label-sm">06:15:24</td>
+<td class="py-1.5 px-3 text-center">2</td>
+<td class="py-1.5 px-3 text-right font-bold text-on-surface">499.70</td>
+<td class="py-1.5 px-3 text-on-surface-variant font-body-sm text-body-sm">OP-104</td>
+<td class="py-1.5 px-3 text-right text-on-surface-variant">22.1</td>
+<td class="py-1.5 px-3 font-label-sm text-label-sm text-outline">A9-88</td>
+<td class="py-1.5 px-3 text-center">
+<span class="px-1.5 py-0.5 rounded bg-secondary-container/40 text-on-secondary-container font-label-sm text-[10px] font-bold">VÁLIDO</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/40 bg-surface-container-low/20">
+<td class="py-1.5 px-3 text-center font-bold text-primary">002</td>
+<td class="py-1.5 px-3 text-on-surface-variant font-label-sm text-label-sm">06:15:39</td>
+<td class="py-1.5 px-3 text-center">3</td>
+<td class="py-1.5 px-3 text-right font-bold text-on-surface">500.45</td>
+<td class="py-1.5 px-3 text-on-surface-variant font-body-sm text-body-sm">OP-104</td>
+<td class="py-1.5 px-3 text-right text-on-surface-variant">22.2</td>
+<td class="py-1.5 px-3 font-label-sm text-label-sm text-outline">A9-88</td>
+<td class="py-1.5 px-3 text-center">
+<span class="px-1.5 py-0.5 rounded bg-secondary-container/40 text-on-secondary-container font-label-sm text-[10px] font-bold">VÁLIDO</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/40 bg-surface-container-low/20">
+<td class="py-1.5 px-3 text-center font-bold text-primary">002</td>
+<td class="py-1.5 px-3 text-on-surface-variant font-label-sm text-label-sm">06:15:52</td>
+<td class="py-1.5 px-3 text-center">4</td>
+<td class="py-1.5 px-3 text-right font-bold text-on-surface">500.05</td>
+<td class="py-1.5 px-3 text-on-surface-variant font-body-sm text-body-sm">OP-104</td>
+<td class="py-1.5 px-3 text-right text-on-surface-variant">22.2</td>
+<td class="py-1.5 px-3 font-label-sm text-label-sm text-outline">A9-88</td>
+<td class="py-1.5 px-3 text-center">
+<span class="px-1.5 py-0.5 rounded bg-secondary-container/40 text-on-secondary-container font-label-sm text-[10px] font-bold">VÁLIDO</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/40 bg-surface-container-low/20">
+<td class="py-1.5 px-3 text-center font-bold text-primary">002</td>
+<td class="py-1.5 px-3 text-on-surface-variant font-label-sm text-label-sm">06:16:05</td>
+<td class="py-1.5 px-3 text-center">5</td>
+<td class="py-1.5 px-3 text-right font-bold text-on-surface">500.30</td>
+<td class="py-1.5 px-3 text-on-surface-variant font-body-sm text-body-sm">OP-104</td>
+<td class="py-1.5 px-3 text-right text-on-surface-variant">22.3</td>
+<td class="py-1.5 px-3 font-label-sm text-label-sm text-outline">A9-88</td>
+<td class="py-1.5 px-3 text-center">
+<span class="px-1.5 py-0.5 rounded bg-secondary-container/40 text-on-secondary-container font-label-sm text-[10px] font-bold">VÁLIDO</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Barra de herramientas de limpieza de datos y confirmación -->
+<div class="mt-space-md pt-space-md flex flex-col md:flex-row md:items-center justify-between gap-space-md bg-surface-container-low p-space-md rounded-lg">
+<div class="flex items-center gap-space-md flex-wrap">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">Tratamiento de Nulos:</span>
+<select class="h-9 px-2 rounded bg-surface-container-lowest text-on-surface font-label-md text-label-md focus:ring-1 focus:ring-primary outline-none">
+<option selected="">Descartar fila incompleta</option>
+<option>Imputar por media de subgrupo</option>
+<option>Alerta estricta (Bloquear lote)</option>
+</select>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">Filtro de Atípicos:</span>
+<select class="h-9 px-2 rounded bg-surface-container-lowest text-on-surface font-label-md text-label-md focus:ring-1 focus:ring-primary outline-none">
+<option selected="">Regla Tukey 1.5×IQR (Recomendado)</option>
+<option>Umbral 3.0σ (Desviación Típica)</option>
+<option>Sin filtro preliminar</option>
+</select>
+</div>
+</div>
+<div class="flex items-center gap-space-sm justify-end">
+<button class="h-11 px-space-md rounded bg-surface-container-lowest text-primary font-label-md text-label-md hover:bg-surface-container shadow-sm flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-sm">file_download</span>
+<span>Exportar Dataset Depurado</span>
+</button>
+<button class="h-11 px-space-lg rounded bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container shadow-sm flex items-center gap-space-xs transition-all font-bold" type="button">
+<span class="material-symbols-outlined text-sm">insights</span>
+<span>Guardar Mapeo y Enviar a X̄-R</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Bloque Derecho: Panel de Estadísticas Descriptivas Preliminares (4 cols) -->
+<div class="xl:col-span-4 flex flex-col gap-space-md">
+<!-- Tarjeta de Estadísticas de la Variable CTQ -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-lg">query_stats</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">Resumen Descriptivo</span>
+</div>
+<span class="px-2 py-0.5 rounded bg-secondary-container/40 text-on-secondary-container font-label-sm text-label-sm font-bold">CTQ: net_weight_g</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-md">Verificación matemática preliminar sobre N = 600 puntos antes del trazado de cartas.</p>
+<!-- Metric Cards Bento inside preview -->
+<div class="grid grid-cols-2 gap-space-sm mb-space-md">
+<!-- Metric 1: N Total -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase font-semibold">Total Lecturas (N)</span>
+<span class="font-metric-display text-headline-lg text-primary mt-1">600</span>
+<span class="font-body-sm text-body-sm text-outline">120 subgrupos × 5</span>
+</div>
+<!-- Metric 2: Media x̄̄ -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase font-semibold">Media General (x̄̄)</span>
+<span class="font-metric-display text-headline-lg text-secondary mt-1">500.12<span class="text-sm font-normal ml-0.5">g</span></span>
+<span class="font-body-sm text-body-sm text-on-secondary-container">Nominal: 500.00g</span>
+</div>
+<!-- Metric 3: Desviación Típica -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase font-semibold">Desv. Estándar (s)</span>
+<span class="font-metric-display text-headline-lg text-on-surface mt-1">1.05<span class="text-sm font-normal ml-0.5">g</span></span>
+<span class="font-body-sm text-body-sm text-outline">s / c₄ = 1.042g</span>
+</div>
+<!-- Metric 4: Rango Medio R̄ -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase font-semibold">Rango Promedio (R̄)</span>
+<span class="font-metric-display text-headline-lg text-on-surface mt-1">2.42<span class="text-sm font-normal ml-0.5">g</span></span>
+<span class="font-body-sm text-body-sm text-outline">R / d₂ = 1.040g</span>
+</div>
+</div>
+<!-- Limites de Especificación de Planta -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col gap-2 mb-space-md">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface font-semibold uppercase">Límites de Especificación (LE)</span>
+<span class="font-label-sm text-label-sm text-outline">Tolerancia ±1.5%</span>
+</div>
+<div class="grid grid-cols-3 gap-1 text-center font-label-sm text-label-sm">
+<div class="p-1 rounded bg-surface-container-lowest">
+<span class="text-outline block text-[10px]">LEI (Inferior)</span>
+<span class="font-bold text-on-surface">492.50 g</span>
+</div>
+<div class="p-1 rounded bg-surface-container-lowest">
+<span class="text-outline block text-[10px]">Objetivo</span>
+<span class="font-bold text-primary">500.00 g</span>
+</div>
+<div class="p-1 rounded bg-surface-container-lowest">
+<span class="text-outline block text-[10px]">LES (Superior)</span>
+<span class="font-bold text-on-surface">507.50 g</span>
+</div>
+</div>
+</div>
+<!-- Mini Inline SVG Histogram Preview with Gaussian Curve -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col">
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">Histograma y Distribución Gaussiana</span>
+<span class="font-label-sm text-label-sm text-secondary font-bold">p-valor Anderson = 0.42</span>
+</div>
+<div class="w-full h-24 relative flex items-end">
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 300 80">
+<!-- Grid dashed lines -->
+<line stroke="#c0c8cb" stroke-dasharray="2,2" stroke-width="0.5" x1="0" x2="300" y1="20" y2="20"></line>
+<line stroke="#c0c8cb" stroke-dasharray="2,2" stroke-width="0.5" x1="0" x2="300" y1="50" y2="50"></line>
+<!-- Bars of histogram -->
+<rect fill="#dce9ff" height="10" rx="1" width="20" x="25" y="70"></rect>
+<rect fill="#dce9ff" height="20" rx="1" width="20" x="50" y="60"></rect>
+<rect fill="#b6ebfe" height="36" rx="1" width="20" x="75" y="44"></rect>
+<rect fill="#87bbce" height="56" rx="1" width="20" x="100" y="24"></rect>
+<rect fill="#0f4c5c" height="70" rx="1" width="20" x="125" y="10"></rect>
+<rect fill="#0f4c5c" height="66" rx="1" width="20" x="150" y="14"></rect>
+<rect fill="#87bbce" height="52" rx="1" width="20" x="175" y="28"></rect>
+<rect fill="#b6ebfe" height="32" rx="1" width="20" x="200" y="48"></rect>
+<rect fill="#dce9ff" height="18" rx="1" width="20" x="225" y="62"></rect>
+<rect fill="#dce9ff" height="8" rx="1" width="20" x="250" y="72"></rect>
+<!-- Gaussian Normal Curve Overlay -->
+<path d="M 20 78 Q 80 75 110 35 Q 137 6 150 6 Q 163 6 190 35 Q 220 75 280 78" fill="none" stroke="#086a5f" stroke-linecap="round" stroke-width="2"></path>
+<!-- Center Target Line (500g) -->
+<line stroke="#ba1a1a" stroke-dasharray="3,2" stroke-width="1.5" x1="147" x2="147" y1="2" y2="80"></line>
+</svg>
+</div>
+<div class="flex items-center justify-between text-[10px] font-label-sm text-outline mt-1 px-1">
+<span>496.20g (Mín)</span>
+<span class="text-primary font-bold">500.12g (Media)</span>
+<span>503.80g (Máx)</span>
+</div>
+</div>
+</div>
+<!-- Capability Prelim Quick Pill -->
+<div class="mt-space-md pt-space-sm flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-outline">Capacidad Preliminar</span>
+<span class="font-label-md text-label-md font-bold text-secondary">Cpk Estimado: 1.55 (Apto)</span>
+</div>
+<span class="material-symbols-outlined text-secondary text-xl">task_alt</span>
+</div>
+</div>
+<!-- Quick Tips Card for Engineers -->
+<div class="bg-primary-container p-space-md rounded-xl text-on-primary shadow-sm flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-primary-fixed text-lg mt-0.5">info</span>
+<div class="flex flex-col gap-0.5">
+<span class="font-label-sm text-label-sm uppercase font-bold text-primary-fixed tracking-wider">Protocolo ISO 7870-2</span>
+<p class="font-body-sm text-body-sm text-on-primary/90">
+            Se requiere un mínimo de 100 puntos (20-25 subgrupos) para validar límites de control provisionales. Con 600 puntos actuales, los límites calculados contarán con una potencia estadística &gt; 99.4%.
+          </p>
+</div>
+</div>
+</div>
+</div>
+</div></main></div></body></html>

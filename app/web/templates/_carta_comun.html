@@ -1,0 +1,129 @@
+{# Bloques compartidos por las pantallas de cartas (Variables y Atributos), derivados de Stitch
+   "gráficos de control por variables". #}
+
+{% macro barra_superior(titulo, tipos) %}
+<!-- 1. Barra Superior de Control Analítico -->
+<section class="flex flex-col gap-space-sm bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-sm">
+    <div class="flex items-center gap-space-xs font-label-sm text-label-sm text-outline">
+      <span>Módulo Analítico</span><span>/</span><span class="text-on-surface font-bold">{{ titulo }}</span>
+    </div>
+    <!-- Conmutador de Fase Metodológica -->
+    <div class="flex items-center gap-space-sm">
+      <div class="relative group flex items-center bg-surface-container-low p-1 rounded-lg">
+        <button class="px-space-md py-1 text-on-surface-variant font-label-md text-label-md rounded transition-all" id="btn-fase-1" type="button">Fase I: Estimación Basal</button>
+        <button class="px-space-md py-1 text-on-surface-variant font-label-md text-label-md rounded transition-all flex items-center gap-space-xs" id="btn-fase-2" type="button">
+          <span class="w-2 h-2 rounded-full bg-secondary-fixed animate-ping hidden" id="fase-2-ping"></span>Fase II: Monitoreo</button>
+        <div class="absolute right-0 top-full mt-2 hidden group-hover:flex z-30 w-72 p-space-sm bg-inverse-surface text-inverse-on-surface rounded shadow-xl flex-col gap-1 pointer-events-none">
+          <span class="font-label-sm text-label-sm font-bold text-secondary-fixed" id="fase-tip-titulo">Fases del CEP</span>
+          <span class="font-body-sm text-body-sm opacity-90" id="fase-tip-texto">Fase I: se estiman los límites y se depuran causas asignables. Fase II: se monitorea con los límites congelados.</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-space-xs px-space-sm py-1 bg-surface-container rounded font-label-sm text-label-sm text-primary font-semibold" id="chip-limites">
+        <span class="material-symbols-outlined text-sm">pending</span>—</div>
+    </div>
+  </div>
+  <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-space-md pt-space-xs">
+    <!-- Selector segmentado de carta -->
+    <div class="flex items-center bg-surface-container p-1 rounded-lg" id="selector-carta">
+      {% for id, icono, texto in tipos %}
+      <button class="px-space-md py-1.5 rounded-lg text-on-surface-variant hover:text-primary font-label-md text-label-md whitespace-nowrap transition-all flex items-center gap-space-xs" data-tipo="{{ id }}" type="button">
+        <span class="material-symbols-outlined text-sm">{{ icono }}</span>{{ texto }}</button>
+      {% endfor %}
+    </div>
+    <div class="flex flex-wrap items-center gap-space-sm">
+      <div class="flex items-center bg-surface-container-low px-space-sm py-1.5 rounded-lg gap-space-xs">
+        <span class="material-symbols-outlined text-outline text-sm">calendar_month</span>
+        <span class="font-body-sm text-body-sm font-medium text-on-surface" id="chip-periodo">—</span>
+        <span class="font-label-sm text-label-sm text-outline px-1.5 py-0.5 bg-surface-container-lowest rounded" id="chip-datos">—</span>
+      </div>
+      <div class="flex items-center bg-surface-container-low px-space-sm py-1.5 rounded-lg gap-space-xs">
+        <span class="material-symbols-outlined text-outline text-sm">category</span>
+        <span class="font-label-sm text-label-sm text-outline">Lote:</span>
+        <span class="font-label-md text-label-md font-bold text-primary" id="chip-lote">—</span>
+      </div>
+      <button class="px-space-md py-1.5 bg-primary-container text-on-primary rounded-lg font-label-md text-label-md hover:bg-primary transition-all flex items-center gap-space-xs shadow-sm" id="btn-fase-accion" type="button">
+        <span class="material-symbols-outlined text-sm">lock</span><span>Congelar Límites</span></button>
+      <div class="flex items-center gap-1">
+        <button class="p-2 bg-surface-container-low text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-lg transition-all flex items-center justify-center" id="btn-png" title="Exportar gráficos (PNG)" type="button">
+          <span class="material-symbols-outlined text-sm">download</span></button>
+        <a class="p-2 bg-surface-container-low text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-lg transition-all flex items-center justify-center" data-con-variable href="/ingenieria/reportes" title="Reporte técnico (PDF / Excel)">
+          <span class="material-symbols-outlined text-sm">description</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endmacro %}
+
+{% macro panel_reglas() %}
+<!-- Panel de Auditoría de Reglas Estadísticas -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between">
+  <div>
+    <div class="flex items-center justify-between pb-space-sm">
+      <div class="flex items-center gap-space-xs">
+        <span class="material-symbols-outlined text-primary text-base">rule</span>
+        <span class="font-headline-sm text-label-lg font-bold text-on-surface">Auditoría de Reglas</span>
+      </div>
+      <span class="font-label-sm text-label-sm text-secondary font-semibold bg-secondary-container/30 px-2 py-0.5 rounded" id="reglas-modo">—</span>
+    </div>
+    <div class="flex items-center justify-between bg-surface-container-low p-2 rounded-lg mb-space-sm">
+      <span class="font-body-sm text-body-sm text-on-surface">Modo de Detección</span>
+      <div class="flex items-center gap-1 bg-surface-container p-0.5 rounded">
+        <button class="px-2 py-1 font-label-sm text-label-sm rounded text-on-surface-variant hover:text-primary" data-preset="western_electric" type="button">WE (4 Reglas)</button>
+        <button class="px-2 py-1 font-label-sm text-label-sm rounded text-on-surface-variant hover:text-primary" data-preset="nelson" type="button">Nelson (8)</button>
+      </div>
+    </div>
+    <div class="flex flex-col gap-space-xs" id="lista-reglas"></div>
+  </div>
+  <div class="mt-space-sm pt-space-xs bg-surface-container p-space-xs rounded-lg flex items-center justify-between">
+    <span class="font-label-sm text-label-sm text-on-surface font-semibold">Tasa de Falsa Alarma (α, regla 1):</span>
+    <span class="font-label-md text-label-md font-bold text-primary" id="alfa-falsa">—</span>
+  </div>
+</div>
+{% endmacro %}
+
+{% macro tabla_depuracion(columnas) %}
+<!-- 4. Panel Interactivo de Exclusión de Subgrupos y Causas Asignables -->
+<section class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-md" id="seccion-depuracion">
+  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-sm">
+    <div class="flex flex-col">
+      <div class="flex items-center gap-space-xs">
+        <span class="material-symbols-outlined text-primary text-lg">fact_check</span>
+        <span class="font-headline-sm text-headline-sm font-bold text-on-surface" id="dep-titulo">Depuración de Subgrupos &amp; Causas Asignables</span>
+      </div>
+      <p class="font-body-sm text-body-sm text-on-surface-variant" id="dep-texto">
+        Los subgrupos con causas atribuibles comprobadas deben ser excluidos del recálculo basal para evitar inflación artificial de los límites de control.</p>
+    </div>
+    <div class="flex items-center gap-space-md bg-surface-container-low px-space-md py-space-xs rounded-lg" id="dep-simulador">
+      <div class="flex flex-col">
+        <span class="font-label-sm text-label-sm text-outline font-semibold">Simulación de Recálculo:</span>
+        <div class="flex items-center gap-space-sm font-label-md text-label-md" id="sim-resultado"><span class="text-outline">Marque subgrupos para ver el impacto</span></div>
+      </div>
+      <button class="px-space-md py-2 bg-secondary text-on-secondary rounded-lg font-label-md text-label-md font-semibold hover:opacity-95 transition-all shadow-sm flex items-center gap-space-xs disabled:opacity-40" disabled id="btn-apply-recalc" type="button">
+        <span class="material-symbols-outlined text-sm">tune</span>Aplicar Recálculo Limpio</button>
+    </div>
+  </div>
+  <div class="flex items-center gap-space-sm font-label-sm text-label-sm">
+    <label class="flex items-center gap-space-xs cursor-pointer"><input class="w-4 h-4 rounded text-primary focus:ring-primary" id="solo-senales" type="checkbox"/>Solo subgrupos con señal o excluidos</label>
+  </div>
+  <div class="overflow-x-auto w-full">
+    <table class="w-full text-left font-body-md text-body-md">
+      <thead><tr class="bg-surface-container-high text-on-surface font-label-sm text-label-sm">
+        <th class="py-2.5 px-space-sm text-center">Excluir</th><th class="py-2.5 px-space-sm">Subgrupo</th>
+        {% for c in columnas %}<th class="py-2.5 px-space-sm text-right">{{ c }}</th>{% endfor %}
+        <th class="py-2.5 px-space-sm">Regla Violada</th><th class="py-2.5 px-space-sm">Causa Asignable Identificada</th>
+        <th class="py-2.5 px-space-sm">Acción Correctiva de Piso</th><th class="py-2.5 px-space-sm">Estado Calidad</th>
+      </tr></thead>
+      <tbody class="divide-y divide-surface-container" id="tabla-subgrupos"></tbody>
+    </table>
+  </div>
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs pt-space-xs font-label-sm text-label-sm text-outline">
+    <div class="flex items-center gap-space-sm"><span id="pag-resumen">—</span><span>•</span><span class="text-primary font-medium" id="pag-seleccion">Clic en un punto de la carta para ubicar el subgrupo</span></div>
+    <div class="flex items-center gap-1">
+      <button class="px-2 py-1 bg-surface-container-low hover:bg-surface-container rounded transition-colors text-on-surface" id="pag-ant" type="button">Anterior</button>
+      <span class="px-2 py-1 bg-primary text-on-primary rounded font-bold" id="pag-num">1</span>
+      <button class="px-2 py-1 bg-surface-container-low hover:bg-surface-container rounded transition-colors text-on-surface" id="pag-sig" type="button">Siguiente</button>
+    </div>
+  </div>
+</section>
+{% endmacro %}

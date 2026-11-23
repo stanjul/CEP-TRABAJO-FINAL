@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{# Historial de muestras (Operario): todas las muestras registradas, en palabras simples.
+   Incluye las archivadas y las anuladas (con su motivo). Lógica inline al final. #}
+{% block contenido %}
+<section class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+  <div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary text-2xl">table_rows</span>
+    <div><h1 class="font-headline-sm text-headline-sm font-bold text-on-surface">Historial de muestras</h1>
+      <p class="font-body-md text-body-md text-on-surface-variant" id="h-sub">—</p></div></div>
+  <div class="flex items-center gap-space-sm">
+    <select class="h-10 rounded border-outline-variant font-label-md text-label-md" id="h-fase" title="Qué muestras mostrar">
+      <option value="">Todas</option><option value="I">Conociendo el proceso (Fase I)</option><option value="II">Monitoreo (Fase II)</option>
+      <option value="archivo">Archivadas</option><option value="anulado">Anuladas</option></select>
+    <button class="h-10 px-space-md bg-surface-container-low hover:bg-surface-container text-primary rounded-lg font-label-md text-label-md font-semibold flex items-center gap-space-xs" id="h-csv" type="button">
+      <span class="material-symbols-outlined text-sm">download</span>Descargar CSV</button>
+  </div>
+</section>
+<section class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm overflow-x-auto">
+  <table class="w-full text-left">
+    <thead><tr class="bg-surface-container-high font-body-sm text-body-sm font-semibold" id="h-cab"></tr></thead>
+    <tbody id="h-cuerpo"></tbody>
+  </table>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+/* Historial de muestras: GET /api/variables/{id}/subgrupos */
+(function () {
+  const { api, fmt, pct, esc, fechaHora } = CEP;
+  const $ = (id) => document.getElementById(id);
+  const ETAPA = { I: "Fase I · base", II: "Monitoreo", archivo: "Archivada", anulado: "Anulada" };
+  let V, filas = [];
+  async function cargar() {
+    const q = $("h-fase").value ? `?fase=${$("h-fase").value}` : "";
+    filas = (await api(`/variables/${V.id}/subgrupos${q}`)).reverse();
+    const attr = CEP.esAtributos(V);
+    const d = V.decimales;
+    const t = V.tipo_carta;
+    const cab = ["Muestra", "Fecha y hora", "Etapa",
+      ...(attr ? (t === "c" ? ["Fallas"] : [t === "u" ? "Fallas" : "Defectuosas", "Revisadas", t === "u" ? "Fallas por unidad" : "% defectuosas"])
+        : (t === "imr" ? [`Valor (${V.unidad})`] : [`Valores (${V.unidad})`, "Promedio"])),
+      "Quién", "Lote", "Estado"];
+    $("h-cab").innerHTML = cab.map((c) => `<th class="py-2 px-space-sm">${esc(c)}</th>`).join("");
+    $("h-cuerpo").innerHTML = filas.map((s, i) => {
+      const datos = attr
+        ? (t === "c" ? [fmt(s.conteo, 0)] : [fmt(s.conteo, 0), s.tamano === null ? "—" : fmt(s.tamano, 0),
+            t === "u" ? fmt(s.conteo / s.tamano, 2) : pct(s.conteo / (s.tamano || V.n), 1)])
+        : (t === "imr" ? [fmt(s.valores[0], d)] : [s.valores.map((x) => fmt(x, d)).join(" · "), fmt(s.media, d + 1)]);
+      let estado = '<span class="text-[#15803D] font-body-sm text-body-sm">Normal</span>';
+      if (s.reglas_violadas.length) estado = `<span class="px-1.5 py-0.5 rounded bg-error-container text-on-error-container font-body-sm text-body-sm font-semibold" title="Reglas: ${esc(s.reglas_violadas.join(", "))}">Para revisar</span>`;
+      if (s.excluido) estado = `<span class="px-1.5 py-0.5 rounded bg-surface-container font-body-sm text-body-sm" title="${esc(s.causa_exclusion || "")}">Excluida por el ingeniero</span>`;
+      if (s.fase === "anulado") estado = `<span class="px-1.5 py-0.5 rounded bg-surface-container font-body-sm text-body-sm" title="${esc(s.comentario || "")}">Anulada</span>`;
+      const tachado = s.fase === "anulado" ? "line-through text-outline" : "";
+      return `<tr class="${i % 2 ? "bg-surface-container-low" : ""}">
+        <td class="py-1.5 px-space-sm font-label-md text-label-md font-bold text-primary">#${s.numero}</td>
+        <td class="py-1.5 px-space-sm font-body-sm text-body-sm">${fechaHora(s.timestamp)}</td>
+        <td class="py-1.5 px-space-sm font-body-sm text-body-sm">${ETAPA[s.fase] || s.fase}</td>
+        ${datos.map((x) => `<td class="py-1.5 px-space-sm font-label-md text-label-md text-right ${tachado}">${x}</td>`).join("")}
+        <td class="py-1.5 px-space-sm font-body-sm text-body-sm">${esc(s.operario || "—")}</td>
+        <td class="py-1.5 px-space-sm font-body-sm text-body-sm">${esc(s.lote || "—")}</td>
+        <td class="py-1.5 px-space-sm">${estado}</td></tr>`;
+    }).join("") || `<tr><td class="py-space-md px-space-sm text-outline" colspan="${cab.length}">Todavía no hay muestras.</td></tr>`;
+    $("h-sub").textContent = `${V.nombre} · ${filas.length} muestra(s), de la más reciente a la más antigua.`;
+  }
+  CEP.arrancar(async (ctx) => {
+    if (!ctx.variable) return;
+    V = ctx.variable;
+    $("h-fase").onchange = cargar;
+    $("h-csv").onclick = () => {
+      const lineas = ["numero,timestamp,fase,valores,conteo,tamano,operario,lote,reglas,excluido,comentario"].concat(filas.map((s) =>
+        [s.numero, s.timestamp, s.fase, (s.valores || []).join(" "), s.conteo ?? "", s.tamano ?? "", s.operario ?? "", s.lote ?? "", s.reglas_violadas.join(" "), s.excluido, s.comentario ?? ""].map((x) => `"${String(x).replace(/"/g, '""')}"`).join(",")));
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob(["﻿" + lineas.join("\n")], { type: "text/csv" }));
+      a.download = `historial_${V.nombre.replace(/\W+/g, "_")}.csv`;
+      a.click();
+    };
+    await cargar();
+  });
+})();
+</script>
+{% endblock %}

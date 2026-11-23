@@ -1,0 +1,19 @@
+{# Tarjeta "Diagnóstico SPC" (Stitch, gráficos por variables). La llena carta_ing.js. #}
+<div class="flex flex-col justify-between p-space-md bg-surface-container-lowest rounded-xl shadow-sm">
+  <div class="flex items-center justify-between pb-space-xs">
+    <div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-base" id="diag-icono">warning</span>
+      <span class="font-label-sm text-label-sm font-bold" id="diag-titulo">Diagnóstico SPC</span></div>
+    <span class="px-1.5 py-0.5 rounded text-[10px] font-bold font-label-sm" id="diag-chip">—</span>
+  </div>
+  <div class="my-space-xs">
+    <div class="flex items-center gap-space-xs">
+      <span class="font-metric-display-mobile text-metric-display-mobile font-bold" id="diag-n">—</span>
+      <span class="font-body-md text-body-md font-semibold text-on-surface leading-tight">Puntos con señal</span>
+    </div>
+    <p class="font-body-sm text-body-sm text-on-surface-variant mt-1" id="diag-texto">—</p>
+  </div>
+  <div class="flex items-center justify-between pt-space-xs p-space-xs rounded-lg font-label-sm text-label-sm" id="diag-pie">
+    <span class="font-medium" id="diag-primero">—</span>
+    <button class="text-error font-bold hover:underline flex items-center gap-0.5" id="diag-auditar" type="button">Auditar <span class="material-symbols-outlined text-xs">arrow_forward</span></button>
+  </div>
+</div>

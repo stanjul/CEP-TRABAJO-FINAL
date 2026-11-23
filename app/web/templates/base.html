@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+{# Layout común derivado de Stitch: header fijo + sidebar (Operario o Ingeniería) + <main>.
+   Variables de plantilla: vista ("operario" | "ingenieria"), pagina (id del ítem activo), titulo. #}
+<html lang="es"><head>
+<meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>{{ titulo }} · CEP</title>
+<link rel="icon" href="/static/img/logo.svg"/>
+<link href="/static/vendor/fuentes.css" rel="stylesheet"/>
+<script src="/static/vendor/tailwindcss.js"></script>
+<script src="/static/js/tailwind-config.js"></script>
+<link href="/static/css/estilos.css" rel="stylesheet"/>
+{% block head %}{% endblock %}
+</head>
+<body class="bg-surface font-body-md text-on-surface antialiased" data-vista="{{ vista }}" data-pagina="{{ pagina }}">
+
+<!-- ===================== HEADER (Stitch) ===================== -->
+<header class="fixed top-0 left-0 right-0 h-16 bg-primary-container z-50 shadow-[0_2px_4px_rgba(0,0,0,0.18)]">
+<div class="h-16 w-full px-margin-desktop flex items-center justify-between text-on-primary">
+  <div class="flex items-center gap-space-md min-w-0">
+    <img alt="CEP" class="h-8 w-auto object-contain" src="/static/img/logo.svg"/>
+    <div class="h-6 w-px bg-outline/40"></div>
+    <div class="flex flex-col min-w-0">
+      <span class="font-label-sm text-label-sm text-primary-fixed" id="hdr-proceso">Estación de Control CEP</span>
+      <div class="flex items-center gap-space-xs">
+        <!-- Selector de proceso / variable activa (reemplaza el texto fijo de Stitch) -->
+        <select id="sel-variable" title="Proceso y variable activa"
+          class="max-w-[16rem] truncate bg-transparent border-0 p-0 pr-6 font-headline-sm text-label-md font-bold tracking-tight text-on-primary focus:ring-0 cursor-pointer [&>optgroup]:text-on-surface [&>option]:text-on-surface">
+          <option>Cargando…</option>
+        </select>
+        <div class="flex items-center gap-space-xs ml-space-xs px-space-xs py-0.5 rounded bg-secondary/30" id="hdr-sync">
+          <span class="w-2 h-2 rounded-full bg-secondary-fixed animate-pulse"></span>
+          <span class="font-label-sm text-label-sm text-secondary-fixed">Conectado</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flex items-center bg-primary p-1 rounded-lg">
+    {% set activo = "bg-primary-container text-on-primary shadow-[0_1px_2px_rgba(0,0,0,0.25)]" %}
+    {% set inactivo = "text-primary-fixed-dim hover:text-on-primary" %}
+    <a href="/operario" data-con-variable class="px-space-md py-1.5 rounded-lg font-label-md text-label-md whitespace-nowrap transition-all flex items-center gap-space-xs {{ activo if vista == 'operario' else inactivo }}">
+      <span class="material-symbols-outlined text-sm">precision_manufacturing</span>Operario</a>
+    <a href="/ingenieria/variables" data-con-variable class="px-space-md py-1.5 rounded-lg font-label-md text-label-md whitespace-nowrap transition-all flex items-center gap-space-xs {{ activo if vista == 'ingenieria' else inactivo }}">
+      <span class="material-symbols-outlined text-sm">analytics</span>Ingeniería</a>
+  </div>
+  <div class="flex items-center gap-space-lg">
+    <div class="hidden xl:flex flex-col items-end">
+      <span class="font-label-sm text-label-sm text-primary-fixed whitespace-nowrap" id="hdr-turno">Turno —</span>
+      <span class="font-label-md text-label-md text-on-primary font-medium whitespace-nowrap" id="hdr-info">—</span>
+    </div>
+    <div class="flex items-center gap-space-xs px-space-sm py-1 rounded bg-secondary text-on-secondary font-label-sm text-label-sm font-semibold" id="hdr-estado">
+      <span class="material-symbols-outlined text-sm">check_circle</span><span>Va bien</span>
+    </div>
+    <a href="/operario/alertas" data-con-variable class="relative p-2 rounded-lg hover:bg-primary text-on-primary transition-colors" title="Alertas sin resolver">
+      <span class="material-symbols-outlined">notifications</span>
+      <span class="absolute top-1.5 right-1.5 hidden h-4 min-w-4 px-0.5 items-center justify-center rounded-full bg-error text-[10px] font-bold text-on-error font-label-sm" id="hdr-alarmas">0</span>
+    </a>
+    <button class="flex items-center gap-space-sm pl-space-xs text-left" id="btn-usuario" type="button" title="Cambiar usuario (queda registrado en el historial)">
+      <span class="w-8 h-8 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center font-label-md text-label-md font-bold" id="hdr-avatar">?</span>
+      <div class="flex flex-col">
+        <span class="font-body-sm text-body-sm font-semibold text-on-primary" id="hdr-usuario">Sin usuario</span>
+        <span class="font-label-sm text-label-sm text-primary-fixed">{{ "Operario de planta" if vista == "operario" else "Calidad y procesos" }}</span>
+      </div>
+    </button>
+  </div>
+</div>
+</header>
+
+<!-- ===================== SIDEBAR (Stitch) ===================== -->
+{% set nav_activo = "bg-primary text-on-primary font-semibold shadow-[0_1px_3px_rgba(0,0,0,0.12)]" %}
+{% set nav_inactivo = "text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface" %}
+<aside class="fixed left-0 top-16 bottom-0 w-64 bg-surface-container-low z-40 flex flex-col justify-between shadow-[2px_0_8px_rgba(15,23,42,0.06)] overflow-y-auto">
+<div class="flex flex-col pt-space-md">
+{% if vista == "operario" %}
+  <div class="px-space-md pb-space-sm"><span class="font-label-sm text-label-sm text-outline">Planta</span></div>
+  <nav class="flex flex-col gap-1 px-space-sm">
+    {% for id, url, icono, texto in [
+        ("inspeccion", "/operario", "edit_note", "Registrar muestra"),
+        ("proceso", "/operario/proceso", "monitoring", "Cómo va el proceso"),
+        ("alertas", "/operario/alertas", "warning", "Alertas"),
+        ("historial", "/operario/historial", "table_rows", "Historial de muestras")] %}
+    <a data-con-variable href="{{ url }}" {% if pagina == id %}aria-current="page"{% endif %}
+       class="flex items-center gap-space-sm px-space-md py-2.5 rounded-lg transition-all {{ nav_activo if pagina == id else nav_inactivo }}">
+      <span class="material-symbols-outlined text-xl">{{ icono }}</span><span class="font-body-md text-body-md">{{ texto }}</span></a>
+    {% endfor %}
+  </nav>
+{% else %}
+  <div class="px-space-md pb-space-sm flex items-center justify-between">
+    <span class="font-label-sm text-label-sm text-outline">Suite de Ingeniería</span>
+    <span class="font-label-sm text-label-sm text-outline">CEP v1.0</span>
+  </div>
+  <nav class="flex flex-col gap-1 px-space-sm">
+    {% for id, url, icono, texto in [
+        ("mis_variables", "/ingenieria/mis-variables", "category", "Variables a controlar"),
+        ("plantilla", "/ingenieria/plantilla", "table_view", "Plantilla de carga"),
+        ("datos", "/ingenieria/datos", "dataset", "Datos & Carga CSV"),
+        ("variables", "/ingenieria/variables", "show_chart", "Gráficos Variables"),
+        ("atributos", "/ingenieria/atributos", "pie_chart", "Gráficos Atributos"),
+        ("supuestos", "/ingenieria/supuestos", "flaky", "Validación de Supuestos"),
+        ("capacidad", "/ingenieria/capacidad", "analytics", "Capacidad (Cp / Cpk)"),
+        ("diseno", "/ingenieria/diseno", "tune", "Plan de muestreo (ARL)"),
+        ("muestreo", "/ingenieria/muestreo", "verified_user", "Muestreo Aceptación (OC)"),
+        ("configuracion", "/ingenieria/configuracion", "settings_input_component", "Límites & Reglas"),
+        ("reportes", "/ingenieria/reportes", "receipt_long", "Reportes y Auditoría")] %}
+    <a data-con-variable href="{{ url }}" {% if pagina == id %}aria-current="page"{% endif %}
+       class="flex items-center justify-between gap-space-sm px-space-md py-2.5 rounded-lg transition-all {{ nav_activo if pagina == id else nav_inactivo }}">
+      <span class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-xl">{{ icono }}</span><span class="font-body-md text-body-md">{{ texto }}</span></span>
+      <span class="font-label-sm text-label-sm hidden" data-insignia="{{ id }}"></span></a>
+    {% endfor %}
+  </nav>
+{% endif %}
+</div>
+{% if vista == "operario" %}
+<div class="p-space-md bg-surface-container-highest m-space-sm rounded-lg flex flex-col gap-space-xs">
+  <div class="flex items-center justify-between">
+    <span class="font-label-sm text-label-sm font-semibold text-on-surface">Muestreo</span>
+    <span class="font-label-sm text-label-sm text-secondary font-bold" id="aside-frecuencia">—</span>
+  </div>
+  <p class="font-body-sm text-body-sm text-on-surface-variant" id="aside-proxima">Próxima muestra: —</p>
+  <a data-con-variable href="/operario#captura" class="mt-space-xs w-full py-2 bg-primary-container text-on-primary rounded font-label-md text-label-md hover:bg-primary transition-colors flex items-center justify-center gap-space-xs">
+    <span class="material-symbols-outlined text-sm">edit_note</span>Registrar muestra</a>
+</div>
+{% else %}
+<!-- Hoja rápida de tolerancias (de la pantalla Capacidad de Stitch) -->
+<div class="p-space-md bg-surface-container-highest m-space-sm rounded-lg flex flex-col gap-space-xs" id="aside-tolerancias">
+  <div class="flex items-center justify-between">
+    <span class="font-label-sm text-label-sm font-semibold text-on-surface">Tolerancias Definidas</span>
+    <span class="material-symbols-outlined text-primary-container text-lg">straighten</span>
+  </div>
+  {% for campo, texto in [("objetivo", "Valor Nominal (T)"), ("lei", "LEI (Inferior)"), ("les", "LES (Superior)"), ("tolerancia", "Tolerancia Total (ΔT)"), ("n", "Tamaño Subgrupo (n)"), ("fase", "Fase")] %}
+  <div class="flex items-center justify-between border-b border-outline-variant/40 py-0.5 last:border-0">
+    <span class="font-body-sm text-body-sm text-on-surface-variant">{{ texto }}</span>
+    <span class="font-label-md text-label-md font-bold text-on-surface" data-tol="{{ campo }}">—</span>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+</aside>
+
+<!-- ===================== CONTENIDO ===================== -->
+<div class="pl-64"><main class="relative pt-16 min-h-screen bg-surface w-full p-margin-desktop">
+<div class="flex flex-col w-full gap-space-lg pt-space-lg">
+{% block contenido %}{% endblock %}
+</div>
+</main></div>
+
+<div id="cep-modales"></div>
+<div id="cep-toasts" class="fixed bottom-4 right-4 z-[70] flex flex-col gap-space-xs items-end"></div>
+
+<script src="/static/js/comun.js"></script>
+{% block scripts %}{% endblock %}
+</body></html>

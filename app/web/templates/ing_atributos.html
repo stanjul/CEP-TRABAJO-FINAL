@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{# Módulo 3 — Cartas por atributos (p, np, c, u). No existe en Stitch: se compone con los mismos
+   bloques de la pantalla de variables + un asistente de selección. Lógica: carta_ing.js y
+   ing_atributos.js (asistente). #}
+{% from "_carta_comun.html" import barra_superior, panel_reglas, tabla_depuracion %}
+{% block head %}<script src="/static/vendor/plotly.min.js"></script>{% endblock %}
+{% block contenido %}
+<div class="flex flex-col gap-space-md" id="pantalla">
+{{ barra_superior("Cartas de Control por Atributos",
+   [("p", "percent", "p (Fracción)"), ("np", "tag", "np (Número)"), ("c", "scatter_plot", "c (Defectos)"), ("u", "grain", "u (Defectos/unidad)")]) }}
+
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-md">
+  <div class="flex flex-col justify-between p-space-md bg-surface-container-lowest rounded-xl shadow-sm relative overflow-hidden">
+    <div class="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-primary/5 pointer-events-none"></div>
+    <div class="flex items-center justify-between pb-space-xs">
+      <div class="flex items-center gap-space-xs"><span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+        <span class="font-label-sm text-label-sm text-outline" id="k1-titulo">Carta</span></div>
+      <span class="font-label-sm text-label-sm font-semibold text-primary px-1.5 py-0.5 rounded bg-surface-container-low" id="k1-n">n = —</span>
+    </div>
+    <div class="flex items-baseline gap-space-xs my-space-xs">
+      <span class="font-metric-display text-metric-display text-on-surface tracking-tight" id="k1-lc">—</span>
+      <span class="font-label-md text-label-md text-outline" id="k1-unidad">(LC)</span>
+    </div>
+    <div class="flex flex-col pt-space-xs mt-space-xs bg-surface-container-low p-space-xs rounded-lg">
+      <span class="font-label-sm text-label-sm text-error font-medium" id="k1-lcs">LCS: —</span>
+      <span class="font-label-sm text-label-sm text-error font-medium" id="k1-lci">LCI: —</span>
+    </div>
+  </div>
+  <div class="flex flex-col justify-between p-space-md bg-surface-container-lowest rounded-xl shadow-sm relative overflow-hidden">
+    <div class="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-secondary/5 pointer-events-none"></div>
+    <div class="flex items-center justify-between pb-space-xs">
+      <div class="flex items-center gap-space-xs"><span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
+        <span class="font-label-sm text-label-sm text-outline">Modelo y Fórmula</span></div>
+      <span class="font-label-sm text-label-sm font-semibold text-secondary px-1.5 py-0.5 rounded bg-secondary-container/40" id="ka-dist">—</span>
+    </div>
+    <p class="font-label-md text-label-md text-on-surface my-space-xs" id="ka-formula">—</p>
+    <div class="flex flex-col pt-space-xs mt-space-xs bg-surface-container-low p-space-xs rounded-lg font-label-sm text-label-sm">
+      <span class="text-on-surface-variant" id="ka-tamanos">—</span>
+      <span class="text-on-surface-variant" id="ka-variable">—</span>
+    </div>
+  </div>
+  <div class="flex flex-col justify-between p-space-md bg-surface-container-lowest rounded-xl shadow-sm">
+    <div class="flex items-center justify-between pb-space-xs">
+      <div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-outline text-base">summarize</span>
+        <span class="font-label-sm text-label-sm text-outline">Totales de la Fase</span></div>
+    </div>
+    <div class="grid grid-cols-2 gap-space-xs my-space-xs font-label-sm text-label-sm">
+      <div class="px-space-xs py-1 bg-surface-container-low rounded flex flex-col"><span class="text-outline">Muestras</span><span class="font-bold text-primary text-label-lg" id="ka-m">—</span></div>
+      <div class="px-space-xs py-1 bg-surface-container-low rounded flex flex-col"><span class="text-outline">Inspeccionadas</span><span class="font-bold text-primary text-label-lg" id="ka-n">—</span></div>
+      <div class="px-space-xs py-1 bg-surface-container-low rounded flex flex-col"><span class="text-outline" id="ka-d-t">No conformes</span><span class="font-bold text-primary text-label-lg" id="ka-d">—</span></div>
+      <div class="px-space-xs py-1 bg-surface-container-low rounded flex flex-col"><span class="text-outline">% conforme</span><span class="font-bold text-secondary text-label-lg" id="ka-conf">—</span></div>
+    </div>
+  </div>
+  {% include "_tarjeta_diagnostico.html" %}
+</section>
+
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md">
+  <div class="lg:col-span-8 flex flex-col gap-space-md">
+    <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col relative">
+      <div class="flex items-center justify-between pb-space-sm">
+        <div class="flex items-center gap-space-sm">
+          <span class="font-headline-sm text-label-lg font-bold text-on-surface" id="g1-titulo">CARTA</span>
+          <span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-surface-container-low text-primary font-medium" id="g1-sub">—</span>
+        </div>
+        <div class="hidden sm:flex items-center gap-space-md font-label-sm text-label-sm">
+          <div class="flex items-center gap-1"><span class="w-3 h-0.5 bg-error"></span><span class="text-outline">LCS / LCI</span></div>
+          <div class="flex items-center gap-1"><span class="w-3 h-0.5 bg-primary"></span><span class="text-outline">LC</span></div>
+          <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-error"></span><span class="text-error font-semibold">Señal</span></div>
+        </div>
+      </div>
+      <div class="grafico" id="graf-1"></div>
+    </div>
+  </div>
+  <div class="lg:col-span-4 flex flex-col gap-space-md">{{ panel_reglas() }}</div>
+</div>
+
+{{ tabla_depuracion(["Conteo", "Tamaño", "Estadístico"]) }}
+</div>
+
+<!-- Asistente de selección de carta (siempre disponible) -->
+<section class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-md" id="asistente">
+  <div class="flex items-center gap-space-xs">
+    <span class="material-symbols-outlined text-primary text-lg">assistant</span>
+    <span class="font-headline-sm text-headline-sm font-bold text-on-surface">Asistente: ¿qué carta de atributos usar?</span>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+    <label class="flex flex-col gap-space-xs"><span class="font-label-sm text-label-sm font-semibold text-outline">1. ¿Qué se registra?</span>
+      <select class="h-12 rounded border-outline-variant font-body-md text-body-md" id="as-tipo">
+        <option value="defectuosos">Unidades defectuosas (pasa / no pasa)</option>
+        <option value="defectos">Defectos contados en cada unidad o área</option></select></label>
+    <label class="flex flex-col gap-space-xs"><span class="font-label-sm text-label-sm font-semibold text-outline">2. Tamaño de muestra / área</span>
+      <select class="h-12 rounded border-outline-variant font-body-md text-body-md" id="as-constante">
+        <option value="true">Constante en todas las muestras</option><option value="false">Variable entre muestras</option></select></label>
+    <label class="flex flex-col gap-space-xs"><span class="font-label-sm text-label-sm font-semibold text-outline">3. Se prefiere graficar</span>
+      <select class="h-12 rounded border-outline-variant font-body-md text-body-md" id="as-interes">
+        <option value="proporcion">Proporción / tasa</option><option value="conteo">Conteo directo</option></select></label>
+  </div>
+  <div class="flex flex-col md:flex-row md:items-center gap-space-md bg-primary-fixed/30 p-space-md rounded-lg">
+    <div class="flex items-center gap-space-sm">
+      <span class="font-label-sm text-label-sm text-outline">Recomendación</span>
+      <span class="font-metric-display-mobile text-metric-display-mobile text-primary font-bold" id="as-carta">—</span>
+      <span class="px-space-xs py-0.5 rounded bg-surface-container-highest font-label-sm text-label-sm" id="as-dist">—</span>
+    </div>
+    <p class="font-body-md text-body-md text-on-surface flex-1" id="as-razon">—</p>
+    <span class="font-label-sm text-label-sm text-outline" id="as-alt">—</span>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/graficos.js"></script>
+<script src="/static/js/carta_ing.js"></script>
+<script src="/static/js/ing_atributos.js"></script>
+{% endblock %}

@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{# Módulo 8 — Reportes. Derivada de Stitch "generador_de_reportes_de_calidad_pdf_excel".
+   Sin firmas digitales ni QR (fuera de alcance): el PDF deja espacio para firma manuscrita y cada
+   archivo se registra con su SHA-256 verificable. Lógica: ing_reportes.js #}
+{% block head %}<script src="/static/vendor/plotly.min.js"></script>{% endblock %}
+{% block contenido %}
+<!-- Encabezado y acciones -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col xl:flex-row xl:items-center justify-between gap-space-md">
+  <div class="flex flex-col gap-space-xs">
+    <div class="flex items-center gap-space-xs font-label-sm text-label-sm text-outline">
+      <span>Ingeniería &amp; Metrología</span><span class="material-symbols-outlined text-sm">chevron_right</span>
+      <span>Reportes &amp; Certificación</span><span class="material-symbols-outlined text-sm">chevron_right</span>
+      <span class="text-on-surface font-bold">Informe de Proceso</span></div>
+    <h1 class="font-headline-md text-headline-md font-bold text-on-surface">Generador de Reportes de Calidad</h1>
+    <p class="font-body-md text-body-md text-on-surface-variant">Informe PDF hecho con LaTeX, pensado para personas que no son del área: describe en palabras cómo se comportó el proceso, sin recomendaciones. También se puede exportar un libro Excel con los datos y resultados de cada módulo.</p>
+  </div>
+  <div class="flex flex-wrap items-center gap-space-sm">
+    <button class="h-12 px-space-md bg-surface-container-low hover:bg-surface-container text-primary rounded-lg font-label-md text-label-md font-semibold flex items-center gap-space-xs" id="btn-previa" type="button">
+      <span class="material-symbols-outlined">visibility</span>Generar y Previsualizar</button>
+    <button class="h-12 px-space-md bg-primary hover:bg-primary-container text-on-primary rounded-lg font-label-md text-label-md font-bold flex items-center gap-space-xs shadow-sm" data-formato="pdf" type="button">
+      <span class="material-symbols-outlined">picture_as_pdf</span>Exportar PDF</button>
+    <button class="h-12 px-space-md bg-secondary hover:opacity-95 text-on-secondary rounded-lg font-label-md text-label-md font-bold flex items-center gap-space-xs shadow-sm" data-formato="xlsx" type="button">
+      <span class="material-symbols-outlined">table_view</span>Exportar Excel (.xlsx)</button>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-space-md items-start">
+  <!-- Panel izquierdo: configuración -->
+  <div class="xl:col-span-5 flex flex-col gap-space-md">
+    <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+      <div class="flex items-center justify-between"><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary">description</span>
+        <span class="font-label-lg text-label-lg font-bold">1. Plantilla del Reporte</span></div>
+        <span class="font-label-sm text-label-sm text-secondary font-semibold">PLANTILLA ACTIVA</span></div>
+      {% for valor, titulo, texto in [
+        ("integral", "Informe Integral de Control Estadístico", "Todos los módulos: síntesis, cartas, alarmas, capacidad, supuestos, diseño ARL, muestreo e historial."),
+        ("capacidad", "Estudio de Capacidad y Supuestos", "Cp, Cpk, Cpu, Cpl, fracción no conforme, histograma con especificaciones, normalidad (SW, AD, Q-Q) e independencia."),
+        ("control", "Resumen de Control en Proceso (Cartas)", "Cartas de control, límites, exclusiones con causa asignable y violaciones de reglas."),
+        ("auditoria", "Historial de Cambios y Trazabilidad", "Cambios de configuración (con versión y hash) y seguimiento de alarmas.")] %}
+      <label class="flex items-start gap-space-sm p-space-sm rounded-lg border border-outline-variant/50 hover:bg-surface-container-low cursor-pointer has-[:checked]:border-primary-container has-[:checked]:bg-primary-fixed/30">
+        <input class="mt-1 text-primary" name="plantilla" type="radio" value="{{ valor }}" {% if loop.first %}checked{% endif %}/>
+        <div class="flex flex-col"><span class="font-label-md text-label-md font-bold text-on-surface">{{ titulo }}</span>
+          <span class="font-body-sm text-body-sm text-on-surface-variant">{{ texto }}</span></div></label>
+      {% endfor %}
+    </div>
+
+    <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+      <div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary">tune</span>
+        <span class="font-label-lg text-label-lg font-bold">2. Alcance y Variable CTQ</span></div>
+      <div class="grid grid-cols-2 gap-space-sm">
+        <div class="flex flex-col gap-1 bg-surface-container-low p-space-sm rounded-lg"><span class="font-label-sm text-label-sm text-outline">Proceso</span>
+          <span class="font-label-md text-label-md font-bold" id="alc-proceso">—</span><span class="font-body-sm text-body-sm text-on-surface-variant" id="alc-linea">—</span></div>
+        <div class="flex flex-col gap-1 bg-surface-container-low p-space-sm rounded-lg"><span class="font-label-sm text-label-sm text-outline">Datos</span>
+          <span class="font-label-md text-label-md font-bold" id="alc-datos">—</span><span class="font-body-sm text-body-sm text-on-surface-variant" id="alc-periodo">—</span></div>
+      </div>
+      <div class="flex items-center justify-between bg-primary-fixed/30 p-space-sm rounded-lg">
+        <div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary">scale</span>
+          <div class="flex flex-col"><span class="font-label-md text-label-md font-bold" id="alc-variable">—</span>
+            <span class="font-body-sm text-body-sm text-on-surface-variant" id="alc-espec">—</span></div></div>
+        <span class="font-label-sm text-label-sm text-outline">Cambie la variable en el selector superior</span>
+      </div>
+    </div>
+
+    <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+      <div class="flex items-center justify-between"><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary">checklist</span>
+        <span class="font-label-lg text-label-lg font-bold">3. Módulos Estadísticos a Incluir</span></div>
+        <button class="font-label-sm text-label-sm text-primary hover:underline" id="btn-todos" type="button">Desmarcar todo</button></div>
+      {% for valor, texto in [("resumen", "Estado general, hallazgos e indicadores principales"), ("cartas", "Gráfica de control y muestras fuera de lo normal"),
+          ("alarmas", "Violaciones de reglas y seguimiento de alarmas"), ("capacidad", "Índices de capacidad (Cp, Cpk, Cpu, Cpl), fracción no conforme e histograma"),
+          ("supuestos", "Validación de supuestos (normalidad, independencia, rachas)"), ("diseno", "Diseño de la carta: ARL₀, ARL₁, ATS"),
+          ("muestreo", "Muestreo de aceptación: lotes inspeccionados"), ("auditoria", "Historial de cambios de configuración")] %}
+      <label class="flex items-center justify-between gap-space-sm p-space-xs rounded hover:bg-surface-container-low cursor-pointer">
+        <span class="flex items-center gap-space-sm"><input class="w-4 h-4 rounded text-primary" data-modulo="{{ valor }}" type="checkbox"/>
+          <span class="font-body-md text-body-md">{{ texto }}</span></span>
+        <span class="font-label-sm text-label-sm text-outline">Cap. {{ loop.index }}</span></label>
+      {% endfor %}
+    </div>
+
+    <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+      <div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary">settings_input_component</span>
+        <span class="font-label-lg text-label-lg font-bold">4. Parámetros del Motor de Impresión</span></div>
+      <div class="grid grid-cols-4 gap-space-xs text-center font-label-sm text-label-sm">
+        <div class="bg-surface-container-low p-space-xs rounded"><span class="block text-outline">FORMATO</span><b>A4</b></div>
+        <div class="bg-surface-container-low p-space-xs rounded"><span class="block text-outline">ORIENTACIÓN</span><b>Vertical</b></div>
+        <div class="bg-surface-container-low p-space-xs rounded"><span class="block text-outline">GRÁFICOS</span><b>PNG 150 dpi</b></div>
+        <div class="bg-surface-container-low p-space-xs rounded"><span class="block text-outline">INTEGRIDAD</span><b>SHA-256</b></div>
+      </div>
+      <span class="font-label-sm text-label-sm text-outline" id="motor-pdf">Motor: LaTeX (PDF, fuente predeterminada) · openpyxl (Excel) · matplotlib (gráficos)</span>
+    </div>
+  </div>
+
+  <!-- Panel derecho: vista previa A4 -->
+  <div class="xl:col-span-7 bg-surface-container-low rounded-xl shadow-sm flex flex-col overflow-hidden">
+    <div class="flex items-center justify-between bg-inverse-surface text-inverse-on-surface px-space-md py-space-sm">
+      <div class="flex items-center gap-space-xs"><span class="material-symbols-outlined">auto_stories</span>
+        <span class="font-label-md text-label-md">Vista previa (página 1)</span><span class="font-label-sm text-label-sm opacity-70" id="zoom-txt">Escala: 100 %</span></div>
+      <div class="flex items-center gap-space-xs">
+        <button class="p-1 rounded hover:bg-primary-container" id="zoom-out" type="button"><span class="material-symbols-outlined">zoom_out</span></button>
+        <button class="p-1 rounded hover:bg-primary-container" id="zoom-in" type="button"><span class="material-symbols-outlined">zoom_in</span></button>
+      </div>
+    </div>
+    <div class="p-space-md overflow-auto max-h-[1100px]">
+      <div class="bg-white shadow-md mx-auto origin-top transition-transform p-space-lg flex flex-col gap-space-md" id="report-paper" style="width: 100%; max-width: 820px; min-height: 1060px;">
+        <p class="text-center text-outline font-body-md py-space-xl">Pulse «Generar y Previsualizar».</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Historial de reportes -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary">history</span>
+      <h2 class="font-label-lg text-label-lg font-bold">Historial de Reportes Generados y Trazabilidad</h2></div>
+    <span class="font-label-sm text-label-sm text-outline" id="hist-resumen">—</span>
+  </div>
+  <div class="overflow-x-auto"><table class="w-full text-left">
+    <thead><tr class="bg-surface-container-high font-label-sm text-label-sm">
+      <th class="py-2 px-space-sm">Archivo</th><th class="py-2 px-space-sm">Tipo de reporte</th><th class="py-2 px-space-sm">Formato</th>
+      <th class="py-2 px-space-sm text-right">Tamaño</th><th class="py-2 px-space-sm">Fecha</th><th class="py-2 px-space-sm">Generado por</th>
+      <th class="py-2 px-space-sm">Integridad (SHA-256)</th><th class="py-2 px-space-sm text-center">Acciones</th></tr></thead>
+    <tbody class="divide-y divide-surface-container" id="tabla-reportes"></tbody>
+  </table></div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/graficos.js"></script>
+<script src="/static/js/ing_reportes.js"></script>
+{% endblock %}

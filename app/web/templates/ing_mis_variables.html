@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{# Variables a controlar: lista por proceso + asistente "Nueva variable" (4 pasos).
+   No existe en Stitch: se compone con los componentes del sistema de diseño. Lógica: ing_mis_variables.js #}
+{% block contenido %}
+<section class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+  <div class="flex flex-col gap-space-xs max-w-2xl">
+    <h1 class="font-headline-md text-headline-md font-bold text-on-surface">Variables a controlar</h1>
+    <p class="font-body-md text-body-md text-on-surface-variant">
+      Una variable es lo que se revisa en cada muestra: un peso, un diámetro, la cantidad de piezas malas…
+      Aquí defines qué se controla en cada proceso y cada cuánto se toma una muestra.</p>
+  </div>
+  <button class="h-12 px-space-lg bg-primary hover:bg-primary-container text-on-primary rounded-lg font-label-lg text-label-lg font-bold flex items-center gap-space-xs shadow-sm shrink-0" id="btn-nueva" type="button">
+    <span class="material-symbols-outlined">add</span>Nueva variable</button>
+</section>
+
+<div class="flex flex-col gap-space-lg" id="lista-procesos">
+  <p class="font-body-md text-body-md text-on-surface-variant">Cargando…</p>
+</div>
+
+<!-- ===================== ASISTENTE (se muestra como diálogo) ===================== -->
+<template id="tpl-asistente">
+<div class="fixed inset-0 z-[60] bg-inverse-surface/50 flex items-center justify-center p-margin" data-fondo>
+  <form class="w-full max-w-2xl max-h-[92vh] overflow-y-auto bg-surface-container-lowest rounded-xl shadow-[0_4px_12px_0_rgba(15,23,42,0.2)] flex flex-col" autocomplete="off" novalidate>
+    <!-- Encabezado y progreso -->
+    <div class="p-space-lg pb-space-md flex flex-col gap-space-sm border-b border-outline-variant/40">
+      <div class="flex items-center justify-between gap-space-md">
+        <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Nueva variable</h2>
+        <button class="p-1 rounded hover:bg-surface-container text-on-surface-variant" data-cerrar type="button" aria-label="Cerrar">
+          <span class="material-symbols-outlined">close</span></button>
+      </div>
+      <ol class="grid grid-cols-4 gap-space-xs" data-progreso>
+        <li data-paso-ind="1">Proceso</li><li data-paso-ind="2">Qué se registra</li>
+        <li data-paso-ind="3">Muestreo</li><li data-paso-ind="4">Especificaciones</li>
+      </ol>
+    </div>
+
+    <!-- Paso 1: proceso -->
+    <fieldset class="p-space-lg flex flex-col gap-space-md" data-paso="1">
+      <legend class="sr-only">Proceso</legend>
+      <p class="font-body-lg text-body-lg text-on-surface">¿En qué proceso o línea se toma la muestra?</p>
+      <div class="flex flex-col gap-space-xs" data-lista-procesos></div>
+      <div class="hidden flex-col gap-space-sm bg-surface-container-low rounded-lg p-space-md" data-nuevo-proceso>
+        <label class="flex flex-col gap-space-xs"><span class="font-body-md text-body-md font-semibold">Nombre del proceso</span>
+          <input class="h-12 rounded-lg border-outline-variant font-body-md text-body-md" name="proceso_nombre" placeholder="Ej.: Envasado de café 500 g" maxlength="120"/></label>
+        <label class="flex flex-col gap-space-xs"><span class="font-body-md text-body-md font-semibold">Línea o máquina <span class="font-normal text-on-surface-variant">(opcional)</span></span>
+          <input class="h-12 rounded-lg border-outline-variant font-body-md text-body-md" name="proceso_linea" placeholder="Ej.: Línea 2" maxlength="120"/></label>
+      </div>
+    </fieldset>
+
+    <!-- Paso 2: nombre y tipo -->
+    <fieldset class="hidden p-space-lg flex-col gap-space-md" data-paso="2">
+      <legend class="sr-only">Qué se registra</legend>
+      <label class="flex flex-col gap-space-xs"><span class="font-body-lg text-body-lg text-on-surface">¿Cómo se llama lo que vas a controlar?</span>
+        <input class="h-12 rounded-lg border-outline-variant font-body-lg text-body-lg" name="nombre" placeholder="Ej.: Peso neto del envase" maxlength="120"/></label>
+      <p class="font-body-lg text-body-lg text-on-surface pt-space-xs">¿Cómo se registra cada unidad revisada?</p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-space-sm" role="radiogroup">
+        {% for valor, icono, titulo, texto in [
+            ("medida", "straighten", "La mido", "Con un instrumento: peso, largo, temperatura, espesor…"),
+            ("defectuosos", "rule", "La clasifico buena o mala", "Cuento cuántas unidades salen defectuosas."),
+            ("defectos", "pest_control", "Cuento sus fallas", "Una unidad puede tener varias: rayas, burbujas, manchas…")] %}
+        <label class="relative cursor-pointer">
+          <input class="peer sr-only" name="que" type="radio" value="{{ valor }}"/>
+          <span class="h-full flex flex-col gap-space-xs p-space-md rounded-lg border-2 border-outline-variant/60 bg-surface-container-lowest peer-checked:border-primary-container peer-checked:bg-primary-fixed/30 peer-focus-visible:ring-2 peer-focus-visible:ring-primary-container hover:border-outline transition-colors">
+            <span class="material-symbols-outlined text-primary-container text-2xl">{{ icono }}</span>
+            <span class="font-body-lg text-body-lg font-semibold text-on-surface">{{ titulo }}</span>
+            <span class="font-body-sm text-body-sm text-on-surface-variant">{{ texto }}</span>
+          </span>
+        </label>
+        {% endfor %}
+      </div>
+    </fieldset>
+
+    <!-- Paso 3: muestreo -->
+    <fieldset class="hidden p-space-lg flex-col gap-space-md" data-paso="3">
+      <legend class="sr-only">Muestreo</legend>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+        <label class="flex flex-col gap-space-xs"><span class="font-body-md text-body-md font-semibold" data-txt-n>¿Cuántas unidades revisas cada vez?</span>
+          <input class="h-12 rounded-lg border-outline-variant font-body-lg text-body-lg" name="n" type="number" min="1" step="1" value="5" inputmode="numeric"/>
+          <span class="font-body-sm text-body-sm text-on-surface-variant" data-ayuda-n>Se recomiendan entre 4 y 6 unidades seguidas.</span></label>
+        <div class="flex flex-col gap-space-xs"><span class="font-body-md text-body-md font-semibold">¿Cada cuánto tomas una muestra?</span>
+          <div class="flex flex-wrap gap-space-xs" data-chips-frecuencia>
+            {% for m, t in [(15, "15 min"), (30, "30 min"), (60, "1 hora"), (120, "2 horas"), (240, "4 horas")] %}
+            <button class="h-10 px-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container font-label-md text-label-md" data-min="{{ m }}" type="button">{{ t }}</button>
+            {% endfor %}
+          </div>
+          <label class="flex items-center gap-space-xs font-body-sm text-body-sm text-on-surface-variant">Otro:
+            <input class="h-10 w-24 rounded-lg border-outline-variant font-body-md text-body-md" name="frecuencia_min" type="number" min="1" step="1" value="30" inputmode="numeric"/> minutos</label>
+        </div>
+      </div>
+      <div class="hidden flex-col gap-space-xs" data-solo-conteo>
+        <span class="font-body-md text-body-md font-semibold">¿Revisas siempre la misma cantidad de unidades?</span>
+        <div class="flex gap-space-sm">
+          <label class="flex items-center gap-space-xs h-10 px-space-md rounded-lg bg-surface-container-low cursor-pointer"><input name="constante" type="radio" value="si" checked/> Sí, siempre igual</label>
+          <label class="flex items-center gap-space-xs h-10 px-space-md rounded-lg bg-surface-container-low cursor-pointer"><input name="constante" type="radio" value="no"/> No, cambia</label>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-space-md" data-solo-medida>
+        <label class="flex flex-col gap-space-xs"><span class="font-body-md text-body-md font-semibold">Unidad de medida</span>
+          <input class="h-12 rounded-lg border-outline-variant font-body-md text-body-md" name="unidad" placeholder="g, mm, °C…" maxlength="30"/></label>
+        <label class="flex flex-col gap-space-xs"><span class="font-body-md text-body-md font-semibold">Decimales que muestra el instrumento</span>
+          <input class="h-12 rounded-lg border-outline-variant font-body-md text-body-md" name="decimales" type="number" min="0" max="6" step="1" value="2"/></label>
+      </div>
+      <!-- Recomendación de carta -->
+      <div class="flex flex-col gap-space-xs bg-primary-fixed/30 rounded-lg p-space-md" data-recomendacion>
+        <div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary-container">lightbulb</span>
+          <span class="font-body-md text-body-md font-semibold text-on-surface" data-rec-titulo>Gráfica recomendada</span></div>
+        <p class="font-body-md text-body-md text-on-surface-variant" data-rec-razon>—</p>
+        <label class="flex items-center gap-space-xs font-body-sm text-body-sm text-on-surface-variant">Usar otra gráfica:
+          <select class="h-9 rounded border-outline-variant font-body-sm text-body-sm" name="tipo_carta"></select></label>
+      </div>
+    </fieldset>
+
+    <!-- Paso 4: especificaciones -->
+    <fieldset class="hidden p-space-lg flex-col gap-space-md" data-paso="4">
+      <legend class="sr-only">Especificaciones</legend>
+      <div data-solo-medida class="flex flex-col gap-space-md">
+        <p class="font-body-lg text-body-lg text-on-surface">¿Qué valores se aceptan? <span class="font-body-md text-body-md text-on-surface-variant">(los fija el cliente, la norma o el plano)</span></p>
+        <div class="grid grid-cols-3 gap-space-sm">
+          {% for campo, texto in [("lei", "Mínimo aceptado"), ("objetivo", "Valor ideal"), ("les", "Máximo aceptado")] %}
+          <label class="flex flex-col gap-space-xs"><span class="font-body-md text-body-md font-semibold">{{ texto }}</span>
+            <input class="h-12 rounded-lg border-outline-variant font-body-lg text-body-lg" name="{{ campo }}" type="text" inputmode="decimal" placeholder="—"/></label>
+          {% endfor %}
+        </div>
+        <p class="font-body-sm text-body-sm text-on-surface-variant">Puedes dejar vacío lo que no aplique (por ejemplo, si solo hay un máximo) y completarlo después en «Límites y reglas».</p>
+      </div>
+      <div data-solo-conteo class="hidden flex-col gap-space-xs">
+        <p class="font-body-md text-body-md text-on-surface-variant">En los conteos no hace falta indicar especificaciones: la gráfica compara cada muestra con el nivel habitual de defectos.</p>
+      </div>
+      <!-- Resumen -->
+      <div class="flex flex-col gap-space-xs bg-surface-container-low rounded-lg p-space-md">
+        <span class="font-body-md text-body-md font-semibold text-on-surface">Resumen</span>
+        <ul class="flex flex-col gap-1 font-body-md text-body-md text-on-surface-variant" data-resumen></ul>
+      </div>
+    </fieldset>
+
+    <!-- Error y navegación -->
+    <p class="hidden mx-space-lg -mt-space-xs mb-space-sm px-space-md py-space-sm rounded-lg bg-error-container text-on-error-container font-body-md text-body-md" data-error role="alert"></p>
+    <div class="p-space-lg pt-space-md flex items-center justify-between gap-space-sm border-t border-outline-variant/40">
+      <button class="h-12 px-space-lg rounded-lg bg-surface-container hover:bg-surface-container-high font-label-md text-label-md font-semibold" data-atras type="button">Atrás</button>
+      <button class="h-12 px-space-lg rounded-lg bg-primary hover:bg-primary-container text-on-primary font-label-lg text-label-lg font-bold flex items-center gap-space-xs" data-siguiente type="submit">Siguiente</button>
+    </div>
+  </form>
+</div>
+</template>
+{% endblock %}
+{% block scripts %}<script src="/static/js/ing_mis_variables.js"></script>{% endblock %}

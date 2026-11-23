@@ -1,0 +1,26 @@
+# Entorno de Python (se recrea con run.bat / run.sh)
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Datos y archivos generados por la app (contienen datos del proceso: no van al repositorio)
+data/*.db
+data/*.db-journal
+data/reportes/
+respaldos/
+*.log
+
+# Proyecto anterior (Vite/Preact), fuera de este repositorio a pedido del usuario
+Programa/
+
+# Configuración local de Claude Code (las skills del proyecto en .claude/skills sí se versionan)
+.claude/settings.local.json
+
+# Temporales de Windows, OneDrive, Excel y LaTeX
+desktop.ini
+Thumbs.db
+~$*
+*.tmp
+*.aux
+*.out

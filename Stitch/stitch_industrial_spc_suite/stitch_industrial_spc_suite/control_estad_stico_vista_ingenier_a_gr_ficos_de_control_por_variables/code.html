@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+
+<html lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"surface-container-low":"#eff4ff","error-container":"#ffdad6","tertiary-fixed-dim":"#b6c4ff","on-error-container":"#93000a","on-error":"#ffffff","on-background":"#0b1c30","on-primary-fixed":"#001f28","surface-container-high":"#dce9ff","surface-variant":"#d3e4fe","error":"#ba1a1a","secondary":"#086a5f","on-secondary":"#ffffff","outline":"#70787c","on-tertiary-fixed":"#00164e","on-secondary-fixed-variant":"#005047","on-tertiary-container":"#9bb0ff","secondary-container":"#a1f2e2","primary":"#003441","tertiary-fixed":"#dce1ff","on-primary-container":"#87bbce","secondary-fixed-dim":"#85d5c6","surface-container-highest":"#d3e4fe","on-tertiary":"#ffffff","surface-container-lowest":"#ffffff","primary-fixed":"#b6ebfe","surface":"#f8f9ff","on-secondary-container":"#167164","on-surface":"#0b1c30","inverse-surface":"#213145","surface-tint":"#306576","tertiary":"#032879","primary-container":"#0f4c5c","surface-container":"#e5eeff","on-tertiary-fixed-variant":"#264191","primary-fixed-dim":"#9acee1","inverse-on-surface":"#eaf1ff","outline-variant":"#c0c8cb","surface-dim":"#cbdbf5","on-surface-variant":"#40484b","surface-bright":"#f8f9ff","on-primary":"#ffffff","tertiary-container":"#254090","secondary-fixed":"#a1f2e2","background":"#f8f9ff","on-secondary-fixed":"#00201c","on-primary-fixed-variant":"#114d5d","inverse-primary":"#9acee1"},borderRadius:{DEFAULT:"0.125rem",lg:"0.25rem",xl:"0.5rem",full:"0.75rem"},spacing:{"space-xl":"2rem","margin-desktop":"2rem","space-lg":"1.25rem","gutter-desktop":"1.5rem","space-md":"0.75rem",margin:"1rem",gutter:"1rem","space-xs":"0.25rem","space-sm":"0.5rem"},fontFamily:{"label-lg":["JetBrains Mono"],"headline-sm":["Inter"],"headline-lg-mobile":["Inter"],"label-sm":["JetBrains Mono"],"body-sm":["Inter"],"headline-lg":["Inter"],"label-md":["JetBrains Mono"],"headline-xl-mobile":["Inter"],"headline-xl":["Inter"],"headline-md":["Inter"],"metric-display-mobile":["JetBrains Mono"],"body-lg":["Inter"],"body-md":["Inter"],"metric-display":["JetBrains Mono"]},fontSize:{"label-lg":["16px",{lineHeight:"22px",letterSpacing:"0.02em",fontWeight:"600"}],"headline-sm":["20px",{lineHeight:"28px",fontWeight:"600"}],"headline-lg-mobile":["24px",{lineHeight:"32px",fontWeight:"700"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.04em",fontWeight:"500"}],"body-sm":["12px",{lineHeight:"16px",fontWeight:"400"}],"headline-lg":["32px",{lineHeight:"40px",letterSpacing:"-0.01em",fontWeight:"700"}],"label-md":["13px",{lineHeight:"18px",letterSpacing:"0.01em",fontWeight:"500"}],"headline-xl-mobile":["28px",{lineHeight:"36px",letterSpacing:"-0.01em",fontWeight:"700"}],"headline-xl":["40px",{lineHeight:"48px",letterSpacing:"-0.02em",fontWeight:"700"}],"headline-md":["24px",{lineHeight:"32px",fontWeight:"600"}],"metric-display-mobile":["26px",{lineHeight:"32px",letterSpacing:"-0.02em",fontWeight:"700"}],"body-lg":["16px",{lineHeight:"24px",fontWeight:"400"}],"body-md":["14px",{lineHeight:"20px",fontWeight:"400"}],"metric-display":["36px",{lineHeight:"40px",letterSpacing:"-0.03em",fontWeight:"700"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 h-16 bg-primary-container z-50 shadow-[0_2px_4px_rgba(0,0,0,0.18)]"><div class="h-16 w-full px-margin-desktop flex items-center justify-between text-on-primary"><div class="flex items-center gap-space-md"><img alt="CEP Pro Industrial Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/ALJJyrAgWzVbFQOlQ2O-vFZMy3_2mFP5wFWgPNWSuwXkSoLP6H9THzikTbkEKJffak5VAe2BfY7_l-H95B3DnfZxI6lOpzNZgsZw2we-Ud8HdZzc-5ypGeuESx86Jsxtg3CTFJ6T-NEl40RecR3JddMyrKN2zLw1b2Q0jfAM-h8CaWVp67wi97TucSSry-UKXyWUR95u-2A7JGW3Oj5MB7E7oGCTa1PNyiC1JmLCr94qZMSO"/><div class="h-6 w-px bg-outline/40"></div><div class="flex flex-col"><span class="font-label-sm text-label-sm uppercase text-primary-fixed">Estación de Control CEP</span><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-label-md font-bold tracking-tight text-on-primary">Planta Norte - Línea de Envasado L-04</span><div class="flex items-center gap-space-xs ml-space-xs px-space-xs py-0.5 rounded bg-secondary/30"><span class="w-2 h-2 rounded-full bg-secondary-fixed animate-pulse"></span><span class="font-label-sm text-label-sm uppercase text-secondary-fixed tracking-wider">Sincronizado</span></div></div></div></div><div class="flex items-center bg-primary p-1 rounded-lg"><button class="px-space-md py-1.5 rounded-lg text-primary-fixed-dim hover:text-on-primary font-label-md text-label-md transition-all flex items-center gap-space-xs" type="button"><span class="material-symbols-outlined text-sm">precision_manufacturing</span>Operario (Piso)</button><button class="px-space-md py-1.5 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md transition-all shadow-[0_1px_2px_rgba(0,0,0,0.25)] flex items-center gap-space-xs font-semibold" type="button"><span class="material-symbols-outlined text-sm">analytics</span>Ingeniería (Analítica)</button></div><div class="flex items-center gap-space-lg"><div class="hidden xl:flex flex-col items-end"><span class="font-label-sm text-label-sm text-primary-fixed">Turno Mañana | 06:00 - 14:00</span><span class="font-label-md text-label-md text-on-primary font-medium">Lote Activo: #ENV-2024-884C</span></div><div class="flex items-center gap-space-xs px-space-sm py-1 rounded bg-secondary text-on-secondary font-label-sm text-label-sm uppercase font-semibold"><span class="material-symbols-outlined text-sm">check_circle</span>Planta Estable</div><button class="relative p-2 rounded-lg hover:bg-primary text-on-primary transition-colors" type="button"><span class="material-symbols-outlined">notifications</span><span class="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-error text-[10px] font-bold text-on-error font-label-sm">3</span></button><div class="flex items-center gap-space-sm pl-space-xs"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpG9tKU6rokg6bRRqaFAIeXviA0A7elh32jA-yebrfglil1VzMm8-c1-0d-3CKQHnW-_38p7kXW03BbhTVwY-jtQObbsK5aSYZc5sh3JgOUaRrevy6Rpb4ASYT0vj1vAHya7aXPSj9-XPy4aAOo8TdntUWSfe33HduWvGqqWQszMB2sfJfw57eoLuFgzJQX0pJWAokAor42vPCBYk1WxSLQU6_u-St9xWzTvJrwAU"/><div class="flex flex-col"><span class="font-body-sm text-body-sm font-semibold text-on-primary">Ing. M. Benítez</span><span class="font-label-sm text-label-sm text-primary-fixed">Calidad &amp; Procesos</span></div></div></div></div></header><aside class="fixed left-0 top-16 bottom-0 w-64 bg-surface-container-low z-40 flex flex-col justify-between shadow-[2px_0_8px_rgba(15,23,42,0.06)]"><div class="flex flex-col pt-space-md"><div class="px-space-md pb-space-sm"><span class="font-label-sm text-label-sm uppercase tracking-wider text-outline">Ingeniería &amp; Control</span></div><nav class="flex flex-col gap-1 px-space-sm" data-active-classes="bg-primary text-on-primary font-semibold shadow-[0_1px_3px_rgba(0,0,0,0.12)]"><a class="flex items-center px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-body-md text-body-md" data-path="graficos-de-control-por-variables" href="#">Gráficos Variables (X̄-R / X̄-S)</a><a class="flex items-center px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-body-md text-body-md" data-path="datos-y-carga-csv" href="#">Datos y Carga CSV</a><a class="flex items-center px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-body-md text-body-md" data-path="capacidad-de-proceso" href="#">Capacidad (Cpk / Ppk)</a><a class="flex items-center px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-body-md text-body-md" data-path="alertas-y-desviaciones" href="#">Alertas de Control</a><a class="flex items-center px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all font-body-md text-body-md" data-path="registro-de-subgrupos" href="#">Historial de Muestreo</a></nav></div><div class="p-space-md bg-surface-container-highest m-space-sm rounded-lg flex flex-col gap-space-xs"><div class="flex items-center justify-between"><span class="font-label-sm text-label-sm font-semibold uppercase text-on-surface">Frecuencia SPC</span><span class="font-label-sm text-label-sm text-secondary font-bold">15 MIN</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Próxima toma en 04:22 min para subgrupo N=5.</p><button class="mt-space-xs w-full py-2 bg-primary-container text-on-primary rounded font-label-md text-label-md hover:bg-primary transition-colors flex items-center justify-center gap-space-xs" type="button"><span class="material-symbols-outlined text-sm">input</span>Capturar Muestra</button></div></aside><div class="pl-64"><main class="relative pt-16 min-h-screen bg-surface w-full p-margin-desktop"><div class="flex flex-col w-full">
+<!-- 1. Barra Superior de Control Analítico -->
+<section class="flex flex-col gap-space-sm mb-space-md bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<!-- Migas de pan y Selector de Fase Metodológica -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-xs font-label-sm text-label-sm uppercase tracking-wider text-outline">
+<span class="hover:text-primary transition-colors cursor-pointer">Módulo Analítico</span>
+<span>/</span>
+<span class="text-on-surface font-bold">Cartas de Control Shewhart por Variables</span>
+</div>
+<!-- Conmutador de Fase Metodológica -->
+<div class="flex items-center gap-space-sm">
+<div class="relative group flex items-center bg-surface-container-low p-1 rounded-lg">
+<button class="px-space-md py-1 text-on-surface-variant font-label-md text-label-md rounded transition-all" id="btn-fase-1" onclick="setFase(1)" type="button">
+            Fase I: Estimación Basal
+          </button>
+<button class="px-space-md py-1 bg-primary text-on-primary font-semibold font-label-md text-label-md rounded shadow-sm transition-all flex items-center gap-space-xs" id="btn-fase-2" onclick="setFase(2)" type="button">
+<span class="w-2 h-2 rounded-full bg-secondary-fixed animate-ping"></span>
+            Fase II: Monitoreo en Tiempo Real
+          </button>
+<!-- Tooltip explicativo de fase -->
+<div class="absolute right-0 top-full mt-2 hidden group-hover:flex z-30 w-72 p-space-sm bg-inverse-surface text-inverse-on-surface rounded shadow-xl flex-col gap-1 pointer-events-none">
+<span class="font-label-sm text-label-sm font-bold text-secondary-fixed">Fase II: Monitoreo Activo</span>
+<span class="font-body-sm text-body-sm opacity-90">Límites basales fijados tras depurar causas especiales. Evaluación estocástica de subgrupos en línea continua.</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs px-space-sm py-1 bg-surface-container rounded font-label-sm text-label-sm text-primary font-semibold">
+<span class="material-symbols-outlined text-sm">verified</span>
+          Límites Validados
+        </div>
+</div>
+</div>
+<!-- Segmentos de Tipo de Carta, Filtro Temporal y Botones de Acción -->
+<div class="flex flex-col xl:flex-row xl:items-center justify-between gap-space-md pt-space-xs">
+<!-- Selector segmentado de carta -->
+<div class="flex items-center bg-surface-container p-1 rounded-lg">
+<button class="px-space-md py-1.5 rounded-lg bg-surface-container-lowest text-primary font-label-md text-label-md font-bold shadow-sm transition-all flex items-center gap-space-xs" id="chart-type-xr" onclick="switchChartType('xr')" type="button">
+<span class="material-symbols-outlined text-sm">stacked_line_chart</span>
+          X̄ - R (Rangos)
+        </button>
+<button class="px-space-md py-1.5 rounded-lg text-on-surface-variant hover:text-primary font-label-md text-label-md transition-all flex items-center gap-space-xs" id="chart-type-xs" onclick="switchChartType('xs')" type="button">
+<span class="material-symbols-outlined text-sm">ssid_chart</span>
+          X̄ - S (Desv. Estándar)
+        </button>
+<button class="px-space-md py-1.5 rounded-lg text-on-surface-variant hover:text-primary font-label-md text-label-md transition-all flex items-center gap-space-xs" id="chart-type-imr" onclick="switchChartType('imr')" type="button">
+<span class="material-symbols-outlined text-sm">show_chart</span>
+          I - MR (Individuales)
+        </button>
+</div>
+<!-- Filtros de Parámetros y Lote -->
+<div class="flex flex-wrap items-center gap-space-sm">
+<div class="flex items-center bg-surface-container-low px-space-sm py-1.5 rounded-lg gap-space-xs">
+<span class="material-symbols-outlined text-outline text-sm">calendar_month</span>
+<span class="font-body-sm text-body-sm font-medium text-on-surface">Últimos 30 días</span>
+<span class="font-label-sm text-label-sm text-outline px-1.5 py-0.5 bg-surface-container-lowest rounded">120 subgrupos · n=5 · N=600</span>
+</div>
+<div class="flex items-center bg-surface-container-low px-space-sm py-1.5 rounded-lg gap-space-xs">
+<span class="material-symbols-outlined text-outline text-sm">category</span>
+<span class="font-label-sm text-label-sm text-outline uppercase">Lote:</span>
+<span class="font-label-md text-label-md font-bold text-primary">#ENV-2024-884C</span>
+</div>
+<!-- Acciones Técnicas -->
+<button class="px-space-md py-1.5 bg-primary-container text-on-primary rounded-lg font-label-md text-label-md hover:bg-primary transition-all flex items-center gap-space-xs shadow-sm" onclick="triggerRecalcModal()" type="button">
+<span class="material-symbols-outlined text-sm">refresh</span>
+          Recalcular Límites
+        </button>
+<div class="flex items-center gap-1">
+<button class="p-2 bg-surface-container-low text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-lg transition-all flex items-center justify-center" title="Exportar Gráficos" type="button">
+<span class="material-symbols-outlined text-sm">download</span>
+</button>
+<button class="p-2 bg-surface-container-low text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-lg transition-all flex items-center justify-center" title="Reporte Técnico PDF" type="button">
+<span class="material-symbols-outlined text-sm">description</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- 2. Tarjetas de Parámetros y Límites Calculados (KPIs de Ingeniería) -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-md mb-space-md">
+<!-- Carta de Medias X̄ -->
+<div class="flex flex-col justify-between p-space-md bg-surface-container-lowest rounded-xl shadow-sm relative overflow-hidden">
+<div class="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-primary/5 pointer-events-none"></div>
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline">Carta X̄ (Medias)</span>
+</div>
+<span class="font-label-sm text-label-sm font-semibold text-primary px-1.5 py-0.5 rounded bg-surface-container-low">n = 5</span>
+</div>
+<div class="flex items-baseline gap-space-xs my-space-xs">
+<span class="font-metric-display text-metric-display text-on-surface tracking-tight">500.12</span>
+<span class="font-label-md text-label-md text-outline">g (LC)</span>
+</div>
+<div class="grid grid-cols-2 gap-space-xs pt-space-xs mt-space-xs bg-surface-container-low p-space-xs rounded-lg">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-error font-medium">LCS (+3σ): 501.52 g</span>
+<span class="font-label-sm text-label-sm text-error font-medium">LCI (-3σ): 498.72 g</span>
+</div>
+<div class="flex flex-col text-right">
+<span class="font-label-sm text-label-sm text-outline font-medium">LES: 505.00 g</span>
+<span class="font-label-sm text-label-sm text-outline font-medium">LEI: 495.00 g</span>
+</div>
+</div>
+</div>
+<!-- Carta de Dispersión R -->
+<div class="flex flex-col justify-between p-space-md bg-surface-container-lowest rounded-xl shadow-sm relative overflow-hidden">
+<div class="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-secondary/5 pointer-events-none"></div>
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline">Carta R (Rangos)</span>
+</div>
+<span class="font-label-sm text-label-sm font-semibold text-secondary px-1.5 py-0.5 rounded bg-secondary-container/40">D4·R̄ / D3·R̄</span>
+</div>
+<div class="flex items-baseline gap-space-xs my-space-xs">
+<span class="font-metric-display text-metric-display text-on-surface tracking-tight">2.42</span>
+<span class="font-label-md text-label-md text-outline">g (R̄)</span>
+</div>
+<div class="grid grid-cols-2 gap-space-xs pt-space-xs mt-space-xs bg-surface-container-low p-space-xs rounded-lg">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-error font-medium">LCS (D4·R̄): 5.11 g</span>
+<span class="font-label-sm text-label-sm text-secondary font-medium">LCI (D3·R̄): 0.00 g</span>
+</div>
+<div class="flex flex-col text-right justify-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">σ̂ = R̄/d2</span>
+<span class="font-label-md text-label-md font-bold text-primary">1.040 g</span>
+</div>
+</div>
+</div>
+<!-- Constantes de Shewhart y Metrología -->
+<div class="flex flex-col justify-between p-space-md bg-surface-container-lowest rounded-xl shadow-sm">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-outline text-base">functions</span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline">Constantes Factores</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-bold">ASTM E2587</span>
+</div>
+<div class="flex flex-wrap gap-1.5 my-space-xs">
+<div class="px-space-xs py-1 bg-surface-container-low rounded flex items-center gap-1 font-label-sm text-label-sm">
+<span class="text-outline">A₂:</span>
+<span class="font-bold text-primary">0.577</span>
+</div>
+<div class="px-space-xs py-1 bg-surface-container-low rounded flex items-center gap-1 font-label-sm text-label-sm">
+<span class="text-outline">D₃:</span>
+<span class="font-bold text-primary">0.000</span>
+</div>
+<div class="px-space-xs py-1 bg-surface-container-low rounded flex items-center gap-1 font-label-sm text-label-sm">
+<span class="text-outline">D₄:</span>
+<span class="font-bold text-primary">2.114</span>
+</div>
+<div class="px-space-xs py-1 bg-surface-container-low rounded flex items-center gap-1 font-label-sm text-label-sm">
+<span class="text-outline">d₂:</span>
+<span class="font-bold text-primary">2.326</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-space-xs bg-surface-container-low p-space-xs rounded-lg font-label-sm text-label-sm">
+<span class="text-on-surface-variant">Capacidad Cpk actual:</span>
+<span class="font-bold text-secondary text-label-md">1.48 (Adecuado)</span>
+</div>
+</div>
+<!-- Estado de Control Global y Alertas -->
+<div class="flex flex-col justify-between p-space-md bg-surface-container-lowest rounded-xl shadow-sm">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-error text-base">warning</span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-error font-bold">Diagnóstico SPC</span>
+</div>
+<span class="px-1.5 py-0.5 rounded text-[10px] font-bold font-label-sm bg-error-container text-on-error-container uppercase">Acción Requerida</span>
+</div>
+<div class="my-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="font-metric-display-mobile text-metric-display-mobile text-error font-bold">2</span>
+<span class="font-body-md text-body-md font-semibold text-on-surface leading-tight">Puntos Fuera de Control</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Causas asignables en evaluación. 1 punto excluido tentativamente.</p>
+</div>
+<div class="flex items-center justify-between pt-space-xs bg-error-container/30 p-space-xs rounded-lg font-label-sm text-label-sm">
+<span class="text-on-error-container font-medium">Subgrupo #18: Regla 1 Nelson</span>
+<button class="text-error font-bold hover:underline flex items-center gap-0.5" onclick="focusSubgroup(18)" type="button">
+          Auditar <span class="material-symbols-outlined text-xs">arrow_forward</span>
+</button>
+</div>
+</div>
+</section>
+<!-- 3. Área Principal de Gráficos Shewhart Sincronizados (Grid 12 cols: 8 cols Gráficos, 4 cols Panel Auditoría & Causas) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md mb-space-md">
+<!-- Contenedor Gráficos SVG Técnicos (8 cols) -->
+<div class="lg:col-span-8 flex flex-col gap-space-md">
+<!-- CARTA SUPERIOR: MEDIAS X̄ -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col relative">
+<div class="flex items-center justify-between pb-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="font-headline-sm text-label-lg font-bold text-on-surface">CARTA DE MEDIAS (X̄)</span>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-surface-container-low text-primary font-medium">Subgrupos n=5 · Línea de Envasado L-04</span>
+</div>
+<!-- Leyenda Técnica -->
+<div class="hidden sm:flex items-center gap-space-md font-label-sm text-label-sm">
+<div class="flex items-center gap-1">
+<span class="w-3 h-0.5 bg-error"></span>
+<span class="text-outline">LCS / LCI (±3σ)</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="w-3 h-0.5 bg-primary"></span>
+<span class="text-outline">LC (500.12)</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+<span class="text-error font-semibold">Regla 1</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-amber-500"></span>
+<span class="text-amber-600 font-semibold">Regla 2</span>
+</div>
+</div>
+</div>
+<!-- Canvas Gráfico SVG X̄ -->
+<div class="relative w-full h-[290px] overflow-hidden select-none" id="chart-container-x">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 860 280">
+<defs>
+<!-- Zona A (2σ a 3σ) -->
+<lineargradient id="grad-zone-a" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#ba1a1a" stop-opacity="0.08"></stop>
+<stop offset="100%" stop-color="#ba1a1a" stop-opacity="0.02"></stop>
+</lineargradient>
+<!-- Zona B y C -->
+<lineargradient id="grad-zone-bc" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#0f4c5c" stop-opacity="0.04"></stop>
+<stop offset="100%" stop-color="#0f4c5c" stop-opacity="0.01"></stop>
+</lineargradient>
+</defs>
+<!-- Zonas sigma sombreadas -->
+<!-- Superior (Zone A: 2s to 3s) -->
+<rect fill="url(#grad-zone-a)" height="28" width="765" x="65" y="45"></rect>
+<!-- Superior (Zone B: 1s to 2s) -->
+<rect fill="url(#grad-zone-bc)" height="28" width="765" x="65" y="73"></rect>
+<!-- Inferior (Zone B: -1s to -2s) -->
+<rect fill="url(#grad-zone-bc)" height="28" width="765" x="65" y="157"></rect>
+<!-- Inferior (Zone A: -2s to -3s) -->
+<rect fill="url(#grad-zone-a)" height="28" width="765" x="65" y="185"></rect>
+<!-- Rejilla horizontal secundaria -->
+<line stroke="#d3e4fe" stroke-dasharray="3,3" stroke-width="1" x1="65" x2="830" y1="20" y2="20"></line>
+<line stroke="#e5eeff" stroke-width="1" x1="65" x2="830" y1="73" y2="73"></line>
+<line stroke="#e5eeff" stroke-width="1" x1="65" x2="830" y1="101" y2="101"></line>
+<line stroke="#e5eeff" stroke-width="1" x1="65" x2="830" y1="157" y2="157"></line>
+<line stroke="#e5eeff" stroke-width="1" x1="65" x2="830" y1="185" y2="185"></line>
+<line stroke="#d3e4fe" stroke-dasharray="3,3" stroke-width="1" x1="65" x2="830" y1="240" y2="240"></line>
+<!-- Líneas de Especificación Técnica LES y LEI -->
+<line stroke="#70787c" stroke-dasharray="4,4" stroke-width="1" x1="65" x2="830" y1="15" y2="15"></line>
+<text fill="#70787c" font-family="JetBrains Mono" font-size="10" x="835" y="19">LES: 505.0</text>
+<line stroke="#70787c" stroke-dasharray="4,4" stroke-width="1" x1="65" x2="830" y1="245" y2="245"></line>
+<text fill="#70787c" font-family="JetBrains Mono" font-size="10" x="835" y="249">LEI: 495.0</text>
+<!-- Límites de Control Shewhart (LCS, LC, LCI) -->
+<!-- LCS: 501.52 (Y ≈ 45) -->
+<line stroke="#ba1a1a" stroke-dasharray="6,4" stroke-width="1.5" x1="65" x2="830" y1="45" y2="45"></line>
+<text fill="#ba1a1a" font-family="JetBrains Mono" font-size="10" font-weight="600" x="8" y="49">LCS 501.52</text>
+<!-- LC: 500.12 (Y = 129) -->
+<line stroke="#003441" stroke-width="2" x1="65" x2="830" y1="129" y2="129"></line>
+<text fill="#003441" font-family="JetBrains Mono" font-size="11" font-weight="700" x="14" y="133">LC 500.12</text>
+<!-- LCI: 498.72 (Y ≈ 213) -->
+<line stroke="#ba1a1a" stroke-dasharray="6,4" stroke-width="1.5" x1="65" x2="830" y1="213" y2="213"></line>
+<text fill="#ba1a1a" font-family="JetBrains Mono" font-size="10" font-weight="600" x="8" y="217">LCI 498.72</text>
+<!-- Ejes Guía Verticales para Subgrupos Clave -->
+<line stroke="#ba1a1a" stroke-dasharray="2,2" stroke-opacity="0.25" x1="495" x2="495" y1="20" y2="245"></line>
+<line stroke="#b45309" stroke-dasharray="2,2" stroke-opacity="0.25" x1="655" x2="655" y1="20" y2="245"></line>
+<!-- Polilínea de Datos (30 subgrupos) -->
+<!-- Coordenadas X: 65 + i * (765/29) = 65 + i * 26.37 -->
+<polyline fill="none" points="
+                65,135  91,120 117,142 144,115 170,126 196,138 223,110 249,122 275,145 302,129 
+                328,118 354,124 381,133 407,112 433,127 460,95  486,75  495,28  522,122 548,131 
+                575,120 601,118 627,112 654,108 680,105 706,102 733,98  759,96  785,115 812,125
+              " stroke="#0f4c5c" stroke-linejoin="round" stroke-width="2"></polyline>
+<!-- Nodos de Datos y Alertas -->
+<!-- Puntos normales en teal -->
+<circle cx="65" cy="135" fill="#0f4c5c" r="3.5"></circle>
+<circle cx="91" cy="120" fill="#0f4c5c" r="3.5"></circle>
+<circle cx="117" cy="142" fill="#0f4c5c" r="3.5"></circle>
+<circle cx="144" cy="115" fill="#0f4c5c" r="3.5"></circle>
+<circle cx="170" cy="126" fill="#0f4c5c" r="3.5"></circle>
+<circle cx="196" cy="138" fill="#0f4c5c" r="3.5"></circle>
+<circle cx="223" cy="110" fill="#0f4c5c" r="3.5"></circle>
+<circle cx="249" cy="122" fill="#0f4c5c" r="3.5"></circle>
+<circle cx="275" cy="145" fill="#0f4c5c" r="3.5"></circle>
+<circle cx="302" cy="129" fill="#0f4c5c" r="3.5"></circle>
+<circle cx="328" cy="118" fill="#0f4c5c" r="3.5"></circle>
+<circle cx="354" cy="124" fill="#0f4c5c" r="3.5"></circle>
+<circle cx="381" cy="133" fill="#0f4c5c" r="3.5"></circle>
+<circle cx="407" cy="112" fill="#0f4c5c" r="3.5"></circle>
+<circle cx="433" cy="127" fill="#0f4c5c" r="3.5"></circle>
+<circle cx="460" cy="95" fill="#0f4c5c" r="3.5"></circle>
+<circle cx="486" cy="75" fill="#0f4c5c" r="3.5"></circle>
+<!-- SUBGRUPO #18: VIOLACIÓN REGLA 1 (> LCS: 501.88g) en cx=495, cy=28 -->
+<g class="cursor-pointer" onclick="focusSubgroup(18)">
+<circle class="animate-ping" cx="495" cy="28" fill="none" opacity="0.6" r="9" stroke="#ba1a1a" stroke-width="2"></circle>
+<circle cx="495" cy="28" fill="#ba1a1a" r="6"></circle>
+<!-- Badge flotante -->
+<rect fill="#ba1a1a" height="18" rx="2" width="70" x="460" y="4"></rect>
+<text fill="#ffffff" font-family="JetBrains Mono" font-size="9.5" font-weight="700" text-anchor="middle" x="495" y="16">R1: 501.88</text>
+</g>
+<circle cx="522" cy="122" fill="#0f4c5c" r="3.5"></circle>
+<circle cx="548" cy="131" fill="#0f4c5c" r="3.5"></circle>
+<!-- Racha de 9 puntos consecutivos por encima de LC (Regla 2 Nelson) Subgrupo #24 (cx=654) -->
+<circle cx="575" cy="120" fill="#d97706" r="3.5"></circle>
+<circle cx="601" cy="118" fill="#d97706" r="3.5"></circle>
+<circle cx="627" cy="112" fill="#d97706" r="3.5"></circle>
+<g class="cursor-pointer" onclick="focusSubgroup(24)">
+<circle cx="654" cy="108" fill="#b45309" r="6" stroke="#fef3c7" stroke-width="2"></circle>
+<rect fill="#b45309" height="18" rx="2" width="70" x="620" y="82"></rect>
+<text fill="#ffffff" font-family="JetBrains Mono" font-size="9.5" font-weight="700" text-anchor="middle" x="655" y="94">R2 (9 en +)</text>
+</g>
+<circle cx="680" cy="105" fill="#d97706" r="3.5"></circle>
+<circle cx="706" cy="102" fill="#d97706" r="3.5"></circle>
+<circle cx="733" cy="98" fill="#d97706" r="3.5"></circle>
+<circle cx="759" cy="96" fill="#d97706" r="3.5"></circle>
+<circle cx="785" cy="115" fill="#0f4c5c" r="3.5"></circle>
+<circle cx="812" cy="125" fill="#0f4c5c" r="3.5"></circle>
+<!-- Marcadores de escala X (Subgrupos 1 a 30) -->
+<text fill="#70787c" font-family="JetBrains Mono" font-size="10" text-anchor="middle" x="65" y="262">#1</text>
+<text fill="#70787c" font-family="JetBrains Mono" font-size="10" text-anchor="middle" x="196" y="262">#6</text>
+<text fill="#70787c" font-family="JetBrains Mono" font-size="10" text-anchor="middle" x="328" y="262">#11</text>
+<text fill="#70787c" font-family="JetBrains Mono" font-size="10" text-anchor="middle" x="460" y="262">#16</text>
+<text fill="#ba1a1a" font-family="JetBrains Mono" font-size="10" font-weight="700" text-anchor="middle" x="495" y="262">#18*</text>
+<text fill="#b45309" font-family="JetBrains Mono" font-size="10" font-weight="700" text-anchor="middle" x="654" y="262">#24*</text>
+<text fill="#70787c" font-family="JetBrains Mono" font-size="10" text-anchor="middle" x="733" y="262">#27</text>
+<text fill="#70787c" font-family="JetBrains Mono" font-size="10" text-anchor="middle" x="812" y="262">#30</text>
+</svg>
+</div>
+</div>
+<!-- CARTA INFERIOR: RANGOS (R) SINCRONIZADA -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col relative">
+<div class="flex items-center justify-between pb-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="font-headline-sm text-label-lg font-bold text-on-surface">CARTA DE DISPERSIÓN (R)</span>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-surface-container-low text-secondary font-medium">Dispersión de Muestra · R = X_max - X_min</span>
+</div>
+<div class="flex items-center gap-space-md font-label-sm text-label-sm">
+<span class="text-error font-medium">LCS (D4·R̄) = 5.11 g</span>
+<span class="text-primary font-bold">R̄ = 2.42 g</span>
+<span class="text-secondary font-medium">LCI = 0.00 g</span>
+</div>
+</div>
+<!-- Canvas Gráfico SVG R -->
+<div class="relative w-full h-[180px] overflow-hidden select-none" id="chart-container-r">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 860 170">
+<!-- Rejilla y Límites -->
+<line stroke="#d3e4fe" stroke-dasharray="3,3" stroke-width="1" x1="65" x2="830" y1="15" y2="15"></line>
+<line stroke="#e5eeff" stroke-width="1" x1="65" x2="830" y1="58" y2="58"></line>
+<line stroke="#e5eeff" stroke-width="1" x1="65" x2="830" y1="102" y2="102"></line>
+<!-- LCS R: 5.11 (Y ≈ 25) -->
+<line stroke="#ba1a1a" stroke-dasharray="5,4" stroke-width="1.5" x1="65" x2="830" y1="25" y2="25"></line>
+<text fill="#ba1a1a" font-family="JetBrains Mono" font-size="10" font-weight="600" x="10" y="29">LCS 5.11</text>
+<!-- LC R: 2.42 (Y = 100) -->
+<line stroke="#003441" stroke-width="1.5" x1="65" x2="830" y1="100" y2="100"></line>
+<text fill="#003441" font-family="JetBrains Mono" font-size="11" font-weight="700" x="18" y="104">R̄ 2.42</text>
+<!-- LCI R: 0.00 (Y = 145) -->
+<line stroke="#086a5f" stroke-width="1.5" x1="65" x2="830" y1="145" y2="145"></line>
+<text fill="#086a5f" font-family="JetBrains Mono" font-size="10" font-weight="600" x="16" y="149">LCI 0.00</text>
+<!-- Polilínea Sincronizada R -->
+<polyline fill="none" points="
+                65,110  91,95  117,105 144,88  170,102 196,115 223,78  249,92  275,120 302,96
+                328,104 354,89  381,112 407,85  433,98  460,72  486,60  495,45  522,105 548,112
+                575,98  601,92  627,100 654,85  680,90  706,94  733,88  759,82  785,108 812,95
+              " stroke="#086a5f" stroke-linejoin="round" stroke-width="1.75"></polyline>
+<!-- Nodos Carta R -->
+<circle cx="65" cy="110" fill="#086a5f" r="3"></circle>
+<circle cx="91" cy="95" fill="#086a5f" r="3"></circle>
+<circle cx="117" cy="105" fill="#086a5f" r="3"></circle>
+<circle cx="144" cy="88" fill="#086a5f" r="3"></circle>
+<circle cx="170" cy="102" fill="#086a5f" r="3"></circle>
+<circle cx="196" cy="115" fill="#086a5f" r="3"></circle>
+<circle cx="223" cy="78" fill="#086a5f" r="3"></circle>
+<circle cx="249" cy="92" fill="#086a5f" r="3"></circle>
+<circle cx="275" cy="120" fill="#086a5f" r="3"></circle>
+<circle cx="302" cy="96" fill="#086a5f" r="3"></circle>
+<circle cx="328" cy="104" fill="#086a5f" r="3"></circle>
+<circle cx="354" cy="89" fill="#086a5f" r="3"></circle>
+<circle cx="381" cy="112" fill="#086a5f" r="3"></circle>
+<circle cx="407" cy="85" fill="#086a5f" r="3"></circle>
+<circle cx="433" cy="98" fill="#086a5f" r="3"></circle>
+<circle cx="460" cy="72" fill="#086a5f" r="3"></circle>
+<circle cx="486" cy="60" fill="#086a5f" r="3"></circle>
+<!-- Subgrupo #18 en Carta R (R=3.10 g, dentro de límites pero elevado) -->
+<circle cx="495" cy="45" fill="#ba1a1a" r="4.5"></circle>
+<text fill="#ba1a1a" font-family="JetBrains Mono" font-size="8.5" font-weight="600" text-anchor="middle" x="495" y="38">R: 3.10</text>
+<circle cx="522" cy="105" fill="#086a5f" r="3"></circle>
+<circle cx="548" cy="112" fill="#086a5f" r="3"></circle>
+<circle cx="575" cy="98" fill="#086a5f" r="3"></circle>
+<circle cx="601" cy="92" fill="#086a5f" r="3"></circle>
+<circle cx="627" cy="100" fill="#086a5f" r="3"></circle>
+<circle cx="654" cy="85" fill="#086a5f" r="3"></circle>
+<circle cx="680" cy="90" fill="#086a5f" r="3"></circle>
+<circle cx="706" cy="94" fill="#086a5f" r="3"></circle>
+<circle cx="733" cy="88" fill="#086a5f" r="3"></circle>
+<circle cx="759" cy="82" fill="#086a5f" r="3"></circle>
+<circle cx="785" cy="108" fill="#086a5f" r="3"></circle>
+<circle cx="812" cy="95" fill="#086a5f" r="3"></circle>
+<!-- Eje X etiquetas numéricas alineadas -->
+<text fill="#70787c" font-family="JetBrains Mono" font-size="9" text-anchor="middle" x="65" y="160">#1</text>
+<text fill="#70787c" font-family="JetBrains Mono" font-size="9" text-anchor="middle" x="196" y="160">#6</text>
+<text fill="#70787c" font-family="JetBrains Mono" font-size="9" text-anchor="middle" x="328" y="160">#11</text>
+<text fill="#70787c" font-family="JetBrains Mono" font-size="9" text-anchor="middle" x="460" y="160">#16</text>
+<text fill="#ba1a1a" font-family="JetBrains Mono" font-size="9" font-weight="700" text-anchor="middle" x="495" y="160">#18</text>
+<text fill="#b45309" font-family="JetBrains Mono" font-size="9" font-weight="700" text-anchor="middle" x="654" y="160">#24</text>
+<text fill="#70787c" font-family="JetBrains Mono" font-size="9" text-anchor="middle" x="733" y="160">#27</text>
+<text fill="#70787c" font-family="JetBrains Mono" font-size="9" text-anchor="middle" x="812" y="160">#30</text>
+</svg>
+</div>
+</div>
+</div>
+<!-- Panel Lateral Derecho: Auditoría de Reglas Nelson & Western Electric (4 cols) -->
+<div class="lg:col-span-4 flex flex-col gap-space-md">
+<!-- Panel de Auditoría de Reglas Estadísticas -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-base">rule</span>
+<span class="font-headline-sm text-label-lg font-bold text-on-surface">Auditoría Nelson</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary font-semibold bg-secondary-container/30 px-2 py-0.5 rounded">
+              Western Electric Activo
+            </span>
+</div>
+<!-- Conmutador Conjunto de Reglas -->
+<div class="flex items-center justify-between bg-surface-container-low p-2 rounded-lg mb-space-sm">
+<span class="font-body-sm text-body-sm text-on-surface">Modo de Detección</span>
+<div class="flex items-center gap-1 bg-surface-container p-0.5 rounded">
+<button class="px-2 py-1 font-label-sm text-label-sm rounded bg-surface-container-lowest text-primary font-bold shadow-xs" type="button">WE (4 Reglas)</button>
+<button class="px-2 py-1 font-label-sm text-label-sm rounded text-on-surface-variant hover:text-primary" type="button">Nelson (8)</button>
+</div>
+</div>
+<!-- Listado de Reglas de Control -->
+<div class="flex flex-col gap-space-xs">
+<!-- Regla 1: Violación Activa -->
+<div class="p-space-xs rounded-lg bg-error-container/20 flex flex-col gap-0.5">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm font-bold text-error">Regla 1: 1 punto &gt; 3σ de la media</span>
+<span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-error text-on-error font-bold">1 Violación</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Subgrupo #18 (501.88 g vs LCS 501.52 g). Desplazamiento especial abrupto.</p>
+</div>
+<!-- Regla 2: Advertencia Racha -->
+<div class="p-space-xs rounded-lg bg-amber-50 flex flex-col gap-0.5">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm font-bold text-amber-800">Regla 2: 9 puntos seguidos mismo lado</span>
+<span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-amber-200 text-amber-900 font-bold">1 Alerta</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Subgrupos #20 al #28 permanecen &gt; LC (500.12 g). Sesgo positivo.</p>
+</div>
+<!-- Regla 3: Cumplida -->
+<div class="p-space-xs rounded-lg bg-surface-container-low flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm font-medium text-on-surface">Regla 3: 6 puntos consecutivos en tendencia</span>
+<span class="font-body-sm text-body-sm text-outline">Sin tendencia monótona continua detectada.</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary font-bold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-xs">check_circle</span> 0 OK
+              </span>
+</div>
+<!-- Regla 4: Cumplida -->
+<div class="p-space-xs rounded-lg bg-surface-container-low flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm font-medium text-on-surface">Regla 4: 14 puntos alternando arriba/abajo</span>
+<span class="font-body-sm text-body-sm text-outline">Comportamiento estocástico normal sin mezcla.</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary font-bold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-xs">check_circle</span> 0 OK
+              </span>
+</div>
+</div>
+</div>
+<div class="mt-space-sm pt-space-xs bg-surface-container p-space-xs rounded-lg flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">Tasa de Falsa Alarma (α):</span>
+<span class="font-label-md text-label-md font-bold text-primary">0.27% (3.00σ)</span>
+</div>
+</div>
+<!-- Métricas de Capacidad en Tiempo Real (Cp / Cpk / Pp / Ppk) -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col">
+<div class="flex items-center justify-between pb-space-xs">
+<span class="font-headline-sm text-label-lg font-bold text-on-surface">Índices de Capacidad</span>
+<span class="font-label-sm text-label-sm text-outline">±3σ Corto Plazo</span>
+</div>
+<div class="grid grid-cols-2 gap-space-sm mt-space-xs">
+<div class="p-space-xs bg-surface-container-low rounded-lg flex flex-col">
+<span class="font-label-sm text-label-sm text-outline">Cp (Potencial)</span>
+<span class="font-metric-display-mobile text-metric-display-mobile text-primary font-bold">1.60</span>
+<span class="font-body-sm text-body-sm text-secondary font-medium">Clase Mundial (&gt;1.33)</span>
+</div>
+<div class="p-space-xs bg-surface-container-low rounded-lg flex flex-col">
+<span class="font-label-sm text-label-sm text-outline">Cpk (Real)</span>
+<span class="font-metric-display-mobile text-metric-display-mobile text-secondary font-bold">1.48</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">Centrado K = 0.08</span>
+</div>
+<div class="p-space-xs bg-surface-container-low rounded-lg flex flex-col">
+<span class="font-label-sm text-label-sm text-outline">Pp (Largo Plazo)</span>
+<span class="font-label-lg text-label-lg text-on-surface font-bold">1.45</span>
+<span class="font-body-sm text-body-sm text-outline">σ_total = 1.15 g</span>
+</div>
+<div class="p-space-xs bg-surface-container-low rounded-lg flex flex-col">
+<span class="font-label-sm text-label-sm text-outline">Ppk (Desempeño)</span>
+<span class="font-label-lg text-label-lg text-on-surface font-bold">1.34</span>
+<span class="font-body-sm text-body-sm text-outline">PPM est.: 32 ppm</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 4. Panel Interactivo de Exclusión de Subgrupos y Causas Asignables -->
+<section class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-md">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-sm">
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-lg">fact_check</span>
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">Depuración de Subgrupos &amp; Causas Asignables</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+          Los subgrupos con causas atribuibles comprobadas deben ser excluidos del recálculo basal para evitar inflación artificial de los límites de control.
+        </p>
+</div>
+<!-- Simulador de Impacto Delta -->
+<div class="flex items-center gap-space-md bg-surface-container-low px-space-md py-space-xs rounded-lg">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-outline uppercase font-semibold">Simulación de Recálculo:</span>
+<div class="flex items-center gap-space-sm font-label-md text-label-md">
+<span class="text-error font-bold">Δ LCS: -0.14 g</span>
+<span class="text-outline">|</span>
+<span class="text-secondary font-bold">Cpk: 1.48 → 1.54</span>
+</div>
+</div>
+<button class="px-space-md py-2 bg-secondary text-on-secondary rounded-lg font-label-md text-label-md font-semibold hover:opacity-95 transition-all shadow-sm flex items-center gap-space-xs" id="btn-apply-recalc" onclick="simulateExclusionRecalc()" type="button">
+<span class="material-symbols-outlined text-sm">tune</span>
+          Aplicar Recálculo Limpio
+        </button>
+</div>
+</div>
+<!-- Tabla Técnica de Subgrupos Auditados -->
+<div class="overflow-x-auto w-full">
+<table class="w-full text-left font-body-md text-body-md">
+<thead>
+<tr class="bg-surface-container-high text-on-surface font-label-sm text-label-sm uppercase tracking-wider">
+<th class="py-2.5 px-space-sm text-center">Excluir</th>
+<th class="py-2.5 px-space-sm">Subgrupo ID</th>
+<th class="py-2.5 px-space-sm text-right">Media (X̄)</th>
+<th class="py-2.5 px-space-sm text-right">Rango (R)</th>
+<th class="py-2.5 px-space-sm">Regla Violada</th>
+<th class="py-2.5 px-space-sm">Causa Asignable Identificada</th>
+<th class="py-2.5 px-space-sm">Acción Correctiva de Piso</th>
+<th class="py-2.5 px-space-sm">Estado Calidad</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container">
+<!-- Fila Subgrupo #18 -->
+<tr class="bg-error-container/10 hover:bg-error-container/20 transition-colors" id="row-sg-18">
+<td class="py-2 px-space-sm text-center">
+<input checked="" class="w-4 h-4 rounded text-primary focus:ring-primary cursor-pointer" id="check-sg-18" onchange="toggleExcludeRow(18)" type="checkbox"/>
+</td>
+<td class="py-2 px-space-sm font-label-md text-label-md font-bold text-primary">#ENV-SG-018</td>
+<td class="py-2 px-space-sm font-label-md text-label-md font-bold text-error text-right">501.88 g</td>
+<td class="py-2 px-space-sm font-label-md text-label-md text-on-surface text-right">3.10 g</td>
+<td class="py-2 px-space-sm">
+<span class="inline-flex items-center gap-1 font-label-sm text-label-sm font-bold text-error bg-error-container px-2 py-0.5 rounded">
+<span class="material-symbols-outlined text-xs">priority_high</span> Regla 1 (&gt;LCS)
+              </span>
+</td>
+<td class="py-2 px-space-sm font-body-sm text-body-sm text-on-surface">
+              Variación térmica en cabezal de inyector dosificador #2 (+4.2°C fuera de setpoint).
+            </td>
+<td class="py-2 px-space-sm font-body-sm text-body-sm text-on-surface-variant">
+              Reemplazo de termocupla y re-calibración de PID de zona térmica.
+            </td>
+<td class="py-2 px-space-sm">
+<span class="inline-flex items-center gap-1 font-label-sm text-label-sm font-semibold text-on-secondary-container bg-secondary-container px-2 py-0.5 rounded">
+<span class="material-symbols-outlined text-xs">verified</span> Causa Válida
+              </span>
+</td>
+</tr>
+<!-- Fila Subgrupo #24 -->
+<tr class="hover:bg-surface-container-low transition-colors" id="row-sg-24">
+<td class="py-2 px-space-sm text-center">
+<input class="w-4 h-4 rounded text-primary focus:ring-primary cursor-pointer" id="check-sg-24" onchange="toggleExcludeRow(24)" type="checkbox"/>
+</td>
+<td class="py-2 px-space-sm font-label-md text-label-md font-bold text-primary">#ENV-SG-024</td>
+<td class="py-2 px-space-sm font-label-md text-label-md font-bold text-amber-700 text-right">500.82 g</td>
+<td class="py-2 px-space-sm font-label-md text-label-md text-on-surface text-right">2.18 g</td>
+<td class="py-2 px-space-sm">
+<span class="inline-flex items-center gap-1 font-label-sm text-label-sm font-semibold text-amber-800 bg-amber-100 px-2 py-0.5 rounded">
+<span class="material-symbols-outlined text-xs">trending_up</span> Regla 2 (Racha 9)
+              </span>
+</td>
+<td class="py-2 px-space-sm font-body-sm text-body-sm text-on-surface">
+              Nuevo lote de resina polimérica con densidad volumétrica en límite superior de tolerancia.
+            </td>
+<td class="py-2 px-space-sm font-body-sm text-body-sm text-on-surface-variant">
+              Ajuste fino de compensación de tara en báscula continua de línea.
+            </td>
+<td class="py-2 px-space-sm">
+<span class="inline-flex items-center gap-1 font-label-sm text-label-sm font-semibold text-amber-900 bg-amber-100 px-2 py-0.5 rounded">
+<span class="material-symbols-outlined text-xs">hourglass_empty</span> En Investigación
+              </span>
+</td>
+</tr>
+<!-- Fila Subgrupo #09 (Referencia Normal) -->
+<tr class="hover:bg-surface-container-low transition-colors opacity-75">
+<td class="py-2 px-space-sm text-center">
+<input class="w-4 h-4 rounded text-outline opacity-40 cursor-not-allowed" disabled="" type="checkbox"/>
+</td>
+<td class="py-2 px-space-sm font-label-md text-label-md font-medium text-on-surface">#ENV-SG-009</td>
+<td class="py-2 px-space-sm font-label-md text-label-md text-on-surface text-right">500.15 g</td>
+<td class="py-2 px-space-sm font-label-md text-label-md text-on-surface text-right">2.40 g</td>
+<td class="py-2 px-space-sm font-label-sm text-label-sm text-secondary font-medium">Bajo Control (Aleatorio)</td>
+<td class="py-2 px-space-sm font-body-sm text-body-sm text-outline">Sin causa asignable (Variación común).</td>
+<td class="py-2 px-space-sm font-body-sm text-body-sm text-outline">Ninguna requerida.</td>
+<td class="py-2 px-space-sm">
+<span class="inline-flex items-center gap-1 font-label-sm text-label-sm font-medium text-secondary bg-surface-container px-2 py-0.5 rounded">
+                Estable
+              </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Paginación y Resumen de Estado -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs pt-space-xs font-label-sm text-label-sm text-outline">
+<div class="flex items-center gap-space-sm">
+<span>Mostrando 3 de 120 subgrupos</span>
+<span>•</span>
+<span class="text-primary font-medium">Subgrupo activo seleccionado: #ENV-SG-018</span>
+</div>
+<div class="flex items-center gap-1">
+<button class="px-2 py-1 bg-surface-container-low hover:bg-surface-container rounded transition-colors text-on-surface" type="button">Anterior</button>
+<span class="px-2 py-1 bg-primary text-on-primary rounded font-bold">1</span>
+<button class="px-2 py-1 bg-surface-container-low hover:bg-surface-container rounded transition-colors text-on-surface" type="button">Siguiente</button>
+</div>
+</div>
+</section>
+<!-- Script interactivo vanilla para micro-interacciones de la pantalla -->
+<script>
+    function setFase(fase) {
+      const btn1 = document.getElementById('btn-fase-1');
+      const btn2 = document.getElementById('btn-fase-2');
+      if (fase === 1) {
+        btn1.className = 'px-space-md py-1 bg-primary text-on-primary font-semibold font-label-md text-label-md rounded shadow-sm transition-all';
+        btn2.className = 'px-space-md py-1 text-on-surface-variant font-label-md text-label-md rounded transition-all flex items-center gap-space-xs';
+      } else {
+        btn2.className = 'px-space-md py-1 bg-primary text-on-primary font-semibold font-label-md text-label-md rounded shadow-sm transition-all flex items-center gap-space-xs';
+        btn1.className = 'px-space-md py-1 text-on-surface-variant font-label-md text-label-md rounded transition-all';
+      }
+    }
+
+    function switchChartType(type) {
+      const ids = ['chart-type-xr', 'chart-type-xs', 'chart-type-imr'];
+      ids.forEach(id => {
+        const btn = document.getElementById(id);
+        if (id === 'chart-type-' + type) {
+          btn.className = 'px-space-md py-1.5 rounded-lg bg-surface-container-lowest text-primary font-label-md text-label-md font-bold shadow-sm transition-all flex items-center gap-space-xs';
+        } else {
+          btn.className = 'px-space-md py-1.5 rounded-lg text-on-surface-variant hover:text-primary font-label-md text-label-md transition-all flex items-center gap-space-xs';
+        }
+      });
+    }
+
+    function focusSubgroup(sgNum) {
+      const row = document.getElementById('row-sg-' + sgNum);
+      if (row) {
+        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        row.classList.add('bg-secondary-container/40');
+        setTimeout(() => {
+          row.classList.remove('bg-secondary-container/40');
+        }, 1800);
+      }
+    }
+
+    function toggleExcludeRow(sgNum) {
+      const row = document.getElementById('row-sg-' + sgNum);
+      const chk = document.getElementById('check-sg-' + sgNum);
+      if (chk && chk.checked) {
+        row.classList.add('opacity-50', 'line-through');
+      } else if (row) {
+        row.classList.remove('opacity-50', 'line-through');
+      }
+    }
+
+    function simulateExclusionRecalc() {
+      const btn = document.getElementById('btn-apply-recalc');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">sync</span> Recalculando...';
+      btn.disabled = true;
+
+      setTimeout(() => {
+        btn.innerHTML = '<span class="material-symbols-outlined text-sm">done_all</span> Límites Recalculados';
+        btn.classList.remove('bg-secondary');
+        btn.classList.add('bg-primary');
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+          btn.classList.remove('bg-primary');
+          btn.classList.add('bg-secondary');
+          btn.disabled = false;
+        }, 2200);
+      }, 700);
+    }
+
+    function triggerRecalcModal() {
+      simulateExclusionRecalc();
+    }
+  </script>
+</div></main></div></body></html>

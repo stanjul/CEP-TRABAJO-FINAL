@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+{# Módulo 6 — Plan de muestreo de la variable activa: n, frecuencia, k y σ, con ARL/ATS y carga
+   muestral explicados en palabras. Debajo, el detalle técnico (curva ARL, tabla y Monte Carlo).
+   No existe en Stitch: se compone con los componentes del sistema de diseño. Lógica: ing_diseno.js #}
+{% block head %}<script src="/static/vendor/plotly.min.js"></script>{% endblock %}
+{% block contenido %}
+<section class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-xs">
+  <h1 class="font-headline-md text-headline-md font-bold text-on-surface">Plan de muestreo · <span id="pl-variable">—</span></h1>
+  <p class="font-body-md text-body-md text-on-surface-variant max-w-3xl">
+    Decide cuántas unidades se revisan y cada cuánto. La app calcula en cuánto tiempo se detectaría un problema
+    y cada cuánto aparecería una falsa alarma, para que elijas un plan equilibrado entre control y trabajo.</p>
+</section>
+
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+  <!-- ===================== CONTROLES ===================== -->
+  <form class="lg:col-span-5 bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-lg" id="pl-form" autocomplete="off">
+    <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Plan propuesto</h2>
+
+    <div class="flex flex-col gap-space-xs">
+      <label class="font-body-md text-body-md font-semibold text-on-surface" for="pl-n">Unidades por muestra</label>
+      <div class="flex items-center gap-space-xs">
+        <button class="h-12 w-12 rounded-lg bg-surface-container-low hover:bg-surface-container text-primary flex items-center justify-center" data-paso-n="-1" type="button" aria-label="Una unidad menos"><span class="material-symbols-outlined">remove</span></button>
+        <input class="h-12 w-24 text-center rounded-lg border-outline-variant font-headline-sm text-headline-sm font-bold" id="pl-n" type="number" min="1" step="1" inputmode="numeric"/>
+        <button class="h-12 w-12 rounded-lg bg-surface-container-low hover:bg-surface-container text-primary flex items-center justify-center" data-paso-n="1" type="button" aria-label="Una unidad más"><span class="material-symbols-outlined">add</span></button>
+      </div>
+      <p class="font-body-sm text-body-sm text-on-surface-variant" id="pl-n-ayuda">Más unidades por muestra detectan antes los cambios pequeños.</p>
+    </div>
+
+    <div class="flex flex-col gap-space-xs">
+      <span class="font-body-md text-body-md font-semibold text-on-surface">Cada cuánto se toma la muestra</span>
+      <div class="flex flex-wrap gap-space-xs" id="pl-chips">
+        {% for m, t in [(15, "15 min"), (30, "30 min"), (60, "1 hora"), (120, "2 horas"), (240, "4 horas")] %}
+        <button class="h-10 px-space-sm rounded-lg bg-surface-container-low font-label-md text-label-md" data-min="{{ m }}" type="button">{{ t }}</button>
+        {% endfor %}
+      </div>
+      <label class="flex items-center gap-space-xs font-body-sm text-body-sm text-on-surface-variant">Otro:
+        <input class="h-10 w-24 rounded-lg border-outline-variant font-body-md text-body-md" id="pl-f" type="number" min="1" step="1" inputmode="numeric"/> minutos</label>
+    </div>
+
+    <fieldset class="flex flex-col gap-space-xs">
+      <legend class="font-body-md text-body-md font-semibold text-on-surface pb-space-xs">Qué tan estrictos son los límites de control</legend>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-space-xs" id="pl-k-opciones">
+        {% for k, t, d in [("2.5", "Más sensible", "Detecta antes, con más falsas alarmas · 2,5σ"), ("3", "Estándar", "El equilibrio habitual · 3σ"), ("3.5", "Más tolerante", "Menos falsas alarmas, detecta más tarde · 3,5σ")] %}
+        <label class="cursor-pointer">
+          <input class="peer sr-only" name="pl-k" type="radio" value="{{ k }}"/>
+          <span class="h-full flex flex-col gap-1 p-space-sm rounded-lg border-2 border-outline-variant/60 peer-checked:border-primary-container peer-checked:bg-primary-fixed/30 peer-focus-visible:ring-2 peer-focus-visible:ring-primary-container">
+            <span class="font-body-md text-body-md font-semibold text-on-surface">{{ t }}</span>
+            <span class="font-body-sm text-body-sm text-on-surface-variant">{{ d }}</span></span>
+        </label>
+        {% endfor %}
+      </div>
+      <label class="flex items-center gap-space-xs font-body-sm text-body-sm text-on-surface-variant">Otro valor:
+        <input class="h-9 w-20 rounded border-outline-variant font-body-md text-body-md" id="pl-k-otro" type="number" min="1" max="6" step="0.1"/> σ</label>
+    </fieldset>
+
+    <!-- σ de monitoreo (solo mediciones) -->
+    <fieldset class="flex flex-col gap-space-xs" id="pl-sigma-caja">
+      <legend class="font-body-md text-body-md font-semibold text-on-surface pb-space-xs">Variabilidad del proceso (σ)</legend>
+      <label class="flex items-start gap-space-sm p-space-sm rounded-lg bg-surface-container-low cursor-pointer">
+        <input class="mt-1" name="pl-sigma-modo" type="radio" value="datos"/>
+        <span class="flex flex-col"><span class="font-body-md text-body-md text-on-surface">Calcularla con los datos</span>
+          <span class="font-body-sm text-body-sm text-on-surface-variant" id="pl-sigma-datos">—</span></span>
+      </label>
+      <label class="flex items-start gap-space-sm p-space-sm rounded-lg bg-surface-container-low cursor-pointer">
+        <input class="mt-1" name="pl-sigma-modo" type="radio" value="fija"/>
+        <span class="flex flex-col gap-space-xs flex-1"><span class="font-body-md text-body-md text-on-surface">Fijarla según mi criterio</span>
+          <span class="font-body-sm text-body-sm text-on-surface-variant">Por ejemplo, el valor histórico de la planta o el que exige una norma.</span>
+          <span class="flex items-center gap-space-xs"><input class="h-10 w-32 rounded-lg border-outline-variant font-body-md text-body-md" id="pl-sigma" type="text" inputmode="decimal" placeholder="σ"/>
+            <span class="font-body-sm text-body-sm text-on-surface-variant" id="pl-sigma-unidad"></span></span></span>
+      </label>
+    </fieldset>
+
+    <!-- Cambio a detectar -->
+    <div class="flex flex-col gap-space-xs" id="pl-delta-caja">
+      <label class="font-body-md text-body-md font-semibold text-on-surface" for="pl-delta">Cambio que quieres detectar</label>
+      <input class="w-full accent-[#0f4c5c]" id="pl-delta" type="range" min="0.25" max="3" step="0.25" value="1"/>
+      <p class="font-body-sm text-body-sm text-on-surface-variant" id="pl-delta-texto">—</p>
+    </div>
+    <div class="hidden flex-col gap-space-sm" id="pl-atrib-caja">
+      <span class="font-body-md text-body-md font-semibold text-on-surface">Cambio que quieres detectar</span>
+      <div class="grid grid-cols-2 gap-space-sm">
+        <label class="flex flex-col gap-space-xs"><span class="font-body-sm text-body-sm text-on-surface-variant" id="pl-c0-txt">Nivel habitual</span>
+          <input class="h-10 rounded-lg border-outline-variant font-body-md text-body-md" id="pl-c0" type="text" inputmode="decimal"/></label>
+        <label class="flex flex-col gap-space-xs"><span class="font-body-sm text-body-sm text-on-surface-variant" id="pl-c1-txt">Detectar si sube a</span>
+          <input class="h-10 rounded-lg border-outline-variant font-body-md text-body-md" id="pl-c1" type="text" inputmode="decimal"/></label>
+      </div>
+      <p class="font-body-sm text-body-sm text-on-surface-variant" id="pl-c0-origen">—</p>
+    </div>
+  </form>
+
+  <!-- ===================== RESULTADOS ===================== -->
+  <div class="lg:col-span-7 flex flex-col gap-space-lg">
+    <section class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md" aria-live="polite">
+      <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Qué cambia con este plan</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left">
+          <thead><tr class="font-body-sm text-body-sm text-on-surface-variant">
+            <th class="py-space-xs pr-space-md font-normal"></th>
+            <th class="py-space-xs px-space-md font-normal">Plan actual</th>
+            <th class="py-space-xs pl-space-md font-semibold text-primary">Plan propuesto</th></tr></thead>
+          <tbody class="divide-y divide-surface-container" id="pl-comparacion"></tbody>
+        </table>
+      </div>
+      <ul class="flex flex-col gap-space-xs" id="pl-textos"></ul>
+      <div class="hidden items-start gap-space-sm p-space-md rounded-lg bg-surface-container-high" id="pl-avisos">
+        <span class="material-symbols-outlined text-primary-container">info</span>
+        <div class="flex flex-col gap-1 font-body-md text-body-md text-on-surface" id="pl-avisos-txt"></div>
+      </div>
+      <div class="flex flex-wrap items-center justify-end gap-space-sm pt-space-xs">
+        <button class="h-12 px-space-md rounded-lg bg-surface-container-low hover:bg-surface-container text-primary font-label-md text-label-md font-semibold" id="pl-restaurar" type="button">Volver al plan actual</button>
+        <button class="h-12 px-space-lg rounded-lg bg-primary hover:bg-primary-container text-on-primary font-label-lg text-label-lg font-bold flex items-center gap-space-xs disabled:opacity-50 disabled:cursor-not-allowed" id="pl-guardar" type="button">
+          <span class="material-symbols-outlined">save</span>Guardar este plan</button>
+      </div>
+    </section>
+
+    <!-- ===================== DETALLE TÉCNICO ===================== -->
+    <details class="bg-surface-container-lowest rounded-xl shadow-sm group" id="pl-tecnico">
+      <summary class="cursor-pointer list-none p-space-lg flex items-center justify-between gap-space-sm">
+        <span class="flex flex-col"><span class="font-headline-sm text-headline-sm font-bold text-on-surface">Detalle técnico</span>
+          <span class="font-body-sm text-body-sm text-on-surface-variant">Curva ARL, tabla de desempeño y simulación (para el informe)</span></span>
+        <span class="material-symbols-outlined text-on-surface-variant group-open:rotate-180 transition-transform">expand_more</span>
+      </summary>
+      <div class="px-space-lg pb-space-lg flex flex-col gap-space-lg">
+        <section class="grid grid-cols-2 xl:grid-cols-4 gap-space-md">
+          {% for id, t, sub in [("arl0", "ARL₀ (en control)", "alfa"), ("beta", "Riesgo β", "potencia"), ("arl1", "ARL₁ (fuera de control)", "de"), ("ats1", "ATS₁", "ats0")] %}
+          <div class="bg-surface-container-low p-space-md rounded-lg flex flex-col gap-space-xs">
+            <span class="font-label-sm text-label-sm text-outline">{{ t }}</span>
+            <span class="font-metric-display-mobile text-metric-display-mobile font-bold text-primary" id="k-{{ id }}">—</span>
+            <span class="font-label-sm text-label-sm text-on-surface-variant" id="k-{{ sub }}">—</span>
+          </div>
+          {% endfor %}
+        </section>
+        <div class="flex flex-col gap-space-sm" id="tec-curva">
+          <div class="flex flex-wrap items-center justify-between gap-space-sm">
+            <span class="font-body-lg text-body-lg font-semibold text-on-surface" id="tec-curva-titulo">Curva ARL₁ según el tamaño del corrimiento</span>
+            <div class="flex items-center gap-space-sm font-label-sm text-label-sm">
+              <label class="flex items-center gap-1">Comparar con n =
+                <input class="h-8 w-24 rounded border-outline-variant font-label-sm text-label-sm" id="p-comparar" type="text" value="3,10"/></label>
+              <div class="flex items-center bg-surface-container-low p-0.5 rounded">
+                <button class="px-2 py-1 rounded font-label-sm text-label-sm" data-eje="arl" type="button">ARL</button>
+                <button class="px-2 py-1 rounded font-label-sm text-label-sm" data-eje="ats" type="button">ATS (h)</button></div>
+            </div>
+          </div>
+          <div class="grafico" id="graf-arl"></div>
+        </div>
+        <div class="flex flex-col gap-space-sm">
+          <span class="font-body-lg text-body-lg font-semibold text-on-surface">Tabla de desempeño</span>
+          <div class="overflow-x-auto"><table class="w-full font-label-md text-label-md">
+            <thead id="tabla-arl-cab"></thead>
+            <tbody class="divide-y divide-surface-container" id="tabla-arl"></tbody>
+          </table></div>
+          <p class="font-body-sm text-body-sm text-on-surface-variant" id="tec-formulas">—</p>
+        </div>
+        <div class="flex flex-col gap-space-sm" id="tec-mc">
+          <div class="flex items-center justify-between">
+            <span class="font-body-lg text-body-lg font-semibold text-on-surface">Simulación Monte Carlo (opcional)</span>
+            <span class="font-label-sm text-label-sm text-outline">Z ~ N(δ√n, 1) hasta |Z| &gt; k</span>
+          </div>
+          <div class="flex flex-wrap items-end gap-space-sm">
+            <label class="flex flex-col gap-1"><span class="font-label-sm text-label-sm text-outline">Réplicas</span>
+              <input class="h-10 w-28 rounded border-outline-variant font-label-md text-label-md" id="mc-replicas" max="20000" min="100" step="100" type="number" value="2000"/></label>
+            <label class="flex flex-col gap-1"><span class="font-label-sm text-label-sm text-outline">Semilla</span>
+              <input class="h-10 w-28 rounded border-outline-variant font-label-md text-label-md" id="mc-semilla" type="number" value="12345"/></label>
+            <button class="h-10 px-space-md bg-primary hover:bg-primary-container text-on-primary rounded-lg font-label-md text-label-md font-bold flex items-center gap-space-xs" id="btn-simular" type="button">
+              <span class="material-symbols-outlined text-sm">play_arrow</span>Simular</button>
+          </div>
+          <div class="grid grid-cols-3 gap-space-xs text-center">
+            <div class="p-space-xs bg-surface-container-low rounded"><span class="font-label-sm text-label-sm text-outline block">ARL simulado</span><b class="font-label-lg text-label-lg" id="mc-arl">—</b></div>
+            <div class="p-space-xs bg-surface-container-low rounded"><span class="font-label-sm text-label-sm text-outline block">IC 95 %</span><b class="font-label-lg text-label-lg" id="mc-ic">—</b></div>
+            <div class="p-space-xs bg-surface-container-low rounded"><span class="font-label-sm text-label-sm text-outline block">vs. teórico</span><b class="font-label-lg text-label-lg" id="mc-err">—</b></div>
+          </div>
+          <div class="grafico" id="graf-mc"></div>
+        </div>
+      </div>
+    </details>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/graficos.js"></script>
+<script src="/static/js/ing_diseno.js"></script>
+{% endblock %}
