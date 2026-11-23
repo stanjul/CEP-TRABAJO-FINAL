@@ -107,8 +107,12 @@ Montserrat en Excel (si no está instalada, Excel usa otra). Ver CLAUDE.md «Pla
 - Verificado con Excel 16 (COM): abre sin reparar, fórmulas correctas, ámbar solo en valores fuera
   de lo aceptado. No se pudo verificar la paginación de impresión en este equipo (Excel exporta
   páginas de 842×204 pt también sin la configuración nueva: problema del entorno, sin impresora).
-- Pendientes del usuario: escritorio/instalador (PyInstaller + pywebview + Inno Setup) y git
-  (instalar con winget; decidir si `Programa/` entra al repo). Ver la conversación del 2026-11-23.
+- Pendiente del usuario: escritorio/instalador (PyInstaller + pywebview + Inno Setup).
+- **Git (2026-11-23):** instalado con winget (2.56.1). Repositorio local en la carpeta del proyecto,
+  rama `main`, primer commit `a689e30`. `Programa/` queda **fuera** (pedido del usuario), igual que
+  `.venv/`, `data/*.db`, `data/reportes/` y `respaldos/`. Autor: identidad global ya configurada
+  en el equipo (stanjul), elegida por el usuario. `.gitattributes`: `run.sh` LF, `run.bat` CRLF.
+  Aún sin remoto (GitHub opcional). Hacer un commit al cerrar cada fase.
 - Respaldo previo: `respaldos/antes_plantilla_2026-11-23.zip`.
 
 ## 3. Decisiones tomadas con el usuario (no volver a discutir)
@@ -149,8 +153,8 @@ Montserrat en Excel (si no está instalada, Excel usa otra). Ver CLAUDE.md «Pla
    equipo del usuario; no inventarlas).
 4. Confirmar la edición de Montgomery del curso (los valores esperados se tomaron de memoria y
    son consistentes con los datos, pero la numeración de ejemplos varía por edición).
-5. El proyecto **no está en git** y git **no está instalado** en el equipo: ofrecer instalarlo.
-   Mientras tanto, respaldos zip en `respaldos/` antes de cada fase grande.
+5. ~~Git~~ → instalado y con repositorio (ver §2c). Opcional: subirlo a GitHub (privado) y, con
+   eso como respaldo, mover el proyecto fuera de OneDrive.
 6. Opcionales: fidelidad fina al Stitch en pantallas armadas desde el outline (Datos, Supuestos,
    Capacidad, Muestreo, Configuración); botón eliminar subgrupo/variable; edición de procesos.
 

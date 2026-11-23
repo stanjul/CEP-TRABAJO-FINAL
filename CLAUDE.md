@@ -12,6 +12,8 @@ de Google Stitch (`Stitch/stitch_industrial_spc_suite/`). `Programa/` es un proy
 - App: `run.bat` (Windows) / `run.sh`. Opciones: `--puerto 8001`, `--sin-navegador`, `--reiniciar`
   (borra `data/cep.db` y vuelve a sembrar los datos de demostración).
 - API interactiva: http://127.0.0.1:8000/docs
+- Git: repositorio en la raíz (rama `main`). Si `git` no está en el PATH de la terminal, usar
+  `"C:\Program Files\Git\cmd\git.exe"`. Commit al cerrar cada fase. `Programa/` está en `.gitignore`.
 - Desarrollo con recarga: `.venv\Scripts\python.exe -m uvicorn app.main:app --reload`
 
 ## Arquitectura y reglas de dependencia
