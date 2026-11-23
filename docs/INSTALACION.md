@@ -21,7 +21,10 @@ Hay dos formas de usarla:
 3. La base arranca **vacía**: crear el primer proceso con el asistente, o cargar los datos de
    demostración desde **Ingeniería → Base de datos y respaldos**.
 
-**Dónde quedan los datos:** `Documentos\CEP\`
+**Dónde quedan los datos:** `C:\Users\<tu usuario>\CEP\` (no en Documentos, que suele estar
+dentro de OneDrive: sincronizar una base de datos abierta puede crear copias en conflicto). Si una
+versión anterior guardó datos en `Documentos\CEP`, el programa los copia solo a la carpeta nueva la
+primera vez que se abre y deja la vieja como copia de seguridad, con un archivo «LEEME».
 
 | Archivo / carpeta | Contenido |
 |---|---|

@@ -102,7 +102,8 @@ de Google Stitch (`Stitch/stitch_industrial_spc_suite/`). `Programa/` es un proy
   Excel por COM (`DisplayFormat.Interior.Color`, `ExportAsFixedFormat`) si está instalado.
 
 ## Programa de escritorio e instalador (2026-11)
-- `app/escritorio.py` = entrada de `CEP.exe`: datos en `Documentos\CEP` (o `CEP_DATOS`), mutex de
+- `app/escritorio.py` = entrada de `CEP.exe`: datos en `C:\Users\<usuario>\CEP` (o `CEP_DATOS`; **no**
+  Documentos, que suele estar en OneDrive; `migrar_datos_anteriores` copia desde Documentos\CEP), mutex de
   instancia única, respaldo al iniciar, `registro.log`, uvicorn en un hilo (127.0.0.1) y ventana
   pywebview/WebView2 con pantalla de carga inmediata. `private_mode=False` + `storage_path` para
   conservar localStorage; `ALLOW_DOWNLOADS` para PDF/Excel. `--sin-ventana --puerto N` para pruebas.

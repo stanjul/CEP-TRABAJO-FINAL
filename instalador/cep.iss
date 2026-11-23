@@ -1,7 +1,7 @@
 ﻿; Instalador de CEP (Inno Setup 6). Lo compila construir.bat:
 ;   ISCC.exe /DFuente=<carpeta dist\CEP de PyInstaller> instalador\cep.iss
 ; Instala para el usuario actual (no pide permisos de administrador). Los datos quedan en
-; Documentos\CEP y NO se borran al desinstalar.
+; C:\Users\<usuario>\CEP (fuera de OneDrive) y NO se borran al desinstalar.
 
 #define Nombre "CEP — Control Estadístico de Procesos"
 #define Version "1.0.0"
@@ -35,7 +35,7 @@ CloseApplications=yes
 Name: "es"; MessagesFile: "compiler:Languages\Spanish.isl"
 
 [Messages]
-es.FinishedLabel=CEP quedó instalado. Ábrelo desde el acceso directo «CEP».%n%nTus datos se guardan en Documentos\CEP (base de datos, reportes y respaldos) y se conservan aunque desinstales o actualices el programa.%n%nPara los informes PDF con LaTeX instala MiKTeX (opcional): sin él, el PDF se genera con el formato de respaldo.
+es.FinishedLabel=CEP quedó instalado. Ábrelo desde el acceso directo «CEP».%n%nTus datos se guardan en la carpeta CEP de tu usuario ({%USERPROFILE}\CEP: base de datos, reportes y respaldos) y se conservan aunque desinstales o actualices el programa.%n%nPara los informes PDF con LaTeX instala MiKTeX (opcional): sin él, el PDF se genera con el formato de respaldo.
 
 [Tasks]
 Name: "escritorio"; Description: "Crear un acceso directo en el escritorio"; GroupDescription: "Accesos directos:"

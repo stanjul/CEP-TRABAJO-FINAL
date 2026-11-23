@@ -111,7 +111,9 @@ Montserrat en Excel (si no está instalada, Excel usa otra). Ver CLAUDE.md «Pla
   todo, solo este equipo, instalador. `CEP-Setup-1.0.0.exe` (68,8 MB, instala 205 MB por usuario sin
   admin). Verificado: build, programa empaquetado (pantallas, demo, PDF LaTeX, plantilla Excel),
   ventana WebView2 real (pantalla de carga, base vacía, instancia única, diálogo «Guardar como» en
-  descargas) e instalación/desinstalación silenciosa (conserva Documentos\CEP). Arranque: ~50 s la
+  descargas) e instalación/desinstalación silenciosa (conserva los datos). Datos en
+  `C:\Users\<usuario>\CEP` desde la v1.0.0 reconstruida (antes `Documentos\CEP`, que en este equipo
+  está en OneDrive; se migran solos al abrir). Arranque: ~50 s la
   primera vez (Defender + caché de fuentes de matplotlib), ~10 s después; la ventana aparece al
   instante con pantalla de carga. Ver CLAUDE.md «Programa de escritorio» y la skill `construir-cep`.
   No probado: Windows 10 sin WebView2 y un equipo limpio distinto de este.

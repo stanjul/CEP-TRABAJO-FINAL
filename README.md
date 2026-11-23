@@ -7,7 +7,7 @@ muestreo de aceptación y reportes PDF / Excel. Interfaz basada en el diseño ex
 
 ## Inicio rápido
 - **Usuarios (Windows):** instalar `CEP-Setup-1.0.0.exe`. Programa de escritorio con ventana propia;
-  los datos quedan en `Documentos\CEP`. Se genera con `construir.bat` (ver
+  los datos quedan en `C:\Users\<usuario>\CEP` (fuera de OneDrive). Se genera con `construir.bat` (ver
   [INSTALACION.md](docs/INSTALACION.md) §0).
 - **Desde el código, Windows:** doble clic en `run.bat` · **Linux / macOS:** `./run.sh`
   (se abre el navegador en `http://127.0.0.1:8000` con datos de demostración cargados).

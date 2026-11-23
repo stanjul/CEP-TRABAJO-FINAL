@@ -298,7 +298,7 @@ la carta explicando por qué**. Las variables sin muestras se pueden eliminar.
 
 ## 11b. Ingeniería · Base de datos y respaldos
 
-Todos los procesos se guardan en un único archivo (`Documentos\CEP\cep.db` en el programa de
+Todos los procesos se guardan en un único archivo (`C:\Users\<usuario>\CEP\cep.db` en el programa de
 escritorio). En esta pantalla:
 
 - **Tus datos:** cuántos procesos, variables y muestras hay, dónde está la base y su tamaño.

@@ -83,4 +83,21 @@ def test_carpeta_de_datos(monkeypatch, tmp_path):
     monkeypatch.setenv("CEP_DATOS", str(tmp_path / "datos"))
     assert escritorio.carpeta_datos() == tmp_path / "datos"
     monkeypatch.delenv("CEP_DATOS")
-    assert escritorio.carpeta_datos().name == "CEP"
+    # Fuera de Documentos (que suele estar en OneDrive): C:\Users\<usuario>\CEP
+    from pathlib import Path
+    assert escritorio.carpeta_datos() == Path.home() / "CEP"
+
+
+def test_migracion_desde_documentos(tmp_path):
+    from app import escritorio
+    vieja, nueva = tmp_path / "Documentos" / "CEP", tmp_path / "CEP"
+    (vieja / "respaldos").mkdir(parents=True)
+    (vieja / "cep.db").write_bytes(b"base")
+    (vieja / "respaldos" / "cep_20261123_100000_inicio.db").write_bytes(b"r")
+    assert escritorio.migrar_datos_anteriores(nueva, vieja)
+    assert (nueva / "cep.db").read_bytes() == b"base" and (nueva / "respaldos" / "cep_20261123_100000_inicio.db").exists()
+    assert (vieja / "cep.db").exists() and "se movieron a" in (vieja / "LEEME - datos movidos.txt").read_text(encoding="utf-8")
+    # Si la carpeta nueva ya tiene base, no se vuelve a copiar (no pisa datos nuevos).
+    (vieja / "cep.db").write_bytes(b"otra")
+    assert not escritorio.migrar_datos_anteriores(nueva, vieja)
+    assert (nueva / "cep.db").read_bytes() == b"base"

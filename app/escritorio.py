@@ -1,8 +1,9 @@
 """Programa de escritorio (Windows): servidor local + ventana propia, sin navegador ni consola.
 
 Es el punto de entrada de CEP.exe (PyInstaller). Al abrirse:
-  1. Usa la carpeta de datos `Documentos\\CEP` (o `CEP_DATOS`): base `cep.db`, `reportes\\`,
-     `respaldos\\` y `registro.log`.
+  1. Usa la carpeta de datos `C:\\Users\\<usuario>\\CEP` (o `CEP_DATOS`), fuera de OneDrive: base
+     `cep.db`, `reportes\\`, `respaldos\\` y `registro.log`. Si encuentra datos de una versión
+     anterior en `Documentos\\CEP`, los copia.
   2. Evita una segunda instancia (mutex de Windows): si ya está abierto, lo avisa y sale.
   3. Hace un respaldo de la base al iniciar (se guardan los últimos 20).
   4. Levanta FastAPI en 127.0.0.1 en un puerto libre (solo este equipo) y abre una ventana con
@@ -59,7 +60,32 @@ def carpeta_documentos() -> Path:
 
 
 def carpeta_datos() -> Path:
-    return Path(os.environ["CEP_DATOS"]) if os.environ.get("CEP_DATOS") else carpeta_documentos() / "CEP"
+    """`C:\\Users\\<usuario>\\CEP` (o `CEP_DATOS`). No se usa Documentos porque suele estar dentro de
+    OneDrive: sincronizar una base SQLite abierta puede generar copias en conflicto."""
+    return Path(os.environ["CEP_DATOS"]) if os.environ.get("CEP_DATOS") else Path.home() / "CEP"
+
+
+def migrar_datos_anteriores(nueva: Path, vieja: Path | None = None) -> bool:
+    """Versiones anteriores guardaban en `Documentos\\CEP`. Si la carpeta nueva todavía no tiene base
+    y la vieja sí, copia todo (base, reportes, respaldos, ventana) y deja un aviso en la vieja.
+    No borra nada: la carpeta vieja queda como copia de seguridad."""
+    import shutil
+
+    vieja = vieja or carpeta_documentos() / "CEP"
+    if (nueva / "cep.db").exists() or not (vieja / "cep.db").exists() or vieja.resolve() == nueva.resolve():
+        return False
+    nueva.mkdir(parents=True, exist_ok=True)
+    for item in vieja.iterdir():
+        destino = nueva / item.name
+        if item.is_dir():
+            shutil.copytree(item, destino, dirs_exist_ok=True)
+        elif item.name != "LEEME - datos movidos.txt":
+            shutil.copy2(item, destino)
+    (vieja / "LEEME - datos movidos.txt").write_text(
+        f"Los datos de CEP se movieron a:\n{nueva}\n\nEsta carpeta quedó como copia de seguridad del "
+        f"{time.strftime('%d/%m/%Y %H:%M')}. CEP ya no la usa: puedes borrarla cuando compruebes que todo está "
+        "en la carpeta nueva.\n", encoding="utf-8")
+    return True
 
 
 def preparar_entorno(datos: Path) -> None:
@@ -136,13 +162,23 @@ def main(argv: list[str] | None = None) -> int:
     args = p.parse_args(argv)
 
     datos = carpeta_datos()
-    preparar_entorno(datos)
-    configurar_registro(datos)
     candado = tomar_instancia_unica()
     if candado is None:
         mensaje("CEP ya está abierto en este equipo. Busca su ventana en la barra de tareas.")
         return 0
+    migrado = False
+    if not os.environ.get("CEP_DATOS"):
+        try:
+            migrado = migrar_datos_anteriores(datos)
+        except OSError:
+            migrado = None  # se registra cuando el registro esté configurado
+    preparar_entorno(datos)
+    configurar_registro(datos)
     registro.info("Inicio de CEP. Datos en %s", datos)
+    if migrado:
+        registro.info("Datos copiados desde %s (versión anterior)", carpeta_documentos() / "CEP")
+    elif migrado is None:
+        registro.exception("No se pudieron copiar los datos de la ubicación anterior")
 
     try:
         from app.db import respaldos
@@ -239,5 +275,5 @@ if __name__ == "__main__":
         sys.exit(main())
     except Exception:  # cualquier error inesperado queda en el registro y se avisa
         registro.exception("Error al iniciar CEP")
-        mensaje("CEP encontró un error al iniciar. Revisa registro.log en Documentos\\CEP.", error=True)
+        mensaje(f"CEP encontró un error al iniciar. Revisa registro.log en {carpeta_datos()}.", error=True)
         sys.exit(1)
