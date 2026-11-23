@@ -13,6 +13,7 @@ muestreo de aceptación y reportes PDF / Excel. Interfaz basada en el diseño ex
   (se abre el navegador en `http://127.0.0.1:8000` con datos de demostración cargados).
 
 ## Documentación
+- [Descripción técnica del software](docs/DESCRIPCION_SOFTWARE.md)
 - [Instalación y solución de problemas](docs/INSTALACION.md)
 - [Manual de usuario](docs/MANUAL_USUARIO.md)
 - API interactiva: `http://127.0.0.1:8000/docs`
