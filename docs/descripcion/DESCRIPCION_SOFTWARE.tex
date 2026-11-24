@@ -221,7 +221,7 @@ Una sola base SQLite guarda todos los procesos de la planta.
 \texttt{variables} & Característica de calidad y su configuración: tipo de carta, tamaño de muestra $n$, frecuencia, especificaciones (LEI, objetivo, LES), ancho de límites $k$, estimador de $\sigma$, $\sigma$ fijada por el ingeniero, reglas activas, fase, decimales y versión.\\
 \texttt{subgrupos} & Cada muestra: número, fecha y hora, fase (\texttt{I}, \texttt{II}, \texttt{archivo}, \texttt{anulado}), conteo y tamaño (atributos), operario, lote, origen (manual, importado, plantilla, semilla) y exclusión con causa y acción.\\
 \texttt{mediciones} & Valores individuales de cada subgrupo (variables).\\
-\texttt{limites\_carta} & Límites congelados para la Fase~II, con historial (uno activo).\\
+\texttt{limites} & Límites congelados para la Fase~II, con historial (uno activo).\\
 \texttt{alarmas} & Violaciones de reglas y eventos manuales (parada, retención, anomalía), con explicación en palabras, severidad, estado, causa y acción.\\
 \texttt{cambios\_configuracion} & Historial de auditoría: parámetro, valor anterior y nuevo, usuario, justificación, versión y SHA-256 de la configuración.\\
 \texttt{lotes\_inspeccion} & Lotes evaluados por muestreo de aceptación y su dictamen.\\

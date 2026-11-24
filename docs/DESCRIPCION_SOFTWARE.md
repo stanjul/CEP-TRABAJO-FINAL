@@ -129,7 +129,7 @@ Una sola base SQLite con todos los procesos de la planta.
 | `variables` | Característica de calidad y su configuración: tipo de carta, tamaño de muestra *n*, frecuencia, especificaciones (LEI, objetivo, LES), ancho de límites *k*, estimador de σ, σ fijada por el ingeniero, reglas activas, fase, decimales, versión |
 | `subgrupos` | Cada muestra: número, fecha y hora, fase (`I`, `II`, `archivo`, `anulado`), conteo y tamaño (atributos), operario, lote, origen (manual, importado, plantilla, semilla), exclusión con causa y acción |
 | `mediciones` | Valores individuales de cada subgrupo (variables) |
-| `limites_carta` | Límites congelados para la Fase II, con historial (uno activo) |
+| `limites` | Límites congelados para la Fase II, con historial (uno activo) |
 | `alarmas` | Violaciones de reglas y eventos manuales (parada, retención, anomalía), con explicación en palabras, severidad, estado, causa y acción |
 | `cambios_configuracion` | Historial de auditoría: parámetro, valor anterior y nuevo, usuario, justificación, versión y SHA-256 de la configuración |
 | `lotes_inspeccion` | Lotes evaluados por muestreo de aceptación y su dictamen |
