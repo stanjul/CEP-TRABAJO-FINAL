@@ -35,7 +35,7 @@ CloseApplications=yes
 Name: "es"; MessagesFile: "compiler:Languages\Spanish.isl"
 
 [Messages]
-es.FinishedLabel=CEP quedó instalado. Ábrelo desde el acceso directo «CEP».%n%nTus datos se guardan en la carpeta CEP de tu usuario ({%USERPROFILE}\CEP: base de datos, reportes y respaldos) y se conservan aunque desinstales o actualices el programa.%n%nPara los informes PDF con LaTeX instala MiKTeX (opcional): sin él, el PDF se genera con el formato de respaldo.
+es.FinishedLabel=CEP quedó instalado. Ábrelo desde el acceso directo «CEP».%n%nTus datos se guardan en la carpeta CEP de tu usuario (C:\Users\<tu usuario>\CEP: base de datos, reportes y respaldos) y se conservan aunque desinstales o actualices el programa.%n%nPara los informes PDF con LaTeX instala MiKTeX (opcional): sin él, el PDF se genera con el formato de respaldo.
 
 [Tasks]
 Name: "escritorio"; Description: "Crear un acceso directo en el escritorio"; GroupDescription: "Accesos directos:"

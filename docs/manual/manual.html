@@ -204,6 +204,29 @@ dialog.visor p { color: #d6e6eb; font-size: 0.85rem; margin: 0.5rem 0 0; text-al
 
 .pie { margin-top: 5rem; padding-top: 1.2rem; border-top: 1px solid var(--linea); font-size: 0.85rem; color: var(--tinta-suave); }
 
+/* ---------- tutoriales */
+.objetivo { display: grid; grid-template-columns: 1.4fr 1.2fr 0.7fr; gap: 0; max-width: 900px; border: 1px solid var(--linea); border-radius: 12px; background: #fff; margin: 0 0 1.8rem; overflow: hidden; }
+.objetivo > div { padding: 0.9rem 1.1rem; border-left: 1px solid var(--linea); }
+.objetivo > div:first-child { border-left: 0; background: var(--hielo); }
+.objetivo b { display: block; font-family: var(--titulos); font-size: 1rem; font-weight: 650; color: var(--petroleo); margin-bottom: 0.2rem; }
+.objetivo p { margin: 0; font-size: 0.92rem; }
+.paso { display: grid; grid-template-columns: 2.6rem minmax(0, 1fr); column-gap: 0.9rem; margin: 1.6rem 0; }
+.paso > .n { width: 2.3rem; height: 2.3rem; border-radius: 50%; background: var(--petroleo); color: #fff; font: 700 1.15rem/2.3rem var(--titulos); text-align: center; }
+.paso h4 { margin: 0.25rem 0 0.4rem; font-size: 1.25rem; }
+.paso figure { margin: 1rem 0 0.6rem; }
+
+/* ---------- catálogo de alertas */
+.catalogo { display: grid; grid-template-columns: 1fr; gap: 0.7rem; max-width: 900px; margin: 1.2rem 0 1.6rem; }
+.catalogo .tipo { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 1rem; align-items: start; border: 1px solid var(--linea); border-left-width: 5px; border-radius: 10px; padding: 0.8rem 1rem; background: #fff; }
+.catalogo .tipo.grave { border-left-color: var(--control); }
+.catalogo .tipo.advertencia { border-left-color: var(--ambar); }
+.catalogo .tipo.alerta { border-left-color: var(--petroleo); }
+.catalogo .tipo > div > b { font-family: var(--titulos); font-size: 1.15rem; color: var(--petroleo-profundo); }
+.catalogo .codigo { font-size: 0.78rem; color: var(--tinta-suave); margin-left: 0.35rem; white-space: nowrap; }
+.catalogo p { margin: 0.25rem 0 0; font-size: 0.92rem; }
+.catalogo p.hacer { color: var(--tinta); }
+svg.mini { width: 150px; height: 72px; background: var(--hielo); border-radius: 8px; }
+
 /* ---------- pantallas pequeñas */
 @media screen and (max-width: 980px) {
   .marco { grid-template-columns: 1fr; }
@@ -211,6 +234,9 @@ dialog.visor p { color: #d6e6eb; font-size: 0.85rem; margin: 0.5rem 0 0; text-al
   .lateral.abierto { transform: none; }
   .boton-menu { display: inline-flex; position: fixed; right: 1rem; bottom: 1rem; z-index: 50; font: 650 0.9rem var(--cuerpo); background: var(--petroleo); color: #fff; border: 0; border-radius: 99px; padding: 0.7rem 1.1rem; box-shadow: 0 6px 18px rgba(0,0,0,0.3); }
   .pareja { grid-template-columns: 1fr; }
+  .objetivo { grid-template-columns: 1fr; }
+  .objetivo > div { border-left: 0; border-top: 1px solid var(--linea); }
+  .catalogo .tipo { grid-template-columns: 1fr; }
   h2 { font-size: 1.9rem; }
   .capitulo .num { font-size: 2.6rem; }
   .punto { width: 24px; height: 24px; font-size: 0.8rem; line-height: 20px; }
@@ -236,6 +262,9 @@ dialog.visor p { color: #d6e6eb; font-size: 0.85rem; margin: 0.5rem 0 0; text-al
   figure img { cursor: default; width: auto; max-width: 100%; max-height: 165mm; }
   figure figcaption, figure .leyenda { text-align: left; }
   .pareja figure img { max-height: 120mm; }
+  .objetivo, .catalogo .tipo, .paso h4 { break-inside: avoid; }
+  .paso h4 { break-after: avoid; }
+  .objetivo > div:first-child, .paso > .n, svg.mini, .catalogo .tipo { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .portada h1 { font-size: 46pt; }
   .caminos { grid-template-columns: repeat(3, 1fr); }
   .aviso, .estado, .punto, .leyenda li::before, .camino, .num, .lienzo, .explorador, .lectura, ol.pasos > li::before { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -286,8 +315,8 @@ dialog.visor p { color: #d6e6eb; font-size: 0.85rem; margin: 0.5rem 0 0; text-al
   </svg>
 </header>
 <nav class="caminos" aria-label="Por dónde empezar">
-  <a class="camino" href="#operario"><strong>Registro muestras en la planta</strong><span>Empieza por «Ideas clave» y luego ve a la vista Operario: registrar, leer el estado y atender alertas.</span></a>
-  <a class="camino" href="#recorrido"><strong>Configuro y analizo el control</strong><span>Sigue el recorrido de ocho pasos: desde definir la variable hasta el informe final.</span></a>
+  <a class="camino" href="#operario"><strong>Registro muestras en la planta</strong><span>Lee «Ideas clave», el Tutorial 4 (registrar muestras) y el capítulo de alertas.</span></a>
+  <a class="camino" href="#variables"><strong>Configuro y analizo el control</strong><span>Sigue los tutoriales 1 a 5: crear la variable, cargar la plantilla Excel, fijar los límites y generar el informe.</span></a>
   <a class="camino" href="#instalar"><strong>Es la primera vez que lo abro</strong><span>Instala el programa, conoce la pantalla y carga los datos de demostración para practicar.</span></a>
 </nav>
 
@@ -323,36 +352,54 @@ dialog.visor p { color: #d6e6eb; font-size: 0.85rem; margin: 0.5rem 0 0; text-al
   <div class="aviso importante"><strong>Importante</strong><p>Algo que cambia el resultado si no se tiene en cuenta.</p></div>
   <div class="aviso cuidado"><strong>Cuidado</strong><p>Una acción que afecta los datos o que no conviene hacer.</p></div>
 </section>
-
-<!-- ===================================================================== 2 -->
+<!-- ===================================================================== instalar -->
 <section class="capitulo" id="instalar" data-perfil="todos">
   <header><span class="num">2</span><h2>Instalar y abrir CEP</h2><p class="para">Para todos</p></header>
-  <h3 id="requisitos">Qué se necesita</h3>
+  <div class="objetivo">
+    <div><b>Lo que vas a lograr</b><p>Tener CEP instalado y abierto en tu computador.</p></div>
+    <div><b>Necesitas</b><p>El archivo <b>CEP-Setup-1.0.1.exe</b> y Windows 10 u 11 de 64 bits.</p></div>
+    <div><b>Tiempo</b><p>Unos 3 minutos.</p></div>
+  </div>
+
+  <h3 id="requisitos">Antes de instalar</h3>
   <ul>
-    <li>Windows 10 u 11 de 64 bits y unos 205 MB libres.</li>
-    <li>Microsoft Edge WebView2, que ya viene en Windows 11 y en los Windows 10 actualizados.</li>
-    <li>Opcional: <strong>MiKTeX</strong>, para que los informes PDF salgan con el formato LaTeX. Sin él, CEP genera el PDF con un formato alternativo y lo avisa.</li>
+    <li>Windows 10 u 11 de 64 bits y unos 205 MB libres. No hace falta ser administrador.</li>
+    <li>Microsoft Edge WebView2: ya viene en Windows 11 y en los Windows 10 actualizados. Si falta, el instalador avisa y da el enlace para descargarlo.</li>
+    <li>Opcional: <strong>MiKTeX</strong>, para que los informes PDF salgan con el formato LaTeX. Sin él, CEP genera el PDF con un formato alternativo con los mismos textos.</li>
   </ul>
 
-  <h3 id="instalacion">Instalación</h3>
-  <ol class="pasos">
-    <li>Haz doble clic en <b>CEP-Setup-1.0.1.exe</b>. Se instala para tu usuario y no pide permisos de administrador.</li>
-    <li>Si aparece <span class="texto-pantalla">«Windows protegió su PC»</span>, pulsa <span class="boton">Más información</span> y luego <span class="boton">Ejecutar de todas formas</span>.</li>
-    <li>Sigue el asistente. Al terminar tendrás un acceso directo en el escritorio y otro en el menú Inicio.</li>
-  </ol>
-  <div class="aviso nota"><strong>¿Por qué aparece ese aviso de Windows?</strong><p>Porque el instalador no tiene firma digital, algo que cuesta dinero y no hace falta para un programa de uso interno. El programa no se conecta a internet ni modifica nada fuera de su carpeta.</p></div>
+  <h3 id="instalacion">Paso a paso</h3>
+  <div class="paso"><span class="n">1</span><div>
+    <h4>Abre el instalador</h4>
+    <p>Haz doble clic en <b>CEP-Setup-1.0.1.exe</b>. Si Windows muestra la ventana azul <span class="texto-pantalla">«Windows protegió su PC»</span>, pulsa <span class="boton">Más información</span> y después <span class="boton">Ejecutar de todas formas</span>.</p>
+    <div class="aviso nota"><strong>¿Por qué aparece ese aviso?</strong><p>Porque el instalador no tiene firma digital, algo que cuesta dinero y no hace falta para un programa de uso interno. CEP no se conecta a internet ni modifica nada fuera de su carpeta.</p></div>
+  </div></div>
+  <div class="paso"><span class="n">2</span><div>
+    <h4>Elige si quieres un acceso directo en el escritorio</h4>
+    <p>Deja marcada la casilla si quieres abrir CEP desde el escritorio (recomendado) y pulsa <span class="boton">Siguiente</span>.</p>
+    <figure class="angosta"><div class="lienzo"><img src="img/g_inst_tareas.png" alt="Asistente de instalación: tareas adicionales"></div></figure>
+  </div></div>
+  <div class="paso"><span class="n">3</span><div>
+    <h4>Confirma e instala</h4>
+    <p>El asistente resume lo que va a hacer. Pulsa <span class="boton">Instalar</span> y espera unos segundos mientras se copian los archivos.</p>
+    <div class="pareja">
+      <figure><div class="lienzo"><img src="img/g_inst_listo.png" alt="Listo para instalar"></div><figcaption><b>Listo para instalar.</b></figcaption></figure>
+      <figure><div class="lienzo"><img src="img/g_inst_progreso.png" alt="Instalando"></div><figcaption><b>Instalando.</b> La barra muestra el avance.</figcaption></figure>
+    </div>
+  </div></div>
+  <div class="paso"><span class="n">4</span><div>
+    <h4>Termina</h4>
+    <p>La última pantalla dice dónde quedan tus datos. Deja marcada <span class="texto-pantalla">Abrir CEP ahora</span> y pulsa <span class="boton">Finalizar</span>.</p>
+    <figure class="angosta"><div class="lienzo"><img src="img/g_inst_final.png" alt="Instalación terminada"></div></figure>
+  </div></div>
 
-  <h3 id="abrir">Abrir el programa</h3>
-  <p>CEP se abre en su propia ventana, sin navegador. La primera vez puede tardar hasta un minuto mientras Windows lo revisa; las siguientes, unos segundos. Mientras tanto se ve una pantalla de carga.</p>
-  <p>Solo puede haber una ventana de CEP abierta. Si intentas abrir otra, verás el mensaje <span class="texto-pantalla">«CEP ya está abierto en este equipo. Busca su ventana en la barra de tareas»</span>. Al cerrar la ventana se cierra el programa.</p>
-
-  <h3 id="primera-vez">La primera vez: base vacía</h3>
-  <p>Al principio no hay procesos y la aplicación lo indica. Tienes dos caminos:</p>
-  <ul>
-    <li><strong>Trabajar con tus datos:</strong> crea la primera variable en <span class="ruta">Ingeniería<i>›</i>Variables a controlar</span> o arma directamente la <a href="#plantilla">plantilla de carga</a>.</li>
-    <li><strong>Practicar con datos de ejemplo:</strong> en <span class="ruta">Ingeniería<i>›</i>Base de datos y respaldos</span> pulsa <span class="boton">Cargar demostración</span>. Se carga un proceso de envasado y los ejemplos del libro de Montgomery.</li>
-  </ul>
-  <div class="aviso consejo"><strong>Practica antes de usar datos reales</strong><p>Los datos de demostración permiten probar todo sin miedo a equivocarse. Cuando quieras empezar con tu proceso, vuelve la base a un respaldo vacío (ver <a href="#base">Base de datos y respaldos</a>).</p></div>
+  <h3 id="abrir">La primera vez que se abre</h3>
+  <p>CEP se abre en su propia ventana, sin navegador. Mientras arranca se ve esta pantalla. La primera vez puede tardar hasta un minuto (Windows revisa el programa); las siguientes, unos segundos.</p>
+  <figure class="media"><div class="lienzo"><img src="img/g_carga.png" alt="Pantalla de carga de CEP"></div><figcaption><b>Pantalla de carga.</b></figcaption></figure>
+  <p>Al terminar, CEP muestra la vista Operario. Como todavía no hay nada cargado, lo dice y ofrece dos caminos: <span class="boton">Crear la primera variable</span> o cargar los datos de demostración.</p>
+  <figure><div class="lienzo"><img src="img/g_base_vacia.png" alt="CEP sin variables"></div><figcaption><b>Base vacía.</b> El siguiente paso es el <a href="#variables">Tutorial 1</a>.</figcaption></figure>
+  <div class="aviso consejo"><strong>¿Quieres practicar primero?</strong><p>En <span class="ruta">Ingeniería<i>›</i>Base de datos y respaldos</span>, pulsa <span class="boton">Cargar demostración</span>: se carga un proceso de envasado y los ejemplos del libro de Montgomery para probar todo sin miedo a equivocarse. Cuando quieras empezar con tu proceso, vuelve a un respaldo vacío (ver <a href="#base">Base de datos y respaldos</a>).</p></div>
+  <div class="aviso nota"><strong>Una sola ventana a la vez</strong><p>Si intentas abrir CEP cuando ya está abierto, aparece <span class="texto-pantalla">«CEP ya está abierto en este equipo. Busca su ventana en la barra de tareas»</span>. Al cerrar la ventana se cierra el programa.</p></div>
 
   <h3 id="datos">Dónde quedan tus datos</h3>
   <p>Todo se guarda en <b>C:\Users\&lt;tu usuario&gt;\CEP\</b>, fuera de OneDrive:</p>
@@ -361,12 +408,20 @@ dialog.visor p { color: #d6e6eb; font-size: 0.85rem; margin: 0.5rem 0 0; text-al
     <tbody>
       <tr><td><b>cep.db</b></td><td>La base de datos: procesos, muestras, alertas e historial.</td></tr>
       <tr><td><b>reportes\</b></td><td>Los informes PDF y Excel generados.</td></tr>
-      <tr><td><b>respaldos\</b></td><td>Copias de la base: una cada vez que abres el programa (se guardan las últimas 20).</td></tr>
+      <tr><td><b>respaldos\</b></td><td>Una copia de la base cada vez que abres el programa (se guardan las últimas 20).</td></tr>
       <tr><td><b>registro.log</b></td><td>Registro técnico de errores, útil si hay que diagnosticar un problema.</td></tr>
     </tbody>
   </table>
-  <div class="aviso importante"><strong>Desinstalar no borra los datos</strong><p>Si desinstalas o actualizas CEP, la carpeta <b>CEP</b> se conserva. Para empezar realmente de cero hay que volver a un respaldo vacío o borrar esa carpeta a mano.</p></div>
+
+  <h3 id="actualizar">Actualizar a una versión nueva</h3>
+  <ol class="pasos">
+    <li>Cierra CEP.</li>
+    <li>Ejecuta el instalador nuevo y sigue los mismos pasos. Se instala encima del anterior: no hace falta desinstalar.</li>
+    <li>Abre CEP. En <span class="ruta">Ingeniería<i>›</i>Base de datos y respaldos</span> verás el número de versión.</li>
+  </ol>
+  <div class="aviso importante"><strong>Actualizar o desinstalar no borra los datos</strong><p>La carpeta <b>CEP</b> de tu usuario se conserva siempre. Para desinstalar, usa <span class="ruta">Configuración de Windows<i>›</i>Aplicaciones</span>.</p></div>
 </section>
+
 
 <!-- ===================================================================== 3 -->
 <section class="capitulo" id="ideas" data-perfil="todos">
@@ -381,7 +436,7 @@ dialog.visor p { color: #d6e6eb; font-size: 0.85rem; margin: 0.5rem 0 0; text-al
     <li>Cuántas unidades tiene cada muestra y cada cuánto se toma forman el <strong>plan de muestreo</strong>.</li>
   </ul>
 
-  <h3 id="limites">Límites de control y valores aceptados</h3>
+  <h3 id="limites-control">Límites de control y valores aceptados</h3>
   <p>Son dos cosas distintas y conviene no confundirlas:</p>
   <div class="pareja">
     <div class="aviso nota"><strong>Límites de control</strong><p>El rango en el que se mueve el proceso cuando funciona como siempre. <b>Los calcula CEP</b> a partir de los datos. En las gráficas son las <b>líneas rojas</b>; entre ellas está la zona normal.</p></div>
@@ -431,7 +486,6 @@ dialog.visor p { color: #d6e6eb; font-size: 0.85rem; margin: 0.5rem 0 0; text-al
     </tbody>
   </table>
 </section>
-
 <!-- ===================================================================== 4 -->
 <section class="capitulo" id="pantalla" data-perfil="todos">
   <header><span class="num">4</span><h2>Conocer la pantalla</h2><p class="para">Para todos</p></header>
@@ -452,7 +506,6 @@ dialog.visor p { color: #d6e6eb; font-size: 0.85rem; margin: 0.5rem 0 0; text-al
   <div class="aviso nota"><strong>Mensajes y confirmaciones</strong><p>El resultado de cada acción aparece como un mensaje breve en la esquina inferior derecha (por ejemplo <span class="texto-pantalla">«Muestra #26 guardada»</span>). Los errores dicen qué pasó y cómo arreglarlo. Las acciones importantes, como congelar límites o restaurar un respaldo, abren una ventana de confirmación que a menudo pide un motivo: ese motivo queda en el historial.</p></div>
   <div class="aviso consejo"><strong>Escribe tu nombre al empezar el turno</strong><p>Si una acción necesita un nombre y no hay ninguno, CEP lo pide. Escribirlo al principio evita interrupciones y deja el historial ordenado.</p></div>
 </section>
-
 <!-- ===================================================================== 5 -->
 <section class="capitulo" id="recorrido" data-perfil="ingenieria">
   <header><span class="num">5</span><h2>Recorrido: de cero a monitorear</h2><p class="para">Para Ingeniería</p></header>
@@ -460,10 +513,10 @@ dialog.visor p { color: #d6e6eb; font-size: 0.85rem; margin: 0.5rem 0 0; text-al
   <div class="recorrido" id="lista-recorrido">
     <div class="avance"><div class="barra"><i id="barra-avance"></i></div><span id="texto-avance">0 de 8 pasos</span></div>
     <ol>
-      <li><label><input type="checkbox" data-paso="1"><span><b>Definir qué se controla</b><small>Crear el proceso y sus variables con el asistente. <a href="#variables">Variables a controlar</a></small></span></label></li>
-      <li><label><input type="checkbox" data-paso="2"><span><b>Juntar 20 a 25 muestras de Fase I</b><small>Con la <a href="#plantilla">plantilla de carga</a>, un <a href="#csv">archivo CSV</a> o registrándolas en la <a href="#registrar">vista Operario</a>.</small></span></label></li>
+      <li><label><input type="checkbox" data-paso="1"><span><b>Definir qué se controla</b><small>Crear el proceso y sus variables con el asistente. <a href="#variables">Tutorial 1</a></small></span></label></li>
+      <li><label><input type="checkbox" data-paso="2"><span><b>Juntar 20 a 25 muestras de Fase I</b><small>Con la <a href="#plantilla">plantilla de carga</a> (Tutorial 2), un <a href="#csv">archivo CSV</a> o registrándolas en la <a href="#registrar">vista Operario</a>.</small></span></label></li>
       <li><label><input type="checkbox" data-paso="3"><span><b>Revisar los supuestos</b><small>Comprobar que los datos se comportan como esperan las gráficas. <a href="#supuestos">Validación de supuestos</a></small></span></label></li>
-      <li><label><input type="checkbox" data-paso="4"><span><b>Estabilizar y congelar los límites</b><small>Excluir solo las muestras con causa conocida y congelar. <a href="#graficos">Gráficos por variables</a></small></span></label></li>
+      <li><label><input type="checkbox" data-paso="4"><span><b>Estabilizar y congelar los límites</b><small>Excluir solo las muestras con causa conocida y congelar. <a href="#limites">Tutorial 3</a></small></span></label></li>
       <li><label><input type="checkbox" data-paso="5"><span><b>Evaluar la capacidad</b><small>¿El proceso cumple lo que pide el cliente? <a href="#capacidad">Capacidad</a></small></span></label></li>
       <li><label><input type="checkbox" data-paso="6"><span><b>Ajustar el plan de muestreo</b><small>Cuántas unidades revisar y cada cuánto. <a href="#plan">Plan de muestreo</a></small></span></label></li>
       <li><label><input type="checkbox" data-paso="7"><span><b>Monitorear</b><small>Registrar las muestras nuevas y atender las alertas. <a href="#operario">Vista Operario</a></small></span></label></li>
@@ -471,329 +524,347 @@ dialog.visor p { color: #d6e6eb; font-size: 0.85rem; margin: 0.5rem 0 0; text-al
     </ol>
   </div>
 </section>
+<!-- ===================================================================== tutorial 1 -->
+<section class="capitulo" id="variables" data-perfil="ingenieria">
+  <header><span class="num">6</span><h2>Tutorial 1 · Crear el proceso y la variable</h2><p class="para">Para Ingeniería</p></header>
+  <div class="objetivo">
+    <div><b>Lo que vas a lograr</b><p>Decirle a CEP qué se controla: el proceso, la característica, cómo se mide, el tamaño de muestra y lo que acepta el cliente.</p></div>
+    <div><b>Ejemplo del manual</b><p>Una llenadora de bolsas de 500 g: cada 30 minutos se pesan 5 bolsas seguidas.</p></div>
+    <div><b>Tiempo</b><p>2 minutos.</p></div>
+  </div>
+  <p>Ve a <span class="ruta">Ingeniería<i>›</i>Variables a controlar</span> y pulsa <span class="boton">Nueva variable</span>. Se abre un asistente de cuatro pasos; la barra de arriba muestra en cuál estás.</p>
 
-<!-- ===================================================================== 6 -->
+  <div class="paso"><span class="n">1</span><div>
+    <h4>El proceso</h4>
+    <p>Elige el proceso o línea donde se toma la muestra. Si es el primero, marca <span class="texto-pantalla">Otro proceso (crear uno nuevo)</span> y escribe su nombre y, si quieres, la línea o máquina. Pulsa <span class="boton">Siguiente</span>.</p>
+    <figure class="media"><div class="lienzo"><img src="img/g_asis_1.png" alt="Asistente, paso 1: proceso"></div></figure>
+  </div></div>
+  <div class="paso"><span class="n">2</span><div>
+    <h4>Qué se registra</h4>
+    <p>Escribe el nombre de lo que vas a controlar (<i>Peso neto</i>) y elige cómo se registra cada unidad revisada:</p>
+    <ul>
+      <li><b>La mido</b>: con un instrumento (peso, largo, temperatura). Es el caso del ejemplo.</li>
+      <li><b>La clasifico buena o mala</b>: cuentas cuántas unidades salen defectuosas.</li>
+      <li><b>Cuento sus fallas</b>: una unidad puede tener varias fallas (rayas, burbujas, manchas).</li>
+    </ul>
+    <figure class="media"><div class="lienzo"><img src="img/g_asis_2.png" alt="Asistente, paso 2: qué se registra"></div></figure>
+  </div></div>
+  <div class="paso"><span class="n">3</span><div>
+    <h4>Cómo se muestrea</h4>
+    <p>Indica cuántas unidades se miden cada vez (5) y cada cuánto se toma la muestra (30 min), la unidad de medida (g) y los decimales que muestra el instrumento. Con eso, CEP <b>recomienda la gráfica</b> y explica por qué.</p>
+    <figure class="media"><div class="lienzo"><img src="img/g_asis_3.png" alt="Asistente, paso 3: muestreo y gráfica recomendada"></div></figure>
+    <div class="aviso consejo"><strong>¿Cuántas unidades por muestra?</strong><p>Lo habitual son 4 o 5 unidades seguidas. Usa 1 solo si cada medición es cara, lenta o destruye la pieza. Si no estás seguro, deja la gráfica recomendada.</p></div>
+  </div></div>
+  <div class="paso"><span class="n">4</span><div>
+    <h4>Valores aceptados</h4>
+    <p>Escribe el mínimo, el valor ideal y el máximo que acepta el cliente, la norma o el plano (495, 500 y 505 g). Si solo hay un límite, deja vacío el otro. Revisa el resumen y pulsa <span class="boton">Crear variable</span>.</p>
+    <figure class="media"><div class="lienzo"><img src="img/g_asis_4.png" alt="Asistente, paso 4: valores aceptados y resumen"></div></figure>
+  </div></div>
+  <div class="paso"><span class="n">5</span><div>
+    <h4>Listo</h4>
+    <p>CEP confirma que la variable quedó creada. El siguiente paso es cargar las primeras muestras: con 20 a 25 se calculan los límites del proceso.</p>
+    <figure class="angosta"><div class="lienzo"><img src="img/g_asis_5.png" alt="Variable creada"></div></figure>
+  </div></div>
+  <div class="aviso nota"><strong>¿Me equivoqué al crearla?</strong><p>Mientras la variable no tenga muestras, en <span class="ruta">Variables a controlar</span> aparece el botón <span class="boton">Eliminar</span>. Las especificaciones y los decimales se pueden cambiar después en <a href="#config">Límites y reglas</a>.</p></div>
+</section>
+
+<!-- ===================================================================== tutorial 2 -->
+<section class="capitulo" id="plantilla" data-perfil="ingenieria">
+  <header><span class="num">7</span><h2>Tutorial 2 · Cargar los datos con la plantilla Excel</h2><p class="para">Para Ingeniería</p></header>
+  <div class="objetivo">
+    <div><b>Lo que vas a lograr</b><p>Cargar de una vez las muestras de estabilización y de monitoreo, sin errores de escritura.</p></div>
+    <div><b>Ejemplo del manual</b><p>25 muestras para establecer los límites y 10 de monitoreo, de 5 unidades cada una.</p></div>
+    <div><b>Tiempo</b><p>5 minutos, más lo que tardes en llenar el Excel.</p></div>
+  </div>
+  <p>CEP genera un Excel a la medida del proceso: con las muestras ya numeradas y controles que no dejan escribir datos inválidos. Lo llenas (en el computador o impreso, a mano) y lo vuelves a subir.</p>
+
+  <div class="paso"><span class="n">1</span><div>
+    <h4>Arma la plantilla</h4>
+    <p>En <span class="ruta">Ingeniería<i>›</i>Plantilla de carga</span>, elige el proceso y, en la fila de la variable, escribe cuántas muestras tendrá cada bloque:</p>
+    <ul>
+      <li><b>Para establecer los límites</b>: las muestras de la Fase I. Se recomiendan 20 a 25.</li>
+      <li><b>Monitoreo</b>: las muestras que se compararán con los límites ya fijados (Fase II). Pueden ser 0 si todavía no las tienes.</li>
+    </ul>
+    <p>Marca las columnas adicionales que quieras (lote, operario, observaciones) e indica la fecha y hora de la primera muestra: la plantilla sugiere la de cada una según la frecuencia. Pulsa <span class="boton">Descargar plantilla</span>.</p>
+    <figure class="media"><div class="lienzo"><img src="img/g_pl_armar.png" alt="Armar la plantilla"></div><figcaption><b>Armar la plantilla.</b> Con <span class="boton">Agregar variable nueva</span> también se pueden definir variables que todavía no existen.</figcaption></figure>
+  </div></div>
+  <div class="paso"><span class="n">2</span><div>
+    <h4>Abre el Excel y lee las instrucciones</h4>
+    <p>La primera hoja explica cómo llenarla. Hay una hoja más por cada variable.</p>
+    <figure class="media"><div class="lienzo"><img src="img/g_xl_instrucciones.png" alt="Hoja de instrucciones de la plantilla en Excel"></div><figcaption><b>Hoja «Instrucciones»</b>, abierta en Excel.</figcaption></figure>
+  </div></div>
+  <div class="paso"><span class="n">3</span><div>
+    <h4>Escribe los valores</h4>
+    <p>En la hoja de la variable, cada fila es una muestra: escribe un valor por unidad. El promedio y el rango se calculan solos.</p>
+    <figure><div class="lienzo"><img src="img/g_xl_hoja.png" alt="Hoja de datos de la plantilla con valores"></div><figcaption><b>Hoja «Peso neto».</b> El valor 505,60 de la muestra 7 se pintó de ámbar porque supera el máximo aceptado (505).</figcaption></figure>
+    <p>La plantilla te protege de los errores más comunes:</p>
+    <ul>
+      <li>Solo se puede escribir en las celdas blancas: números de muestra, fechas sugeridas y cálculos están bloqueados (sin contraseña).</li>
+      <li>Si escribes texto donde va un número, Excel lo rechaza y muestra un aviso.</li>
+      <li>Los valores fuera de lo aceptado se pintan de <b style="color:var(--ambar)">ámbar</b> al escribirlos: revisa que estén bien escritos.</li>
+      <li>En conteos, solo acepta enteros y no deja que las defectuosas superen a las revisadas.</li>
+    </ul>
+    <div class="aviso consejo"><strong>Anota lo que pase</strong><p>Usa la columna <b>Observaciones</b> para lo que veas en la línea («boquilla goteando», «cambio de bobina»). Esa nota queda con la muestra y ayuda a explicar después las señales.</p></div>
+  </div></div>
+  <div class="paso"><span class="n">4</span><div>
+    <h4>Súbela y revisa el informe</h4>
+    <p>Guarda el Excel. En la misma pantalla, en <span class="texto-pantalla">2. Sube la plantilla llenada</span>, arrastra el archivo o haz clic para elegirlo. <b>Todavía no se guarda nada</b>: CEP muestra un informe de revisión.</p>
+    <figure><div class="lienzo"><img src="img/g_pl_informe.png" alt="Informe de revisión"></div><figcaption><b>Informe de revisión.</b> 25 muestras listas. Avisa que la muestra 7 tiene un valor fuera de lo aceptado y que las 10 de monitoreo quedan para después.</figcaption></figure>
+    <ul>
+      <li><b>Errores</b> (en rojo): esa muestra no se carga. Por ejemplo, falta un valor o hay más defectuosas que revisadas. Corrígelos en el Excel y vuelve a subirlo.</li>
+      <li><b>Avisos</b> (en ámbar): la muestra se carga igual. Revisa que el valor esté bien escrito.</li>
+    </ul>
+  </div></div>
+  <div class="paso"><span class="n">5</span><div>
+    <h4>Carga las muestras</h4>
+    <p>Pulsa <span class="boton">Cargar 25 muestras</span>. CEP confirma cuántas se cargaron y ofrece ver la gráfica.</p>
+    <figure><div class="lienzo"><img src="img/g_pl_cargada.png" alt="Carga terminada"></div></figure>
+  </div></div>
+  <div class="aviso importante"><strong>¿Por qué no se cargaron las muestras de monitoreo?</strong><p>Porque las muestras de monitoreo se comparan con límites fijos, y esos límites todavía no existen. Primero hay que fijarlos (<a href="#limites">Tutorial 3</a>). Después se sube <b>el mismo archivo</b> otra vez: las 25 ya cargadas no se duplican y entran las 10 de monitoreo.</p></div>
+  <div class="aviso nota"><strong>¿Tienes los datos en otro archivo?</strong><p>Si los datos ya existen en un CSV o un Excel propio (por ejemplo, exportados de otro sistema), usa <a href="#csv">Datos y carga CSV</a>.</p></div>
+</section>
+
+<!-- ===================================================================== tutorial 3 -->
+<section class="capitulo" id="limites" data-perfil="ingenieria">
+  <header><span class="num">8</span><h2>Tutorial 3 · Fijar los límites del proceso</h2><p class="para">Para Ingeniería</p></header>
+  <div class="objetivo">
+    <div><b>Lo que vas a lograr</b><p>Conocer cómo se comporta el proceso cuando funciona bien, descartar lo que tuvo una causa conocida y congelar los límites para empezar a vigilarlo.</p></div>
+    <div><b>Necesitas</b><p>20 a 25 muestras cargadas (<a href="#plantilla">Tutorial 2</a>).</p></div>
+    <div><b>Tiempo</b><p>5 minutos.</p></div>
+  </div>
+
+  <div class="paso"><span class="n">1</span><div>
+    <h4>Mira las gráficas</h4>
+    <p>Ve a <span class="ruta">Ingeniería<i>›</i>Gráficos Variables</span>. Arriba se ven los límites calculados con tus muestras; debajo, la gráfica de promedios y la de dispersión. Los puntos rojos con un código encima son <b>señales</b>: muestras que salieron del comportamiento habitual.</p>
+    <figure><div class="lienzo"><img src="img/g_f1_cartas.png" alt="Gráficas de la Fase I con una señal"></div><figcaption><b>Fase I.</b> La muestra 7 sale del límite superior en las dos gráficas (regla N1). A la derecha, la auditoría de reglas lo resume.</figcaption></figure>
+  </div></div>
+  <div class="paso"><span class="n">2</span><div>
+    <h4>Averigua qué pasó en las muestras con señal</h4>
+    <p>Pregunta en la planta o revisa las observaciones de la plantilla. En el ejemplo, la observación de la muestra 7 decía «Boquilla 3 goteando»: es una <span class="termino" tabindex="0" data-def="Causa identificable de una variación anormal: un ajuste, un material, un error. Se opone a la variación natural del proceso.">causa asignable</span>.</p>
+    <div class="aviso cuidado"><strong>Solo se excluye con causa</strong><p>No excluyas una muestra solo porque salió fuera de los límites. Si se excluyen sin motivo, los límites quedan más estrechos que la variación real y después aparecerán falsas alarmas.</p></div>
+  </div></div>
+  <div class="paso"><span class="n">3</span><div>
+    <h4>Marca la muestra y mira la simulación</h4>
+    <p>En la tabla <span class="texto-pantalla">Depuración de Subgrupos</span>, marca la casilla <span class="texto-pantalla">Excluir</span> de la muestra. Arriba a la derecha, la <b>simulación</b> muestra cómo cambiarían los límites y el Cpk, y si quedarían señales, antes de confirmar nada.</p>
+    <figure><div class="lienzo"><img src="img/g_f1_simulacion.png" alt="Muestra 7 marcada y simulación del recálculo"></div><figcaption><b>Simulación.</b> Al excluir la 7, el límite superior baja 0,152 g y no quedan señales.</figcaption></figure>
+  </div></div>
+  <div class="paso"><span class="n">4</span><div>
+    <h4>Aplica el recálculo y escribe la causa</h4>
+    <p>Pulsa <span class="boton">Aplicar Recálculo Limpio</span>. Por cada muestra excluida se pide la causa (obligatoria) y la acción que se tomó. Queda en el historial.</p>
+    <figure class="angosta"><div class="lienzo"><img src="img/g_f1_causa.png" alt="Ventana para escribir la causa"></div></figure>
+    <figure><div class="lienzo"><img src="img/g_f1_depurada.png" alt="Gráficas después de excluir la muestra 7"></div><figcaption><b>Después del recálculo.</b> La muestra 7 aparece con una cruz (excluida) y el diagnóstico dice <span class="texto-pantalla">0 puntos con señal</span>.</figcaption></figure>
+  </div></div>
+  <div class="paso" id="congelar"><span class="n">5</span><div>
+    <h4>Congela los límites</h4>
+    <p>Cuando no queden señales sin explicación, pulsa <span class="boton">Congelar Límites → Fase II</span>. La ventana dice con cuántas muestras se fijarán y pide un motivo.</p>
+    <figure class="angosta"><div class="lienzo"><img src="img/g_congelar.png" alt="Congelar límites"></div></figure>
+    <p>Desde ahora la variable está en <b>monitoreo</b>: cada muestra nueva se compara con estos límites y la vista Operario muestra el estado en verde, ámbar o rojo.</p>
+    <div class="aviso importante"><strong>Advertencias al congelar</strong><p>CEP avisa si quedan puntos con señal o si hay menos de 20 muestras. Deja continuar, pero los límites serán menos confiables.</p></div>
+  </div></div>
+  <div class="paso"><span class="n">6</span><div>
+    <h4>Carga las muestras de monitoreo</h4>
+    <p>Vuelve a <span class="ruta">Plantilla de carga</span> y sube el mismo Excel. Ahora el informe dice que 10 se cargarán y 25 ya estaban cargadas. Pulsa <span class="boton">Cargar 10 muestras</span>.</p>
+    <figure><div class="lienzo"><img src="img/g_pl_monitoreo.png" alt="Segunda carga: muestras de monitoreo"></div></figure>
+    <figure><div class="lienzo"><img src="img/g_f2_cartas.png" alt="Gráficas de la Fase II con señales"></div><figcaption><b>Fase II.</b> Las muestras 31 a 35 se corrieron hacia arriba: CEP las marca con N1, N5 y N6 y genera alertas.</figcaption></figure>
+    <figure><div class="lienzo"><img src="img/g_f2_tabla.png" alt="Tabla de señales de Fase II"></div><figcaption><b>Señales de Fase II.</b> En esta etapa las muestras no se excluyen: se atienden desde las alertas (ver <a href="#alertas">Entender y atender las alertas</a>).</figcaption></figure>
+  </div></div>
+  <div class="aviso nota"><strong>¿El proceso cambió para siempre?</strong><p>Si cambió la máquina, el proveedor o el método, pulsa <span class="boton">Volver a Fase I</span> en la misma pantalla. Se pide un motivo y se elige la nueva base: conservar la anterior o usar las muestras de monitoreo. Los límites anteriores quedan en el historial.</p></div>
+</section>
+
+<!-- ===================================================================== tutorial 4 -->
 <section class="capitulo" id="operario" data-perfil="operario">
-  <header><span class="num">6</span><h2>Vista Operario</h2><p class="para">Para el personal de planta</p></header>
-  <p class="entrada">Cuatro pantallas: <span class="boton">Registrar muestra</span>, <span class="boton">Cómo va el proceso</span>, <span class="boton">Alertas</span> e <span class="boton">Historial de muestras</span>. Todas muestran la variable elegida en el encabezado.</p>
+  <header><span class="num">9</span><h2>Tutorial 4 · Registrar muestras en la planta</h2><p class="para">Para el personal de planta</p></header>
+  <div class="objetivo">
+    <div><b>Lo que vas a lograr</b><p>Registrar cada muestra a tiempo, saber al instante si está bien y corregir un error de escritura.</p></div>
+    <div><b>Necesitas</b><p>Que el ingeniero haya creado la variable. Tu nombre en el encabezado.</p></div>
+    <div><b>Tiempo</b><p>Menos de un minuto por muestra.</p></div>
+  </div>
+  <p>Todo se hace en la vista <span class="boton">Operario</span>, pantalla <span class="boton">Registrar muestra</span>. Antes de empezar, pulsa tu nombre arriba a la derecha y escríbelo: queda registrado en cada muestra y cada alerta.</p>
 
-  <h3 id="registrar">Registrar una muestra</h3>
-  <p>Es la pantalla de inicio y la que más se usa.</p>
+  <h3 id="registrar">La pantalla de registro</h3>
   <figure>
     <div class="lienzo"><img src="img/op_general.png" alt="Pantalla Registrar muestra"></div>
-    <figcaption><b>Registrar muestra.</b> Arriba el estado; a la izquierda el formulario; a la derecha las últimas muestras.</figcaption>
+    <figcaption><b>Registrar muestra.</b> Pasa el puntero sobre los números.</figcaption>
     <ol class="leyenda">
       <li data-xy="20.8,10.4"><b>Estado y qué hacer.</b> La frase dice qué hacer en ese momento.</li>
-      <li data-xy="71.5,14.5"><b>Próxima muestra.</b> Cuenta regresiva hasta la siguiente; dice <span class="texto-pantalla">«¡Ahora!»</span> cuando toca, o avisa si está atrasada.</li>
+      <li data-xy="71.5,14.5"><b>Próxima muestra.</b> Cuenta regresiva; dice <span class="texto-pantalla">«¡Ahora!»</span> cuando toca, o avisa si está atrasada.</li>
       <li data-xy="96.4,15.2"><b>Reportar un problema.</b> Para avisar de una parada, un lote retenido o algo raro.</li>
-      <li data-xy="39.9,32"><b>Formulario.</b> Un campo por cada unidad de la muestra, más el lote (opcional).</li>
-      <li data-xy="50.2,82.3"><b>Guardar muestra.</b> Registra la muestra y la compara con los límites.</li>
-      <li data-xy="68.4,32"><b>Últimas muestras.</b> El promedio de cada muestra sobre la zona normal.</li>
-      <li data-xy="54.4,68.7"><b>Resumen.</b> Unidades dentro de lo aceptado, promedio frente al ideal y muestras para revisar.</li>
+      <li data-xy="39.9,32"><b>Formulario.</b> Un campo por unidad, más el lote (opcional).</li>
+      <li data-xy="50.2,82.3"><b>Guardar muestra.</b></li>
+      <li data-xy="68.4,32"><b>Últimas muestras.</b> El promedio de cada una sobre la zona normal.</li>
+      <li data-xy="54.4,68.7"><b>Resumen.</b> Unidades dentro de lo aceptado, promedio y muestras para revisar.</li>
       <li data-xy="31.3,91.5"><b>Modo demostración.</b> Solo aparece si el ingeniero lo activó.</li>
     </ol>
   </figure>
 
-  <h4>Paso a paso</h4>
-  <ol class="pasos">
-    <li>Toma las unidades que indica la pantalla (por ejemplo, 5 unidades seguidas) y mídelas.</li>
-    <li>Escribe cada valor en <span class="texto-pantalla">Unidad 1</span>, <span class="texto-pantalla">Unidad 2</span>… Puedes usar coma o punto decimal. La tecla <kbd>Enter</kbd> pasa al campo siguiente.</li>
-    <li>Mientras escribes, debajo aparece el <b>resultado en vivo</b>: el promedio, si está dentro de lo normal y cuántas unidades quedaron fuera de lo aceptado.</li>
-    <li>Si quieres, escribe el lote.</li>
-    <li>Pulsa <span class="boton">Guardar muestra</span>.</li>
-  </ol>
-  <div class="aviso nota"><strong>Si la variable es un conteo</strong><p>En lugar de un campo por unidad, el formulario pide cuántas unidades se revisaron y cuántas salieron defectuosas (o cuántas fallas se encontraron).</p></div>
-  <div class="aviso importante"><strong>Si la muestra queda fuera de lo normal</strong><p>Al guardarla se crea una alerta y el estado cambia de color. No borres ni cambies valores para que la alerta desaparezca: anota en la alerta qué pasó (ver <a href="#alertas">Alertas</a>).</p></div>
+  <h3 id="registrar-pasos">Registrar una muestra paso a paso</h3>
+  <div class="paso"><span class="n">1</span><div>
+    <h4>Mira el estado y la próxima muestra</h4>
+    <p>La franja de arriba dice si el proceso va bien y cuándo toca la próxima muestra. Cuando dice <span class="texto-pantalla">«¡Ahora!»</span>, toma las unidades.</p>
+    <figure><div class="lienzo"><img src="img/g_op_estado.png" alt="Pantalla de registro en monitoreo"></div><figcaption><b>Estado rojo:</b> en el ejemplo, las últimas muestras se corrieron y hay alertas graves sin resolver.</figcaption></figure>
+  </div></div>
+  <div class="paso"><span class="n">2</span><div>
+    <h4>Escribe los valores</h4>
+    <p>Mide las unidades en el orden en que las tomaste y escribe cada valor. Puedes usar coma o punto decimal; <kbd>Enter</kbd> pasa al siguiente campo. Mientras escribes, abajo aparece el resultado en vivo.</p>
+    <div class="pareja">
+      <figure><div class="lienzo"><img src="img/g_op_normal.png" alt="Muestra dentro de lo normal"></div><figcaption><b>Dentro de lo normal:</b> el promedio está en la zona habitual.</figcaption></figure>
+      <figure><div class="lienzo"><img src="img/g_op_fuera.png" alt="Muestra fuera de lo normal"></div><figcaption><b>Fuera de lo normal:</b> al guardarla se generará una alerta.</figcaption></figure>
+    </div>
+  </div></div>
+  <div class="paso"><span class="n">3</span><div>
+    <h4>Guarda</h4>
+    <p>Pulsa <span class="boton">Guardar muestra</span>. Un mensaje confirma el número de muestra. Si salió fuera de lo normal, el mensaje es rojo, se crea una alerta y el estado cambia.</p>
+    <figure><div class="lienzo"><img src="img/g_op_guardada.png" alt="Muestra guardada con alerta"></div><figcaption><b>Muestra guardada.</b> Abajo a la derecha, el mensaje; debajo del botón, la opción de deshacer.</figcaption></figure>
+    <div class="aviso importante"><strong>No cambies los valores para que la alerta desaparezca</strong><p>Si la muestra salió así, es información valiosa. Anota en la alerta qué pasó (ver <a href="#alertas">Entender y atender las alertas</a>).</p></div>
+  </div></div>
 
-  <h4>Cuando un valor parece mal escrito</h4>
-  <p>Si un valor está muy lejos de lo habitual, por ejemplo 5000 en lugar de 500,0, CEP pregunta antes de guardar.</p>
-  <figure class="media">
-    <div class="lienzo"><img src="img/op_sospechoso.png" alt="Aviso de valor mal escrito"></div>
-    <figcaption><b>¿Están bien escritos estos valores?</b> <span class="boton">Corregir</span> vuelve al formulario; <span class="boton">Sí, están bien</span> guarda igual.</figcaption>
-  </figure>
-
+  <h3 id="corregir">Si te equivocas</h3>
+  <h4>Un valor mal escrito</h4>
+  <p>Si un valor está muy lejos de lo habitual (por ejemplo 5000 en lugar de 500,0), CEP pregunta antes de guardar. <span class="boton">Corregir</span> vuelve al formulario; <span class="boton">Sí, están bien</span> guarda igual.</p>
+  <figure class="media"><div class="lienzo"><img src="img/op_sospechoso.png" alt="Aviso de valor mal escrito"></div></figure>
   <h4>Deshacer la última muestra</h4>
-  <p>Durante los <b>10 minutos</b> siguientes a guardar aparece el recuadro <span class="texto-pantalla">«¿Te equivocaste en la muestra #25? Puedes deshacerla durante 09:25»</span> con el botón <span class="boton">Deshacer</span>. Al usarlo:</p>
-  <ul>
-    <li>se pide un motivo opcional, por ejemplo <span class="texto-pantalla">«Error al escribir un valor»</span>;</li>
-    <li>la muestra no se borra: queda <b>anulada</b> en el historial, con el motivo;</li>
-    <li>sus valores vuelven al formulario para corregirlos y guardarlos otra vez.</li>
-  </ul>
+  <p>Durante <b>10 minutos</b> después de guardar aparece <span class="texto-pantalla">«¿Te equivocaste en la muestra #36? Puedes deshacerla»</span> con el botón <span class="boton">Deshacer</span>. Se pide un motivo opcional; la muestra no se borra, queda <b>anulada</b> en el historial, y sus valores vuelven al formulario para corregirlos.</p>
+  <figure class="angosta"><div class="lienzo"><img src="img/g_op_deshacer.png" alt="Deshacer una muestra"></div></figure>
   <div class="aviso consejo"><strong>¿Pasaron los 10 minutos?</strong><p>Avisa al ingeniero. Mientras el proceso está en Fase I, puede excluir esa muestra indicando la causa.</p></div>
 
-  <h4>Alertas y resumen del turno</h4>
-  <p>Más abajo, en la misma pantalla, están las alertas del turno con su botón <span class="boton">Anotar qué pasó</span> y el resumen <span class="texto-pantalla">«Este turno»</span>: muestras tomadas frente a las programadas, unidades dentro de lo aceptado, alertas y quién registra.</p>
-  <figure class="media">
-    <div class="lienzo"><img src="img/op_alertas_turno.png" alt="Alertas del turno y resumen del turno"></div>
-    <figcaption><b>Alertas del turno.</b> Las rojas son graves; la última está resuelta y muestra la causa y la acción anotadas.</figcaption>
-  </figure>
-  <div class="aviso nota"><strong>Modo demostración</strong><p>Si el ingeniero lo activó, aparece <span class="boton">Completar con valores simulados</span> con una lista para elegir el comportamiento (normal o con un corrimiento). Sirve para mostrar la aplicación sin datos reales y debe desactivarse al trabajar con un proceso real.</p></div>
+  <h3 id="problema">Reportar un problema</h3>
+  <p>Si se detiene la máquina, retienes un lote o ves algo raro, pulsa <span class="boton">Reportar un problema</span>, elige qué pasó y descríbelo brevemente. Se crea una alerta manual.</p>
+  <figure class="angosta"><div class="lienzo"><img src="img/g_op_reportar.png" alt="Reportar un problema"></div></figure>
+  <div class="aviso importante"><strong>Paradas y lotes retenidos ponen el estado en rojo</strong><p>Hasta que esa alerta se resuelva, el proceso muestra <span class="estado rojo">Detener y avisar</span>.</p></div>
 
-  <h3 id="como-va">Cómo va el proceso</h3>
-  <p>La misma gráfica en grande, con una guía para leerla y la lista de muestras que conviene revisar.</p>
-  <figure>
-    <div class="lienzo"><img src="img/op_proceso.png" alt="Pantalla Cómo va el proceso"></div>
-    <figcaption><b>Cómo va el proceso.</b> Al pasar el puntero por un punto se ve su número y su valor.</figcaption>
-    <ol class="leyenda">
-      <li data-xy="19,19.1"><b>La gráfica.</b> Cada punto es el promedio de una muestra; la línea del medio es el promedio habitual.</li>
-      <li data-xy="47.4,36.9"><b>Zona normal.</b> La franja sombreada entre las líneas rojas. Un punto fuera de ella genera una alerta.</li>
-      <li data-xy="36.2,23.7"><b>Valores aceptados.</b> Las líneas grises punteadas: lo que exige el cliente.</li>
-      <li data-xy="8.6,29.8"><b>Punto para revisar.</b> Rojo y con «!» encima.</li>
-      <li data-xy="84.9,19.1"><b>Cómo leer la gráfica.</b> La guía, siempre visible.</li>
-      <li data-xy="86.6,51.8"><b>Muestras para revisar.</b> Cada una con la razón en palabras.</li>
-      <li data-xy="2.4,55.9"><b>Resumen.</b> Unidades dentro de lo aceptado, promedio y muestras para revisar.</li>
-    </ol>
-  </figure>
+  <h3 id="historial">Ver lo que se registró</h3>
+  <p>La pantalla <span class="boton">Historial de muestras</span> lista todas las muestras, de la más reciente a la más antigua, con sus valores, promedio, quién la registró, el lote y si quedó <b>Normal</b> o <b>Para revisar</b>. La lista de arriba filtra por etapa (Fase I, Monitoreo, Archivadas, Anuladas) y <span class="boton">Descargar CSV</span> la guarda para abrirla en Excel.</p>
+  <figure><div class="lienzo"><img src="img/g_historial.png" alt="Historial de muestras"></div></figure>
+</section>
 
-  <h3 id="alertas">Alertas</h3>
-  <p>Todas las alertas de la variable, con su explicación y su seguimiento.</p>
+<!-- ===================================================================== alertas -->
+<section class="capitulo" id="alertas" data-perfil="todos">
+  <header><span class="num">10</span><h2>Entender y atender las alertas</h2><p class="para">Para todos</p></header>
+  <p class="entrada">Una alerta es el aviso de CEP de que una muestra no se comportó como de costumbre. No siempre significa producto malo: significa que <b>algo cambió</b> y conviene averiguar qué.</p>
+
+  <h3 id="alertas-donde">Dónde aparecen</h3>
+  <ul>
+    <li>En la <b>campana</b> del encabezado, con el número de alertas sin resolver.</li>
+    <li>En el <b>estado del proceso</b>: ámbar si hay alertas sin resolver, rojo si alguna es grave.</li>
+    <li>En <span class="texto-pantalla">Alertas del turno</span>, debajo del formulario de registro.</li>
+    <li>En la pantalla <span class="boton">Alertas</span>, con todas las de la variable.</li>
+  </ul>
+
+  <h3 id="alertas-tipos">Qué significa cada alerta</h3>
+  <p>Cada alerta tiene un título corto, una explicación en palabras y, en letra pequeña, el código de la regla que la generó. El dibujo muestra el patrón que la dispara.</p>
+  <div class="catalogo">
+    <div class="tipo grave"><svg class="mini" data-patron="N1"></svg><div><b>Valor fuera de lo normal</b> <span class="codigo">N1 · grave</span>
+      <p>Un promedio quedó por encima o por debajo de los límites normales. Algo distinto pasó en esa muestra.</p><p class="hacer"><b>Qué hacer:</b> detener y avisar; revisar la máquina, el material y la medición de esa muestra.</p></div></div>
+    <div class="tipo grave"><svg class="mini" data-patron="R"></svg><div><b>Aumentó la variación</b> <span class="codigo">N1 en la gráfica de dispersión · grave</span>
+      <p>Las unidades de una misma muestra son demasiado distintas entre sí.</p><p class="hacer"><b>Qué hacer:</b> revisar piezas sueltas, desgaste, una boquilla o un cabezal que falla.</p></div></div>
+    <div class="tipo grave"><svg class="mini" data-patron="N5"></svg><div><b>Valores cerca del límite</b> <span class="codigo">N5 · grave</span>
+      <p>2 de los últimos 3 valores quedaron muy cerca del límite, del mismo lado.</p><p class="hacer"><b>Qué hacer:</b> es un aviso temprano de corrimiento; revisar el ajuste antes de que salga producto fuera.</p></div></div>
+    <div class="tipo advertencia"><svg class="mini" data-patron="N2"></svg><div><b>El proceso se corrió</b> <span class="codigo">N2 (9 seguidos) o WE4 (8 seguidos) · advertencia</span>
+      <p>Muchos valores seguidos quedaron del mismo lado del promedio.</p><p class="hacer"><b>Qué hacer:</b> buscar un cambio reciente: lote de material, turno, ajuste o calibración.</p></div></div>
+    <div class="tipo advertencia"><svg class="mini" data-patron="N3"></svg><div><b>Tendencia</b> <span class="codigo">N3 · advertencia</span>
+      <p>6 valores seguidos suben (o bajan) uno tras otro.</p><p class="hacer"><b>Qué hacer:</b> algo se desgasta, se calienta o se desajusta poco a poco; revisar antes de que salga del límite.</p></div></div>
+    <div class="tipo alerta"><svg class="mini" data-patron="N6"></svg><div><b>Valores alejados del promedio</b> <span class="codigo">N6 · alerta</span>
+      <p>4 de los últimos 5 valores quedaron alejados del promedio, del mismo lado.</p><p class="hacer"><b>Qué hacer:</b> observar las próximas muestras; puede ser el comienzo de un corrimiento.</p></div></div>
+    <div class="tipo alerta"><svg class="mini" data-patron="N4"></svg><div><b>Sube y baja alternadamente</b> <span class="codigo">N4 · alerta</span>
+      <p>14 valores seguidos alternan arriba y abajo.</p><p class="hacer"><b>Qué hacer:</b> puede haber dos máquinas, turnos u operarios mezclados en las muestras.</p></div></div>
+    <div class="tipo alerta"><svg class="mini" data-patron="N7"></svg><div><b>Valores demasiado parejos</b> <span class="codigo">N7 · alerta</span>
+      <p>15 valores seguidos quedaron muy pegados al promedio.</p><p class="hacer"><b>Qué hacer:</b> avisar al ingeniero; suele indicar que los límites o la forma de medir no son los adecuados.</p></div></div>
+    <div class="tipo alerta"><svg class="mini" data-patron="N8"></svg><div><b>Posible mezcla de producto</b> <span class="codigo">N8 · alerta</span>
+      <p>8 valores seguidos quedaron lejos del promedio, a uno y otro lado.</p><p class="hacer"><b>Qué hacer:</b> revisar si se juntan unidades de dos fuentes (dos líneas, dos moldes).</p></div></div>
+    <div class="tipo grave"><svg class="mini" data-patron="manual"></svg><div><b>Se detuvo el proceso · Lote retenido · Vi algo raro</b> <span class="codigo">alertas manuales</span>
+      <p>Las crea una persona con <span class="boton">Reportar un problema</span>. Las dos primeras son graves; «Vi algo raro» es una advertencia.</p><p class="hacer"><b>Qué hacer:</b> resolverlas cuando el problema esté atendido.</p></div></div>
+  </div>
+  <div class="aviso nota"><strong>Pruébalo con el explorador</strong><p>En <a href="#reglas">Ideas clave</a> hay un explorador interactivo: eliges un patrón y una carta de ejemplo muestra qué puntos marcaría CEP.</p></div>
+
+  <h3 id="alertas-gravedad">Gravedad y color</h3>
+  <table class="tabla">
+    <thead><tr><th>Gravedad</th><th>Cómo se ve</th><th>Efecto en el estado</th></tr></thead>
+    <tbody>
+      <tr><td><b>Grave</b></td><td>Tarjeta roja con un círculo de exclamación.</td><td><span class="estado rojo">Detener y avisar</span> mientras no se resuelva.</td></tr>
+      <tr><td><b>Advertencia</b></td><td>Tarjeta ámbar.</td><td><span class="estado ambar">Revisar</span>.</td></tr>
+      <tr><td><b>Alerta</b></td><td>Tarjeta azul con una «i».</td><td><span class="estado ambar">Revisar</span>.</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="alertas-atender">Atender una alerta paso a paso</h3>
   <figure>
     <div class="lienzo"><img src="img/op_alertas.png" alt="Pantalla Alertas"></div>
-    <figcaption><b>Alertas.</b> Las graves se muestran en rojo.</figcaption>
+    <figcaption><b>Pantalla Alertas.</b> Pasa el puntero sobre los números.</figcaption>
     <ol class="leyenda">
       <li data-xy="43.9,5.5"><b>Filtros.</b> <span class="boton">Sin resolver</span>, <span class="boton">Resueltas</span> o <span class="boton">Todas</span>.</li>
       <li data-xy="66.7,5.9"><b>Todas las variables.</b> Muestra las alertas de todos los procesos.</li>
       <li data-xy="95.5,5.9"><b>Reportar un problema.</b></li>
-      <li data-xy="23.8,17"><b>Contadores.</b> Sin resolver, graves sin resolver, en revisión y resueltas.</li>
-      <li data-xy="1.8,29.7"><b>La alerta.</b> Hora, qué pasó, número de muestra y explicación en palabras. En letra pequeña, el código de la regla para el ingeniero.</li>
-      <li data-xy="39.2,31.8"><b>Estado.</b> Sin revisar, En revisión o Resuelto.</li>
-      <li data-xy="32.8,40.4"><b>Anotar qué pasó.</b> Para registrar la causa y la acción.</li>
+      <li data-xy="23.8,17"><b>Contadores.</b> Sin resolver, graves, en revisión y resueltas.</li>
+      <li data-xy="1.8,29.7"><b>La alerta.</b> Hora, título, número de muestra y explicación.</li>
+      <li data-xy="39.2,31.8"><b>Estado.</b> Sin revisar, En revisión o Resuelta.</li>
+      <li data-xy="32.8,40.4"><b>Anotar qué pasó.</b></li>
     </ol>
   </figure>
+  <div class="paso"><span class="n">1</span><div>
+    <h4>Lee la explicación</h4>
+    <p>Dice qué pasó en palabras simples y en qué muestra. Si hace falta, mira la muestra en <span class="boton">Cómo va el proceso</span>.</p>
+  </div></div>
+  <div class="paso"><span class="n">2</span><div>
+    <h4>Revisa la máquina y averigua la causa</h4>
+    <p>Observa el proceso, el material, el instrumento de medición. Si es grave, avisa al supervisor o al ingeniero antes de seguir.</p>
+  </div></div>
+  <div class="paso"><span class="n">3</span><div>
+    <h4>Anota qué pasó</h4>
+    <p>Pulsa <span class="boton">Anotar qué pasó</span>, escribe la causa (si la sabes) y lo que se hizo, y elige el estado:</p>
+    <ul>
+      <li><b>En revisión</b>: todavía estás averiguando. El estado del proceso no cambia.</li>
+      <li><b>Resuelta</b>: ya sabes la causa y se tomó una acción. <b>Exige causa y acción.</b></li>
+    </ul>
+    <figure class="angosta"><div class="lienzo"><img src="img/g_al_anotar.png" alt="Anotar qué pasó"></div></figure>
+  </div></div>
+  <div class="paso"><span class="n">4</span><div>
+    <h4>Comprueba el resultado</h4>
+    <p>La alerta pasa a <b>Resuelta</b>, muestra la causa, la acción y quién la anotó, y el contador baja. Cuando no quedan alertas graves, el estado deja de estar en rojo.</p>
+    <figure><div class="lienzo"><img src="img/g_al_resuelta.png" alt="Alerta resuelta"></div><figcaption><b>Alerta resuelta</b> (filtro «Todas»).</figcaption></figure>
+  </div></div>
+  <div class="aviso consejo"><strong>Lo que anotes es la memoria del proceso</strong><p>Las causas y acciones aparecen después en las gráficas de Ingeniería y en los informes. Una buena nota dice qué se vio, qué se cambió y quién lo hizo.</p></div>
 
-  <h4>Anotar qué pasó</h4>
-  <div class="pareja">
-    <div>
-      <ol class="pasos">
-        <li>Pulsa <span class="boton">Anotar qué pasó</span> en la alerta.</li>
-        <li>Escribe <span class="texto-pantalla">¿Qué lo causó?</span> si lo sabes, y <span class="texto-pantalla">¿Qué se hizo?</span>.</li>
-        <li>Elige el estado: <b>Sin revisar</b>, <b>En revisión</b> o <b>Resuelta</b>.</li>
-        <li>Pulsa <span class="boton">Guardar</span>.</li>
-      </ol>
-      <div class="aviso importante"><strong>Para resolver hacen falta causa y acción</strong><p>Una alerta solo se marca como resuelta si tiene las dos. Si todavía no se sabe la causa, déjala <b>En revisión</b>.</p></div>
-    </div>
-    <figure style="margin-top:0">
-      <div class="lienzo"><img src="img/op_anotar.png" alt="Ventana Anotar qué pasó"></div>
-      <figcaption><b>Anotar qué pasó.</b> Queda registrado quién lo anotó y cuándo.</figcaption>
-    </figure>
-  </div>
-  <p>Lo que anotes aparece después en las gráficas de Ingeniería y en los informes: es la memoria del proceso.</p>
-
-  <h4 id="problema">Reportar un problema</h4>
-  <p>El botón <span class="boton">Reportar un problema</span> crea una alerta manual. Eliges <span class="texto-pantalla">¿Qué pasó?</span> (<b>Se detuvo el proceso</b>, <b>Retuve un lote</b> o <b>Vi algo raro</b>) y lo describes brevemente.</p>
-  <div class="aviso importante"><strong>Paradas y lotes retenidos ponen el estado en rojo</strong><p>Hasta que la alerta se resuelva, el proceso muestra <span class="estado rojo">Detener y avisar</span>.</p></div>
-
-  <h3 id="historial">Historial de muestras</h3>
+  <h3 id="como-va">Ver la evolución: Cómo va el proceso</h3>
+  <p>La pantalla <span class="boton">Cómo va el proceso</span> muestra la gráfica en grande, una guía para leerla y la lista de muestras para revisar con su explicación.</p>
   <figure>
-    <div class="lienzo"><img src="img/op_historial.png" alt="Pantalla Historial de muestras"></div>
-    <figcaption><b>Historial de muestras.</b> De la más reciente a la más antigua.</figcaption>
+    <div class="lienzo"><img src="img/op_proceso.png" alt="Pantalla Cómo va el proceso"></div>
+    <figcaption><b>Cómo va el proceso.</b></figcaption>
+    <ol class="leyenda">
+      <li data-xy="19,19.1"><b>La gráfica.</b> Cada punto es el promedio de una muestra.</li>
+      <li data-xy="47.4,36.9"><b>Zona normal.</b> La franja entre las líneas rojas. Un punto fuera genera una alerta.</li>
+      <li data-xy="36.2,23.7"><b>Valores aceptados.</b> Líneas grises punteadas.</li>
+      <li data-xy="8.6,29.8"><b>Punto para revisar.</b> Rojo, con «!» encima.</li>
+      <li data-xy="84.9,19.1"><b>Cómo leer la gráfica.</b></li>
+      <li data-xy="86.6,51.8"><b>Muestras para revisar.</b> Cada una con su razón.</li>
+      <li data-xy="2.4,55.9"><b>Resumen.</b></li>
+    </ol>
   </figure>
-  <p>Cada fila muestra la fecha y hora, la etapa, los valores, el promedio, quién la registró, el lote y si quedó <b>Normal</b> o <b>Para revisar</b>. La lista desplegable filtra por etapa: Todas, Conociendo el proceso (Fase I), Monitoreo (Fase II), Archivadas y Anuladas. <span class="boton">Descargar CSV</span> guarda la tabla en un archivo que se abre con Excel.</p>
 </section>
 
-<!-- ===================================================================== 7 -->
-<section class="capitulo" id="preparar" data-perfil="ingenieria">
-  <header><span class="num">7</span><h2>Ingeniería: preparar el control</h2><p class="para">Para Ingeniería</p></header>
-  <p class="entrada">Antes de analizar hay que decir qué se controla y cargar las muestras. Estas tres pantallas lo resuelven.</p>
-
-  <h3 id="variables">Variables a controlar</h3>
-  <figure>
-    <div class="lienzo"><img src="img/ing_mis_variables.png" alt="Pantalla Variables a controlar"></div>
-    <figcaption><b>Variables a controlar.</b> A la izquierda, el menú completo de Ingeniería.</figcaption>
-  </figure>
-  <p>Cada tarjeta dice qué se registra, el plan de muestreo, los valores aceptados o el tipo de gráfica, la etapa y cuántas muestras tiene. Sus botones llevan a <span class="boton">Registrar muestras</span>, al <span class="boton">Plan de muestreo</span> y a <span class="boton">Ver gráfica</span>.</p>
-  <div class="aviso nota"><strong>¿Se puede borrar una variable?</strong><p>Solo si no tiene muestras: en ese caso aparece el botón <span class="boton">Eliminar</span>. Las variables con datos no se eliminan, para no perder la trazabilidad.</p></div>
-
-  <h4>Crear una variable con el asistente</h4>
-  <div class="pareja">
-    <ol class="pasos">
-      <li><b>Proceso.</b> Elige el proceso o <span class="texto-pantalla">Otro proceso (crear uno nuevo)</span>.</li>
-      <li><b>Qué se registra.</b> Nombre, unidad y cómo se registra cada unidad: <i>la mido</i>, <i>la clasifico buena o mala</i> o <i>cuento sus fallas</i>.</li>
-      <li><b>Muestreo.</b> Unidades por muestra y cada cuánto. El asistente <b>recomienda la gráfica</b> y explica por qué.</li>
-      <li><b>Especificaciones.</b> Mínimo, ideal y máximo aceptados (pueden quedar vacíos) y los decimales.</li>
-    </ol>
-    <figure style="margin-top:0">
-      <div class="lienzo"><img src="img/ing_asistente.png" alt="Asistente Nueva variable"></div>
-      <figcaption><b>Nueva variable.</b> Se abre con <span class="boton">Nueva variable</span> o desde el selector del encabezado.</figcaption>
-    </figure>
+<!-- ===================================================================== tutorial 5 -->
+<section class="capitulo" id="informe" data-perfil="ingenieria">
+  <header><span class="num">11</span><h2>Tutorial 5 · Revisar la capacidad y generar el informe</h2><p class="para">Para Ingeniería</p></header>
+  <div class="objetivo">
+    <div><b>Lo que vas a lograr</b><p>Saber si el proceso cumple lo que pide el cliente y entregar un informe que cualquiera puede leer.</p></div>
+    <div><b>Necesitas</b><p>La variable con valores aceptados y sus límites fijados.</p></div>
+    <div><b>Tiempo</b><p>3 minutos.</p></div>
   </div>
 
-  <h3 id="plantilla">Plantilla de carga</h3>
-  <p>La forma recomendada de cargar datos. CEP genera un Excel a la medida del proceso, se llena (en el computador o impreso, a mano) y se vuelve a subir. El Excel no deja escribir datos inválidos y la carga muestra un informe antes de guardar.</p>
-  <figure>
-    <div class="lienzo"><img src="img/ing_plantilla.png" alt="Pantalla Plantilla de carga"></div>
-    <figcaption><b>Armar la plantilla.</b> A la derecha, cómo quedará el Excel y qué controla.</figcaption>
-    <ol class="leyenda">
-      <li data-xy="9.8,19.5"><b>Proceso.</b> El proceso de la plantilla, o uno nuevo.</li>
-      <li data-xy="1.7,42.2"><b>Variables.</b> Marca las que tendrá la plantilla.</li>
-      <li data-xy="44,40.7"><b>Para establecer los límites.</b> Cuántas muestras de Fase I (se recomiendan 20 a 25).</li>
-      <li data-xy="55.2,40.7"><b>Monitoreo.</b> Cuántas muestras de Fase II.</li>
-      <li data-xy="16.4,52.1"><b>Variable nueva.</b> Con <span class="boton">Agregar variable nueva</span> se definen variables que aún no existen; se crean al subir la plantilla.</li>
-      <li data-xy="18.1,72.9"><b>Columnas adicionales.</b> Lote, operario y observaciones.</li>
-      <li data-xy="26.7,82.4"><b>Primera muestra.</b> Con la fecha y la frecuencia, la plantilla sugiere la fecha y hora de cada muestra.</li>
-      <li data-xy="34.1,94.9"><b>Descargar plantilla.</b></li>
-      <li data-xy="71.1,16.1"><b>Así quedará.</b> Vista previa de cada hoja.</li>
-    </ol>
-  </figure>
-  <h4>Qué trae el Excel</h4>
-  <ul>
-    <li>Una hoja de instrucciones y una hoja por variable, con las muestras numeradas, fecha y hora sugeridas y una columna por unidad.</li>
-    <li>Solo se escribe en las celdas de datos; números de muestra y cálculos están protegidos (sin contraseña).</li>
-    <li>Acepta solo números con coma decimal y conteos enteros; las defectuosas no pueden superar las revisadas.</li>
-    <li>Los valores fuera de lo aceptado se pintan de <b style="color:var(--ambar)">ámbar</b> al escribirlos.</li>
-    <li>Calcula solo el promedio y el rango (o el % de defectuosas) de cada muestra, y está lista para imprimir en horizontal.</li>
-  </ul>
-
-  <h4>Subir la plantilla llenada</h4>
-  <p>En <span class="texto-pantalla">2. Sube la plantilla llenada</span>, arrastra el archivo o haz clic para elegirlo. Antes de guardar nada, CEP muestra un <b>informe de revisión</b>:</p>
-  <figure>
-    <div class="lienzo"><img src="img/ing_plantilla_informe.png" alt="Informe de revisión de la plantilla"></div>
-    <figcaption><b>Informe de revisión.</b> En rojo los errores (esa muestra no se carga); en ámbar los avisos (se carga igual).</figcaption>
-  </figure>
-  <p>Con <span class="boton">Cargar N muestras</span> se guardan las muestras válidas; con <span class="boton">Cancelar</span> no se guarda nada. Si hay errores, corrígelos en el Excel y vuelve a subirlo.</p>
-  <div class="aviso importante"><strong>Las dos etapas se cargan en dos momentos</strong><p>Mientras la variable está en Fase I, solo entran las muestras de <span class="texto-pantalla">Para establecer los límites</span>; las de monitoreo quedan pendientes y el informe lo avisa. Después de <a href="#congelar">congelar los límites</a>, sube <b>el mismo archivo</b> otra vez: las ya cargadas no se duplican y ahora entran las de monitoreo.</p></div>
-  <div class="aviso consejo"><strong>Sube la plantilla las veces que quieras</strong><p>Mientras se va llenando, cada subida carga solo lo nuevo: las filas vacías se ignoran y las muestras ya cargadas no se repiten. Cada carga queda en el historial con el nombre del archivo y su huella SHA-256.</p></div>
-
-  <h3 id="csv">Datos y carga CSV</h3>
-  <p>Para importar archivos que ya existen (CSV, TXT, DAT o Excel), por ejemplo los que exporta otro sistema. Si los datos todavía no existen, conviene más la plantilla.</p>
-  <figure>
-    <div class="lienzo"><img src="img/ing_datos_a.png" alt="Carga de archivo y asignación de columnas"></div>
-    <figcaption><b>Carga y asignación de columnas.</b> CEP sugiere qué es cada columna; se puede cambiar.</figcaption>
-  </figure>
-  <ol class="pasos">
-    <li>Pulsa <span class="boton">Cargar Nuevo Dataset</span> o arrastra el archivo. El delimitador, la codificación y los encabezados se detectan solos.</li>
-    <li>En <span class="texto-pantalla">Motor de Mapeo de Columnas</span>, revisa el rol de cada columna: fecha y hora, identificador de subgrupo, valor, operario, lote o ignorar. Si cada fila es una muestra con sus valores en varias columnas, todas llevan el rol de valor.</li>
-    <li>Elige la <span class="texto-pantalla">Variable de destino</span> y, si el archivo no tiene columna de subgrupo, el tamaño <i>n</i>: las filas se agrupan de a <i>n</i> en orden.</li>
-    <li>Elige cómo tratar los faltantes (<i>Descartar fila incompleta</i>, <i>Imputar por media de subgrupo</i> o <i>Alerta estricta</i>) y los atípicos (<i>Regla Tukey 1.5×IQR</i>, <i>Umbral 3σ</i> o <i>Sin filtro</i>).</li>
-    <li>Revisa las pestañas <span class="texto-pantalla">Primeras filas</span>, <span class="texto-pantalla">Subgrupos formados</span> e <span class="texto-pantalla">Informe de limpieza</span>, y el resumen descriptivo.</li>
-    <li>Pulsa <span class="boton">Guardar Mapeo e Importar a la Variable</span>.</li>
-  </ol>
-  <figure>
-    <div class="lienzo"><img src="img/ing_datos_b.png" alt="Vista previa y resumen descriptivo"></div>
-    <figcaption><b>Vista previa y resumen descriptivo</b> antes de importar.</figcaption>
-  </figure>
-  <div class="aviso nota"><strong>Solo a variables en Fase I</strong><p>Los datos importados entran en la Fase I. Si la variable ya está en Fase II, la pantalla dice <span class="texto-pantalla">«no admite importación»</span>: usa la plantilla o la vista Operario.</p></div>
-</section>
-
-<!-- ===================================================================== 8 -->
-<section class="capitulo" id="analizar" data-perfil="ingenieria">
-  <header><span class="num">8</span><h2>Ingeniería: analizar</h2><p class="para">Para Ingeniería</p></header>
-  <p class="entrada">Aquí se fijan los límites, se revisa que los datos sean adecuados y se mide si el proceso cumple.</p>
-
-  <h3 id="graficos">Gráficos por variables</h3>
-  <p>La pantalla central del análisis para las variables que se miden.</p>
-  <figure>
-    <div class="lienzo"><img src="img/ing_var_f1_a.png" alt="Gráficos por variables en Fase I"></div>
-    <figcaption><b>Fase I</b>, con el ejemplo de los anillos de pistón de Montgomery.</figcaption>
-    <ol class="leyenda">
-      <li data-xy="48.7,4.1"><b>Etapa.</b> Fase I o Fase II, y si los límites son provisionales o están congelados.</li>
-      <li data-xy="2.2,8.3"><b>Tipo de gráfica.</b> X̄-R, X̄-S o I-MR. Solo se cambia en Fase I.</li>
-      <li data-xy="44.4,11.5"><b>Congelar límites.</b> En Fase II, este botón dice <span class="boton">Volver a Fase I</span>.</li>
-      <li data-xy="71.6,11.5"><b>Exportar gráficos</b> como imagen y abrir el reporte técnico.</li>
-      <li data-xy="1.4,15.3"><b>Tarjetas.</b> Línea central y límites de cada gráfica, constantes usadas y σ estimada.</li>
-      <li data-xy="87.1,17"><b>Diagnóstico.</b> Cuántos puntos tienen señal; <span class="boton">Auditar</span> lleva al primero.</li>
-      <li data-xy="40.5,31.9"><b>Gráfica de promedios.</b> Con las franjas a 1 y 2 σ que usan algunas reglas.</li>
-      <li data-xy="30.2,61.9"><b>Gráfica de dispersión</b> (R, S o MR): cuánto varían las unidades dentro de cada muestra.</li>
-      <li data-xy="81.5,32"><b>Auditoría de reglas.</b> Cuántas veces se cumplió cada regla y en qué muestras; cambia entre WE (4) y Nelson (8).</li>
-      <li data-xy="80.6,85"><b>Índices de capacidad.</b> Resumen; <span class="boton">Estudio completo</span> abre la pantalla de capacidad.</li>
-    </ol>
-  </figure>
-
-  <h4 id="depurar">Fase I: depurar las muestras</h4>
-  <figure>
-    <div class="lienzo"><img src="img/ing_var_f1_b.png" alt="Tabla de depuración de subgrupos"></div>
-    <figcaption><b>Depuración de subgrupos.</b> Cada muestra con su media, su dispersión, la regla que violó y la causa registrada.</figcaption>
-    <ol class="leyenda">
-      <li data-xy="23.1,12.2"><b>Solo con señal.</b> Acorta la lista a las muestras con señal o excluidas.</li>
-      <li data-xy="6.2,21.2"><b>Excluir.</b> Marca las muestras con causa conocida.</li>
-      <li data-xy="61.9,2.8"><b>Simulación.</b> Cómo cambiarían los límites y el Cpk antes de confirmar.</li>
-      <li data-xy="95.2,3"><b>Aplicar recálculo limpio.</b> Pide la causa (obligatoria) y la acción de cada muestra excluida.</li>
-      <li data-xy="62.1,16.8"><b>Causa y acción</b> registradas.</li>
-    </ol>
-  </figure>
-  <ol class="pasos">
-    <li>Marca <span class="texto-pantalla">Excluir</span> en las muestras afectadas por una causa conocida: un ajuste de máquina, un error de medición, una materia prima distinta.</li>
-    <li>Mira la <span class="texto-pantalla">Simulación de Recálculo</span>: cuánto cambian el límite superior y la línea central, el Cpk antes y después, y si quedarían señales.</li>
-    <li>Pulsa <span class="boton">Aplicar Recálculo Limpio</span> y escribe la causa de cada muestra.</li>
-    <li>Repite hasta que no queden señales sin explicación.</li>
-  </ol>
-  <div class="aviso cuidado"><strong>Solo se excluye con causa</strong><p>No excluyas muestras solo porque salen fuera de los límites. Si se excluyen sin motivo, los límites quedan más estrechos que la variación real del proceso y después aparecerán falsas alarmas.</p></div>
-
-  <h4 id="congelar">Congelar los límites</h4>
-  <p>Con la Fase I depurada, pulsa <span class="boton">Congelar Límites → Fase II</span>. La ventana indica con cuántas muestras se fijarán y pide un motivo. CEP advierte si quedan puntos con señal o si hay menos de 20 muestras, pero permite continuar. Desde ese momento, cada muestra nueva se compara con estos límites y la vista Operario muestra el estado en verde, ámbar o rojo.</p>
-
-  <h4 id="fase2">Fase II: monitoreo</h4>
-  <figure>
-    <div class="lienzo"><img src="img/ing_var_f2_a.png" alt="Gráficos por variables en Fase II"></div>
-    <figcaption><b>Fase II.</b> Las gráficas usan los límites congelados; cada señal lleva el código de la regla.</figcaption>
-  </figure>
-  <p>En esta etapa las muestras no se excluyen: las señales se atienden desde las alertas. La tabla <span class="texto-pantalla">Señales de Fase II</span> muestra la causa y la acción anotadas en cada alerta y su estado.</p>
-  <figure>
-    <div class="lienzo"><img src="img/ing_var_f2_b.png" alt="Seguimiento de señales de Fase II"></div>
-    <figcaption><b>Seguimiento de señales.</b> Resuelta, En investigación o Estable.</figcaption>
-  </figure>
-  <h4>Volver a la Fase I</h4>
-  <p>Si el proceso cambió de forma permanente (máquina nueva, otro proveedor, otro método), pulsa <span class="boton">Volver a Fase I</span>. Se pide un motivo y se elige la nueva base: conservar la anterior (las muestras de Fase II se archivan) o usar las de Fase II. Los límites anteriores quedan en el historial.</p>
-
-  <h3 id="atributos">Gráficos por atributos</h3>
-  <p>Funciona igual que la pantalla anterior, para las variables que se cuentan.</p>
-  <table class="tabla">
-    <thead><tr><th>Gráfica</th><th>Cuándo se usa</th></tr></thead>
-    <tbody>
-      <tr><td><strong>p</strong></td><td>Porcentaje de unidades defectuosas; el tamaño de muestra puede variar.</td></tr>
-      <tr><td><strong>np</strong></td><td>Cantidad de unidades defectuosas, con tamaño de muestra constante.</td></tr>
-      <tr><td><strong>c</strong></td><td>Cantidad de fallas por muestra, cuando la muestra es siempre igual.</td></tr>
-      <tr><td><strong>u</strong></td><td>Fallas por unidad, cuando el tamaño de la muestra cambia.</td></tr>
-    </tbody>
-  </table>
-  <figure>
-    <div class="lienzo"><img src="img/ing_atr_a.png" alt="Gráfica p"></div>
-    <figcaption><b>Gráfica p</b> de envases defectuosos. Las muestras #15 y #23 superan el límite superior.</figcaption>
-  </figure>
-  <p>Al final de la pantalla, un asistente responde qué gráfica usar con tres preguntas: qué se registra, si el tamaño de muestra es constante y si se prefiere ver una proporción o un conteo.</p>
-  <figure>
-    <div class="lienzo"><img src="img/ing_atr_b.png" alt="Asistente de gráfica de atributos"></div>
-    <figcaption><b>Asistente.</b> La recomendación viene con la razón en palabras.</figcaption>
-  </figure>
-
-  <h3 id="supuestos">Validación de supuestos</h3>
-  <p>Las gráficas de control dan por hecho que las mediciones siguen aproximadamente una <span class="termino" tabindex="0" data-def="La curva en forma de campana: la mayoría de los valores cerca del promedio y cada vez menos hacia los extremos.">distribución normal</span> y que cada una no depende de la anterior. Esta pantalla lo comprueba.</p>
-  <figure>
-    <div class="lienzo"><img src="img/ing_sup_a.png" alt="Validación de supuestos"></div>
-    <figcaption><b>Veredicto, pruebas de normalidad, gráfico Q-Q e histograma.</b></figcaption>
-  </figure>
-  <ul>
-    <li><b>Controles:</b> los datos a analizar (automático, Fase I o Fase II) y el nivel de significancia α (0,01, 0,05 o 0,10).</li>
-    <li><b>Veredicto:</b> una frase en verde si todo se cumple o en ámbar si hay observaciones.</li>
-    <li><b>Normalidad:</b> Anderson-Darling, Shapiro-Wilk y Lilliefors, cada una con su <span class="termino" tabindex="0" data-def="Número entre 0 y 1. Si es mayor que α, los datos no contradicen el supuesto; si es menor, sí.">p-valor</span> y la etiqueta Conforme o Rechaza H0.</li>
-    <li><b>Gráfico Q-Q:</b> si los puntos siguen la recta dentro de las bandas, los datos son compatibles con la normal.</li>
-  </ul>
-  <figure>
-    <div class="lienzo"><img src="img/ing_sup_b.png" alt="Independencia y Box-Cox"></div>
-    <figcaption><b>Independencia, rachas y transformación de Box-Cox.</b></figcaption>
-  </figure>
-  <ul>
-    <li><b>Independencia:</b> en el correlograma, las barras deben quedar dentro de las líneas rojas. Durbin-Watson cerca de 2 indica independencia.</li>
-    <li><b>Aleatoriedad:</b> prueba de rachas y tendencia por τ de Kendall.</li>
-    <li><b>Box-Cox:</b> si la normalidad se rechaza, indica qué transformación la corregiría. Si el intervalo incluye 1, no conviene transformar.</li>
-  </ul>
-  <div class="aviso importante"><strong>Datos redondeados</strong><p>Si el instrumento mide con poca resolución (por ejemplo, gramos enteros), muchos valores se repiten y las pruebas pueden rechazar la normalidad aunque el proceso sea normal; en el gráfico Q-Q se ven escalones. Revisa entonces si los datos son simétricos y si el Q-Q sigue la recta en general. La gráfica X̄ trabaja con promedios y es poco sensible a este efecto.</p></div>
-
-  <h3 id="capacidad">Capacidad del proceso</h3>
-  <p>Responde una pregunta concreta: <b>¿el proceso cumple lo que pide el cliente?</b> Requiere que la variable tenga mínimo, máximo o ambos.</p>
+  <h3 id="capacidad">Revisar la capacidad</h3>
+  <p>Ve a <span class="ruta">Ingeniería<i>›</i>Capacidad</span>. Arriba aparece el veredicto en una frase; debajo, los índices y el detalle.</p>
   <figure>
     <div class="lienzo"><img src="img/ing_capacidad.png" alt="Capacidad del proceso"></div>
-    <figcaption><b>Capacidad.</b> El veredicto arriba, los índices debajo y el detalle a continuación.</figcaption>
+    <figcaption><b>Capacidad</b> (datos de demostración).</figcaption>
     <ol class="leyenda">
       <li data-xy="41.6,4.3"><b>Cómo se estima σ.</b> Con los rangos, las desviaciones, los rangos móviles o la σ fijada por el ingeniero.</li>
       <li data-xy="63.1,2.6"><b>Datos.</b> Automático usa la Fase II si tiene al menos 20 muestras; si no, la Fase I.</li>
-      <li data-xy="1.4,12.2"><b>Veredicto.</b> Capaz, marginal o no capaz, en una frase.</li>
+      <li data-xy="1.4,12.2"><b>Veredicto.</b> Capaz, marginal o no capaz.</li>
       <li data-xy="1.4,23.3"><b>Cp.</b> Cuánto cabe la variación en la tolerancia, si el proceso estuviera centrado.</li>
       <li data-xy="25.4,23.3"><b>Cpk.</b> Lo mismo, considerando dónde está el promedio.</li>
       <li data-xy="49.8,23.3"><b>Cpu y Cpl.</b> Cada lado por separado.</li>
-      <li data-xy="74.2,23.3"><b>Fracción no conforme.</b> Esperada (en % y piezas por millón) y observada.</li>
+      <li data-xy="74.2,23.3"><b>Fracción no conforme.</b> Esperada (% y piezas por millón) y observada.</li>
       <li data-xy="31.5,36.7"><b>Histograma</b> con mínimo, máximo, promedio y curva normal.</li>
-      <li data-xy="88.8,57.4"><b>Producto fuera de especificación</b> por debajo y por encima.</li>
+      <li data-xy="88.8,57.4"><b>Producto fuera de especificación</b>, por debajo y por encima.</li>
       <li data-xy="87.1,80.7"><b>Conclusiones</b> automáticas para revisar.</li>
     </ol>
   </figure>
@@ -806,149 +877,167 @@ dialog.visor p { color: #d6e6eb; font-size: 0.85rem; margin: 0.5rem 0 0; text-al
     </tbody>
   </table>
   <div class="aviso importante"><strong>Primero estable, después capaz</strong><p>Si el proceso tiene señales sin resolver, CEP advierte que los índices no son confiables. Atiende las alertas o depura la Fase I antes de interpretarlos.</p></div>
-  <details class="tecnico"><summary>Detalle técnico</summary><p>Cp = (LES − LEI) / 6σ; Cpu = (LES − μ) / 3σ; Cpl = (μ − LEI) / 3σ; Cpk = mín(Cpu, Cpl). La fracción esperada supone distribución normal; por eso conviene compararla con la observada y revisar los supuestos. Para variables por atributos, la capacidad se expresa como el nivel medio de defectos.</p></details>
-</section>
+  <details class="tecnico"><summary>Detalle técnico</summary><p>Cp = (LES − LEI) / 6σ; Cpu = (LES − μ) / 3σ; Cpl = (μ − LEI) / 3σ; Cpk = mín(Cpu, Cpl). La fracción esperada supone distribución normal; por eso conviene compararla con la observada y revisar los <a href="#supuestos">supuestos</a>.</p></details>
 
-<!-- ===================================================================== 9 -->
-<section class="capitulo" id="planificar" data-perfil="ingenieria">
-  <header><span class="num">9</span><h2>Ingeniería: planificar y decidir</h2><p class="para">Para Ingeniería</p></header>
-
-  <h3 id="plan">Plan de muestreo</h3>
-  <p>Ayuda a decidir cuántas unidades revisar y cada cuánto, buscando equilibrio entre detectar rápido los problemas, evitar las falsas alarmas y no recargar al personal.</p>
-  <figure>
-    <div class="lienzo"><img src="img/ing_plan.png" alt="Plan de muestreo"></div>
-    <figcaption><b>Plan de muestreo.</b> A la izquierda el plan propuesto; a la derecha, qué cambia respecto del actual.</figcaption>
-    <ol class="leyenda">
-      <li data-xy="18.1,25.1"><b>Unidades por muestra.</b> Con − y +. Más unidades detectan antes los cambios pequeños.</li>
-      <li data-xy="24.3,36.5"><b>Cada cuánto.</b> 15 min, 30 min, 1, 2 o 4 horas, u otro valor.</li>
-      <li data-xy="30.7,49.2"><b>Qué tan estrictos son los límites.</b> Más sensible (2,5σ), estándar (3σ) o más tolerante (3,5σ).</li>
-      <li data-xy="21.3,67.3"><b>Variabilidad (σ).</b> Calculada con los datos o fijada según el criterio del ingeniero.</li>
-      <li data-xy="22.4,89.7"><b>Cambio a detectar.</b> El tamaño del corrimiento del promedio que interesa.</li>
-      <li data-xy="64.7,20.7"><b>Comparación.</b> Tiempo para detectar, frecuencia de falsas alarmas y unidades por turno.</li>
-      <li data-xy="42.6,61.3"><b>Explicación en palabras</b> de lo que significa el plan.</li>
-      <li data-xy="95.2,69.7"><b>Guardar este plan.</b> Pide un motivo y lo aplica.</li>
-      <li data-xy="56,81.1"><b>Detalle técnico.</b> Curva ARL, tabla de desempeño y simulación.</li>
-    </ol>
-  </figure>
-  <div class="aviso consejo"><strong>Cómo leer la comparación</strong><p>Busca un plan que detecte el cambio que te importa en un tiempo razonable (por ejemplo, menos de un turno) sin dar falsas alarmas a cada rato y sin que revisar unidades se coma el tiempo del personal.</p></div>
-  <div class="aviso cuidado"><strong>Guardar un plan en Fase II</strong><p>Los límites se recalculan con el centro y la σ congelados. Si cambia el número de unidades por muestra, las muestras de monitoreo tomadas con el tamaño anterior pasan al archivo, porque ya no son comparables con los límites nuevos.</p></div>
-  <details class="tecnico"><summary>Detalle técnico: ARL y ATS</summary><p>El <b>ARL</b> es el número medio de muestras hasta que la gráfica da una señal. Con el proceso estable (ARL₀) conviene que sea alto: pocas falsas alarmas. Con el proceso corrido (ARL₁) conviene que sea bajo: detección rápida. El <b>ATS</b> es lo mismo expresado en tiempo (ARL × intervalo entre muestras). Para gráficas de atributos, CEP calcula el ARL exacto con la distribución binomial o de Poisson.</p></details>
-
-  <h3 id="aceptacion">Muestreo de aceptación</h3>
-  <p>Para decidir si se acepta o se rechaza un lote (por ejemplo, de materia prima) revisando solo una muestra. El plan es simple: se revisan <i>n</i> unidades y se acepta el lote si hay como máximo <i>c</i> defectuosas.</p>
-  <figure>
-    <div class="lienzo"><img src="img/ing_muestreo.png" alt="Muestreo de aceptación"></div>
-    <figcaption><b>Muestreo de aceptación.</b> Plan, curvas, dictamen del lote e historial.</figcaption>
-  </figure>
-  <ol class="pasos">
-    <li>Identifica el lote (código y descripción) y escribe el tamaño del lote <i>N</i>, la muestra <i>n</i>, el número de aceptación <i>c</i>, el <span class="termino" tabindex="0" data-def="Nivel de calidad aceptable: el porcentaje defectuoso con el que un lote debería aceptarse casi siempre.">AQL</span> y el <span class="termino" tabindex="0" data-def="Porcentaje defectuoso tolerable del lote: la calidad que se quiere rechazar casi siempre.">LTPD</span>.</li>
-    <li>O deja que CEP lo diseñe: escribe los riesgos α y β en <span class="texto-pantalla">Diseñar plan</span> y pulsa <span class="boton">Calcular n y c</span>.</li>
-    <li>Revisa la <b>curva OC</b> (probabilidad de aceptar según la calidad del lote), la <b>AOQ</b> (calidad media que sale) y la <b>ATI</b> (unidades inspeccionadas por lote).</li>
-    <li>Al inspeccionar, indica los defectuosos hallados con − y +: CEP muestra el dictamen, la fracción estimada y su intervalo de confianza.</li>
-    <li>Pulsa <span class="boton">Registrar Dictamen del Lote</span> para guardarlo en el historial de lotes.</li>
-  </ol>
-  <div class="aviso nota"><strong>Inspección severa y reducida</strong><p>Los botones <span class="texto-pantalla">Severa</span> y <span class="texto-pantalla">Reducida</span> aparecen desactivados: quedan fuera del alcance de esta versión.</p></div>
-</section>
-
-<!-- ===================================================================== 10 -->
-<section class="capitulo" id="administrar" data-perfil="ingenieria">
-  <header><span class="num">10</span><h2>Ingeniería: configurar, informar y respaldar</h2><p class="para">Para Ingeniería</p></header>
-
-  <h3 id="config">Límites y reglas</h3>
-  <p>La configuración de la variable activa y el historial de todos sus cambios.</p>
-  <figure>
-    <div class="lienzo"><img src="img/ing_conf_a.png" alt="Configuración de la variable"></div>
-    <figcaption><b>Revisión vigente, especificaciones y muestreo.</b></figcaption>
-  </figure>
-  <ul>
-    <li><b>Revisión vigente:</b> el número de versión (<span class="texto-pantalla">REV v2</span>), si los límites están congelados y la huella SHA-256 de la configuración.</li>
-    <li><b>Especificaciones:</b> mínimo, ideal y máximo; para una especificación de un solo lado se deja vacío el otro. También el nombre, la unidad y los decimales.</li>
-    <li><b>Muestreo y límites:</b> tipo de gráfica, tamaño de muestra, frecuencia, ancho de los límites y estimador de σ.</li>
-  </ul>
-  <p>Al cambiar algo, el botón de arriba pasa de <span class="texto-pantalla">Sin cambios pendientes</span> a <span class="boton">Guardar nueva revisión</span>, que pide una justificación.</p>
-  <div class="aviso nota"><strong>¿Por qué algunos campos no se pueden cambiar?</strong><p>Con los límites congelados, el tamaño de muestra, k y σ se cambian desde el <a href="#plan">plan de muestreo</a>, que recalcula los límites. El tipo de gráfica y el estimador de σ solo se cambian volviendo a la Fase I.</p></div>
-  <figure>
-    <div class="lienzo"><img src="img/ing_conf_b.png" alt="Reglas de detección"></div>
-    <figcaption><b>Reglas de detección.</b> Condición, tasa de falsa alarma, severidad y estado.</figcaption>
-  </figure>
-  <p>Las reglas se activan una a una o con <span class="boton">Preset WE</span> (4 reglas) y <span class="boton">Preset Nelson</span> (8 reglas). Las gráficas de dispersión solo evalúan la regla N1.</p>
-  <figure>
-    <div class="lienzo"><img src="img/ing_conf_c.png" alt="Historial, turnos y modo demostración"></div>
-    <figcaption><b>Historial de cambios, turnos y modo demostración.</b></figcaption>
-  </figure>
-  <ul>
-    <li><b>Historial de cambios:</b> fecha, usuario, parámetro, valor anterior y nuevo, justificación y versión. Se filtra y se descarga con <span class="boton">Exportar Historial (CSV)</span>.</li>
-    <li><b>Turnos de trabajo:</b> nombre, inicio y fin de cada turno; los usa el resumen del turno del operario.</li>
-    <li><b>Modo demostración:</b> muestra u oculta el botón de valores simulados en la vista Operario.</li>
-  </ul>
-
-  <h3 id="reportes">Reportes</h3>
-  <figure>
-    <div class="lienzo"><img src="img/ing_reportes.png" alt="Generador de reportes"></div>
-    <figcaption><b>Reportes.</b> Configuración a la izquierda y vista previa a la derecha.</figcaption>
-    <ol class="leyenda">
-      <li data-xy="21.6,15.7"><b>Plantilla del reporte.</b> Integral, Capacidad y supuestos, Control en proceso o Trazabilidad.</li>
-      <li data-xy="23.3,39.8"><b>Alcance.</b> El proceso y la variable (se cambia en el encabezado).</li>
-      <li data-xy="27.6,55"><b>Módulos a incluir.</b> Marca o desmarca capítulos.</li>
-      <li data-xy="71.1,3.6"><b>Generar y previsualizar.</b> Muestra la primera página.</li>
-      <li data-xy="86.2,7.1"><b>Exportar PDF.</b></li>
-      <li data-xy="90.5,10.7"><b>Exportar Excel.</b></li>
-      <li data-xy="66.4,16"><b>Vista previa.</b></li>
-      <li data-xy="70.2,90.8"><b>Historial de reportes.</b> Descargar otra vez y verificar.</li>
-    </ol>
-  </figure>
-  <ol class="pasos">
-    <li>Elige la plantilla del reporte y revisa el alcance.</li>
-    <li>Marca los módulos que quieres incluir.</li>
-    <li>Pulsa <span class="boton">Generar y Previsualizar</span>.</li>
-    <li>Pulsa <span class="boton">Exportar PDF</span> o <span class="boton">Exportar Excel (.xlsx)</span> y elige dónde guardarlo. Además queda una copia en la carpeta <b>reportes</b>.</li>
-  </ol>
+  <h3 id="reportes">Generar el informe</h3>
+  <div class="paso"><span class="n">1</span><div>
+    <h4>Elige qué informe quieres</h4>
+    <p>En <span class="ruta">Ingeniería<i>›</i>Reportes y Auditoría</span>, elige la plantilla del reporte: <b>Integral</b> (todo), <b>Capacidad y supuestos</b>, <b>Control en proceso</b> (gráficas y alertas) o <b>Trazabilidad</b> (historial de cambios). Debajo puedes marcar o desmarcar capítulos.</p>
+  </div></div>
+  <div class="paso"><span class="n">2</span><div>
+    <h4>Previsualiza</h4>
+    <p>Pulsa <span class="boton">Generar y Previsualizar</span>: a la derecha aparece la primera página tal como saldrá.</p>
+    <figure><div class="lienzo"><img src="img/g_reportes.png" alt="Generador de reportes con vista previa"></div></figure>
+  </div></div>
+  <div class="paso"><span class="n">3</span><div>
+    <h4>Exporta</h4>
+    <p>Pulsa <span class="boton">Exportar PDF</span> o <span class="boton">Exportar Excel (.xlsx)</span> y elige dónde guardarlo. Además queda una copia en la carpeta <b>reportes</b> y una fila en el historial de reportes.</p>
+  </div></div>
   <h4>Cómo es el informe PDF</h4>
-  <p>Está escrito para lectores que no son del área y <b>solo describe</b> lo que pasó, sin recomendaciones: el estado en una frase, un resumen «En pocas palabras», los indicadores con su significado, la gráfica con una guía de lectura, las muestras fuera de lo normal, el cumplimiento de la especificación, la verificación de los datos, el plan de muestreo, las alertas, los lotes, el historial de cambios, un anexo técnico y un glosario.</p>
+  <p>Está escrito para lectores que no son del área y <b>solo describe</b> lo que pasó, sin recomendaciones: el estado en una frase, un resumen «En pocas palabras», los indicadores con su significado, la gráfica con una guía de lectura, las muestras fuera de lo normal, el cumplimiento de la especificación, la verificación de los datos, el plan de muestreo, las alertas, el historial de cambios, un anexo técnico y un glosario.</p>
   <div class="pareja">
     <figure><div class="lienzo"><img src="img/informe_p1.png" alt="Página 1 del informe"></div><figcaption><b>Página 1.</b> Estado, resumen e indicadores.</figcaption></figure>
     <figure><div class="lienzo"><img src="img/informe_p2.png" alt="Página 2 del informe"></div><figcaption><b>Página 2.</b> La gráfica con su guía de lectura.</figcaption></figure>
   </div>
-  <div class="aviso nota"><strong>Sin LaTeX también hay PDF</strong><p>Si el equipo no tiene MiKTeX, el PDF se genera con un formato alternativo con los mismos textos y la pantalla lo avisa. El libro Excel tiene una hoja por sección con los datos y resultados numéricos.</p></div>
   <div class="aviso consejo"><strong>Comprobar que un informe no fue modificado</strong><p>En el historial de reportes, la verificación recalcula la huella SHA-256 del archivo y la compara con la registrada al generarlo. Si alguien cambió el archivo, no coincide.</p></div>
-
-  <h3 id="base">Base de datos y respaldos</h3>
-  <figure class="media">
-    <div class="lienzo"><img src="img/ing_base_datos.png" alt="Base de datos y respaldos"></div>
-    <figcaption><b>Base de datos y respaldos.</b></figcaption>
-  </figure>
-  <ul>
-    <li><b>Tus datos:</b> cuántos procesos, variables y muestras hay, dónde está la base y su tamaño.</li>
-    <li><span class="boton">Respaldar ahora</span> guarda una copia. Además, CEP hace una cada vez que se abre (se guardan las últimas 20).</li>
-    <li><span class="boton">Descargar una copia</span> guarda la base completa en un archivo .db, para archivarla o llevarla a otro equipo.</li>
-    <li>En la lista de respaldos, cada copia se descarga o se recupera con <span class="boton">Volver a este</span>.</li>
-    <li><span class="boton">Elegir archivo .db</span> reemplaza todos los datos por los de una copia descargada antes.</li>
-    <li><span class="boton">Cargar demostración</span> aparece solo con la base vacía.</li>
-  </ul>
-  <div class="aviso cuidado"><strong>Volver a un respaldo reemplaza todo</strong><p>La base vuelve completa al estado de esa copia: se pierde lo registrado después, en todos los procesos. Antes de hacerlo, CEP guarda una copia de la base actual que aparece en la misma lista, así que siempre se puede deshacer.</p></div>
-  <div class="aviso consejo"><strong>Pasar los datos a otro computador</strong><p>En el equipo de origen, <span class="boton">Descargar una copia</span>. En el de destino, con CEP instalado, <span class="boton">Elegir archivo .db</span>.</p></div>
+  <div class="aviso nota"><strong>Sin LaTeX también hay PDF</strong><p>Si el equipo no tiene MiKTeX, el PDF se genera con un formato alternativo con los mismos textos y la pantalla lo avisa.</p></div>
 </section>
 
-<!-- ===================================================================== 11 -->
+<!-- ===================================================================== referencia -->
+<section class="capitulo" id="referencia" data-perfil="ingenieria">
+  <header><span class="num">12</span><h2>Referencia de las demás pantallas</h2><p class="para">Para Ingeniería</p></header>
+  <p class="entrada">Lo que no apareció en los tutoriales: cada pantalla de Ingeniería explicada parte por parte.</p>
+
+  <h3 id="graficos">Gráficos por variables, en detalle</h3>
+  <figure>
+    <div class="lienzo"><img src="img/ing_var_f1_a.png" alt="Gráficos por variables"></div>
+    <figcaption><b>Gráficos por variables</b> (ejemplo de los anillos de pistón de Montgomery).</figcaption>
+    <ol class="leyenda">
+      <li data-xy="48.7,4.1"><b>Etapa.</b> Fase I o Fase II, y si los límites son provisionales o están congelados.</li>
+      <li data-xy="2.2,8.3"><b>Tipo de gráfica.</b> X̄-R, X̄-S o I-MR. Solo se cambia en Fase I.</li>
+      <li data-xy="44.4,11.5"><b>Congelar límites</b> (en Fase II, <span class="boton">Volver a Fase I</span>).</li>
+      <li data-xy="71.6,11.5"><b>Exportar gráficos</b> como imagen y abrir el reporte técnico.</li>
+      <li data-xy="1.4,15.3"><b>Tarjetas.</b> Línea central y límites de cada gráfica, constantes y σ estimada.</li>
+      <li data-xy="87.1,17"><b>Diagnóstico.</b> Cuántos puntos tienen señal; <span class="boton">Auditar</span> lleva al primero.</li>
+      <li data-xy="40.5,31.9"><b>Gráfica de promedios</b>, con franjas a 1 y 2 σ que usan algunas reglas.</li>
+      <li data-xy="30.2,61.9"><b>Gráfica de dispersión</b> (R, S o MR).</li>
+      <li data-xy="81.5,32"><b>Auditoría de reglas.</b> Cambia entre WE (4) y Nelson (8).</li>
+      <li data-xy="80.6,85"><b>Índices de capacidad</b> resumidos.</li>
+    </ol>
+  </figure>
+  <p>Al hacer clic en un punto de la gráfica, la tabla de abajo salta a esa muestra.</p>
+
+  <h3 id="atributos">Gráficos por atributos</h3>
+  <p>Funciona igual, para las variables que se cuentan:</p>
+  <table class="tabla">
+    <thead><tr><th>Gráfica</th><th>Cuándo se usa</th></tr></thead>
+    <tbody>
+      <tr><td><strong>p</strong></td><td>Porcentaje de unidades defectuosas; el tamaño de muestra puede variar.</td></tr>
+      <tr><td><strong>np</strong></td><td>Cantidad de unidades defectuosas, con tamaño de muestra constante.</td></tr>
+      <tr><td><strong>c</strong></td><td>Cantidad de fallas por muestra, cuando la muestra es siempre igual.</td></tr>
+      <tr><td><strong>u</strong></td><td>Fallas por unidad, cuando el tamaño de la muestra cambia.</td></tr>
+    </tbody>
+  </table>
+  <figure><div class="lienzo"><img src="img/ing_atr_a.png" alt="Gráfica p"></div><figcaption><b>Gráfica p</b> de envases defectuosos.</figcaption></figure>
+  <p>Al final de la pantalla, un asistente recomienda la gráfica con tres preguntas: qué se registra, si el tamaño de muestra es constante y si se prefiere ver una proporción o un conteo.</p>
+
+  <h3 id="supuestos">Validación de supuestos</h3>
+  <p>Las gráficas de control dan por hecho que las mediciones siguen aproximadamente una <span class="termino" tabindex="0" data-def="La curva en forma de campana: la mayoría de los valores cerca del promedio y cada vez menos hacia los extremos.">distribución normal</span> y que cada una no depende de la anterior. Esta pantalla lo comprueba.</p>
+  <figure><div class="lienzo"><img src="img/ing_sup_a.png" alt="Validación de supuestos"></div><figcaption><b>Veredicto, normalidad, gráfico Q-Q e histograma.</b></figcaption></figure>
+  <ul>
+    <li><b>Veredicto:</b> una frase en verde si todo se cumple, en ámbar si hay observaciones.</li>
+    <li><b>Normalidad:</b> Anderson-Darling, Shapiro-Wilk y Lilliefors. Si el <span class="termino" tabindex="0" data-def="Número entre 0 y 1. Si es mayor que α, los datos no contradicen el supuesto; si es menor, sí.">p-valor</span> es mayor que α, dice <b>Conforme</b>.</li>
+    <li><b>Gráfico Q-Q:</b> si los puntos siguen la recta dentro de las bandas, los datos son compatibles con la normal.</li>
+    <li><b>Independencia:</b> en el correlograma, las barras deben quedar dentro de las líneas rojas; Durbin-Watson cerca de 2 indica independencia.</li>
+    <li><b>Box-Cox:</b> si la normalidad se rechaza, indica qué transformación la corregiría.</li>
+  </ul>
+  <div class="aviso importante"><strong>Datos redondeados</strong><p>Si el instrumento mide con poca resolución (por ejemplo, gramos enteros), muchos valores se repiten y las pruebas pueden rechazar la normalidad aunque el proceso sea normal; en el gráfico Q-Q se ven escalones. Revisa entonces si los datos son simétricos y si el Q-Q sigue la recta en general.</p></div>
+
+  <h3 id="plan">Plan de muestreo</h3>
+  <p>Ayuda a decidir cuántas unidades revisar y cada cuánto, buscando equilibrio entre detectar rápido los problemas, evitar falsas alarmas y no recargar al personal.</p>
+  <figure>
+    <div class="lienzo"><img src="img/ing_plan.png" alt="Plan de muestreo"></div>
+    <figcaption><b>Plan de muestreo.</b></figcaption>
+    <ol class="leyenda">
+      <li data-xy="18.1,25.1"><b>Unidades por muestra.</b> Más unidades detectan antes los cambios pequeños.</li>
+      <li data-xy="24.3,36.5"><b>Cada cuánto</b> se toma la muestra.</li>
+      <li data-xy="30.7,49.2"><b>Qué tan estrictos son los límites.</b> Más sensible (2,5σ), estándar (3σ) o más tolerante (3,5σ).</li>
+      <li data-xy="21.3,67.3"><b>Variabilidad (σ).</b> Calculada o fijada según el criterio del ingeniero.</li>
+      <li data-xy="22.4,89.7"><b>Cambio a detectar.</b></li>
+      <li data-xy="64.7,20.7"><b>Comparación.</b> Tiempo para detectar, falsas alarmas y unidades por turno.</li>
+      <li data-xy="42.6,61.3"><b>Explicación en palabras.</b></li>
+      <li data-xy="95.2,69.7"><b>Guardar este plan.</b> Pide un motivo.</li>
+      <li data-xy="56,81.1"><b>Detalle técnico.</b> Curva ARL, tabla y simulación.</li>
+    </ol>
+  </figure>
+  <div class="aviso cuidado"><strong>Guardar un plan en Fase II</strong><p>Los límites se recalculan con el centro y la σ congelados. Si cambia el número de unidades por muestra, las muestras de monitoreo tomadas con el tamaño anterior pasan al archivo.</p></div>
+
+  <h3 id="aceptacion">Muestreo de aceptación</h3>
+  <p>Para decidir si se acepta o se rechaza un lote (por ejemplo, de materia prima) revisando solo una muestra: se revisan <i>n</i> unidades y se acepta si hay como máximo <i>c</i> defectuosas.</p>
+  <figure><div class="lienzo"><img src="img/ing_muestreo.png" alt="Muestreo de aceptación"></div></figure>
+  <ol class="pasos">
+    <li>Escribe el tamaño del lote <i>N</i>, la muestra <i>n</i>, el número de aceptación <i>c</i>, el <span class="termino" tabindex="0" data-def="Nivel de calidad aceptable: el porcentaje defectuoso con el que un lote debería aceptarse casi siempre.">AQL</span> y el <span class="termino" tabindex="0" data-def="Porcentaje defectuoso tolerable del lote: la calidad que se quiere rechazar casi siempre.">LTPD</span>, o deja que CEP lo diseñe con <span class="boton">Calcular n y c</span> a partir de los riesgos α y β.</li>
+    <li>Revisa la curva OC (probabilidad de aceptar según la calidad), la AOQ y la ATI.</li>
+    <li>Indica los defectuosos hallados con − y +: aparece el dictamen. <span class="boton">Registrar Dictamen del Lote</span> lo guarda en el historial.</li>
+  </ol>
+
+  <h3 id="csv">Datos y carga CSV</h3>
+  <p>Para importar archivos que ya existen (CSV, TXT, DAT o Excel propio).</p>
+  <figure><div class="lienzo"><img src="img/ing_datos_a.png" alt="Datos y carga CSV"></div></figure>
+  <ol class="pasos">
+    <li>Pulsa <span class="boton">Cargar Nuevo Dataset</span> o arrastra el archivo. El delimitador, la codificación y los encabezados se detectan solos.</li>
+    <li>Revisa el rol de cada columna: fecha y hora, identificador de subgrupo, valor, operario, lote o ignorar.</li>
+    <li>Elige la variable de destino y, si no hay columna de subgrupo, el tamaño <i>n</i>.</li>
+    <li>Elige cómo tratar faltantes y atípicos, revisa la vista previa y pulsa <span class="boton">Guardar Mapeo e Importar a la Variable</span>.</li>
+  </ol>
+  <div class="aviso nota"><strong>Solo a variables en Fase I</strong><p>Si la variable ya está en Fase II, la pantalla dice <span class="texto-pantalla">«no admite importación»</span>: usa la plantilla o la vista Operario.</p></div>
+
+  <h3 id="config">Límites y reglas</h3>
+  <figure><div class="lienzo"><img src="img/ing_conf_a.png" alt="Configuración"></div><figcaption><b>Revisión vigente, especificaciones y muestreo.</b></figcaption></figure>
+  <ul>
+    <li><b>Especificaciones:</b> mínimo, ideal y máximo; nombre, unidad y decimales.</li>
+    <li><b>Muestreo y límites:</b> tipo de gráfica, tamaño de muestra, frecuencia, ancho de los límites y estimador de σ. Con límites congelados, varios se cambian desde el plan de muestreo.</li>
+    <li>Al cambiar algo, pulsa <span class="boton">Guardar nueva revisión</span>: pide una justificación y aumenta la versión.</li>
+  </ul>
+  <figure><div class="lienzo"><img src="img/ing_conf_b.png" alt="Reglas de detección"></div><figcaption><b>Reglas de detección.</b> Se activan una a una o con <span class="boton">Preset WE</span> y <span class="boton">Preset Nelson</span>.</figcaption></figure>
+  <figure><div class="lienzo"><img src="img/ing_conf_c.png" alt="Historial, turnos y modo demostración"></div><figcaption><b>Historial de cambios, turnos de trabajo y modo demostración.</b></figcaption></figure>
+
+  <h3 id="base">Base de datos y respaldos</h3>
+  <figure class="media"><div class="lienzo"><img src="img/ing_base_datos.png" alt="Base de datos y respaldos"></div></figure>
+  <ul>
+    <li><span class="boton">Respaldar ahora</span> guarda una copia. Además, CEP hace una cada vez que se abre (las últimas 20).</li>
+    <li><span class="boton">Descargar una copia</span> guarda la base completa en un archivo .db, para archivarla o llevarla a otro equipo.</li>
+    <li>En la lista de respaldos, <span class="boton">Volver a este</span> recupera una copia; <span class="boton">Elegir archivo .db</span> restaura una descargada antes.</li>
+    <li><span class="boton">Cargar demostración</span> aparece solo con la base vacía.</li>
+  </ul>
+  <div class="aviso cuidado"><strong>Volver a un respaldo reemplaza todo</strong><p>Se pierde lo registrado después, en todos los procesos. Antes, CEP guarda una copia de la base actual, así que siempre se puede deshacer.</p></div>
+</section>
+
+<!-- ===================================================================== problemas -->
 <section class="capitulo" id="problemas" data-perfil="todos">
-  <header><span class="num">11</span><h2>Problemas frecuentes</h2><p class="para">Para todos</p></header>
+  <header><span class="num">13</span><h2>Problemas frecuentes</h2><p class="para">Para todos</p></header>
   <p class="entrada">Pulsa una pregunta para ver la respuesta.</p>
-  <details class="pregunta"><summary>Escribí mal un valor y ya guardé la muestra.</summary><div><p>Durante 10 minutos, usa <span class="boton">Deshacer</span> en Registrar muestra. Pasado ese plazo, avisa al ingeniero: en Fase I puede excluirla indicando la causa.</p></div></details>
+  <details class="pregunta"><summary>Windows muestra «Windows protegió su PC» al instalar.</summary><div><p>Pulsa <span class="boton">Más información</span> y <span class="boton">Ejecutar de todas formas</span>. Aparece porque el instalador no tiene firma digital.</p></div></details>
+  <details class="pregunta"><summary>CEP tarda en abrir.</summary><div><p>La primera vez puede tardar hasta un minuto mientras Windows revisa el programa. Las siguientes, unos segundos.</p></div></details>
+  <details class="pregunta"><summary>Dice «CEP ya está abierto en este equipo».</summary><div><p>Ya hay una ventana abierta: búscala en la barra de tareas.</p></div></details>
+  <details class="pregunta"><summary>Escribí mal un valor y ya guardé la muestra.</summary><div><p>Durante 10 minutos, usa <span class="boton">Deshacer</span>. Después, avisa al ingeniero: en Fase I puede excluirla indicando la causa.</p></div></details>
   <details class="pregunta"><summary>La próxima muestra aparece «atrasada».</summary><div><p>Ya pasó el tiempo de la frecuencia desde la última muestra. Regístrala, o pide al ingeniero que revise la frecuencia en el plan de muestreo.</p></div></details>
-  <details class="pregunta"><summary>El estado está en rojo y no sé por qué.</summary><div><p>Abre <span class="boton">Alertas</span>: las graves sin resolver (puntos fuera de los límites, valores cerca del límite, paradas o lotes retenidos) ponen el estado en rojo. Anota la causa y la acción y márcalas como resueltas.</p></div></details>
-  <details class="pregunta"><summary>Subí la plantilla y las muestras de monitoreo no se cargaron.</summary><div><p>Es lo esperado mientras la variable está en Fase I. Congela los límites en Gráficos y vuelve a subir el mismo archivo.</p></div></details>
-  <details class="pregunta"><summary>Quiero cambiar el tipo de gráfica y no me deja.</summary><div><p>El tipo de gráfica y el estimador de σ solo se cambian en Fase I. Si los límites ya están congelados, primero usa <span class="boton">Volver a Fase I</span>.</p></div></details>
+  <details class="pregunta"><summary>El estado está en rojo y no sé por qué.</summary><div><p>Abre <span class="boton">Alertas</span>: hay alguna grave sin resolver. Anota la causa y la acción y márcala como resuelta (ver <a href="#alertas-atender">Atender una alerta</a>).</p></div></details>
+  <details class="pregunta"><summary>No puedo marcar una alerta como resuelta.</summary><div><p>Para resolverla hacen falta la causa y la acción. Si todavía no sabes la causa, déjala <b>En revisión</b>.</p></div></details>
+  <details class="pregunta"><summary>Subí la plantilla y las muestras de monitoreo no se cargaron.</summary><div><p>Es lo esperado mientras la variable está en Fase I. Congela los límites (<a href="#limites">Tutorial 3</a>) y vuelve a subir el mismo archivo.</p></div></details>
+  <details class="pregunta"><summary>El informe de revisión muestra errores en rojo.</summary><div><p>Esas muestras no se cargan. Corrige el Excel (falta un valor, más defectuosas que revisadas…) y vuelve a subirlo: las ya cargadas no se duplican.</p></div></details>
+  <details class="pregunta"><summary>Quiero cambiar el tipo de gráfica y no me deja.</summary><div><p>Solo se cambia en Fase I. Si los límites ya están congelados, primero usa <span class="boton">Volver a Fase I</span>.</p></div></details>
   <details class="pregunta"><summary>No puedo eliminar una variable.</summary><div><p>Solo se eliminan variables sin muestras, para no perder la trazabilidad.</p></div></details>
-  <details class="pregunta"><summary>Quiero quitar todo lo que cargué.</summary><div><p>En Base de datos y respaldos, usa <span class="boton">Volver a este</span> en un respaldo anterior a la carga. Ten en cuenta que afecta a todos los procesos.</p></div></details>
-  <details class="pregunta"><summary>La validación de supuestos rechaza la normalidad.</summary><div><p>Revisa si los datos están redondeados (escalones en el gráfico Q-Q) y si son simétricos. Ver el recuadro «Datos redondeados» en <a href="#supuestos">Validación de supuestos</a>.</p></div></details>
+  <details class="pregunta"><summary>Quiero empezar de cero o quitar lo que cargué.</summary><div><p>En <a href="#base">Base de datos y respaldos</a>, usa <span class="boton">Volver a este</span> en un respaldo anterior. Afecta a todos los procesos.</p></div></details>
+  <details class="pregunta"><summary>La validación de supuestos rechaza la normalidad.</summary><div><p>Revisa si los datos están redondeados (escalones en el gráfico Q-Q) y si son simétricos. Ver <a href="#supuestos">Validación de supuestos</a>.</p></div></details>
   <details class="pregunta"><summary>La capacidad dice que los índices no son confiables.</summary><div><p>El proceso tiene señales sin resolver. Atiende las alertas o depura la Fase I antes de interpretar los índices.</p></div></details>
   <details class="pregunta"><summary>El PDF dice que se usó el formato alternativo.</summary><div><p>El equipo no tiene LaTeX. Instala MiKTeX si quieres ese formato; el contenido es el mismo.</p></div></details>
-  <details class="pregunta"><summary>Windows muestra «Windows protegió su PC» al instalar.</summary><div><p>Pulsa <span class="boton">Más información</span> y <span class="boton">Ejecutar de todas formas</span>. Aparece porque el instalador no tiene firma digital.</p></div></details>
+  <details class="pregunta"><summary>Quiero pasar los datos a otro computador.</summary><div><p>En el equipo de origen, <span class="boton">Descargar una copia</span>. En el de destino, con CEP instalado, <span class="boton">Elegir archivo .db</span>.</p></div></details>
 </section>
 
 <!-- ===================================================================== 12 -->
 <section class="capitulo" id="glosario" data-perfil="todos">
-  <header><span class="num">12</span><h2>Glosario</h2><p class="para">Para todos</p></header>
+  <header><span class="num">14</span><h2>Glosario</h2><p class="para">Para todos</p></header>
   <dl class="glosario">
     <dt>Alerta</dt><dd>Aviso que genera CEP cuando una muestra cumple una regla de detección, o que crea una persona al reportar un problema.</dd>
     <dt>AOQ y AOQL</dt><dd>Calidad media que sale después de inspeccionar los lotes, y su valor máximo.</dd>
@@ -1139,6 +1228,36 @@ dialog.visor p { color: #d6e6eb; font-size: 0.85rem; margin: 0.5rem 0 0; text-al
   }
   $$("#explorador .opciones button").forEach((b) => b.addEventListener("click", () => dibujar(b.dataset.patron)));
   dibujar("N2");
+
+  // ---------------------------------------------------------------- dibujos del catálogo de alertas
+  const MINI = {
+    N1: { z: [0.3, -0.5, 0.8, -0.2, 0.4, -0.7, 0.2, 3.5, 0.1, -0.4], m: [7] },
+    R: { z: [0.5, -0.4, 0.6, -0.8, 0.2, 3.4, -0.3, 0.4, -0.6, 0.1], m: [5], disp: true },
+    N5: { z: [0.3, -0.5, 0.8, -0.2, 0.4, 2.4, 1.0, 2.6, 0.2, -0.4], m: [5, 7] },
+    N2: { z: [-0.4, 0.3, 0.6, 1.1, 0.4, 0.8, 1.3, 0.2, 0.9, 0.5, 1.2], m: [2, 3, 4, 5, 6, 7, 8, 9, 10] },
+    N3: { z: [0.2, -0.6, -1.6, -1.0, -0.4, 0.3, 0.9, 1.6, 0.4, -0.2], m: [2, 3, 4, 5, 6, 7] },
+    N6: { z: [0.2, -0.5, 0.3, 1.3, 1.6, 0.4, 1.2, 1.5, -0.2, 0.3], m: [3, 4, 6, 7] },
+    N4: { z: [0.8, -0.7, 0.9, -0.8, 0.7, -0.9, 0.8, -0.6, 0.9, -0.8, 0.7, -0.7, 0.8, -0.9], m: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13] },
+    N7: { z: [0.2, -0.1, 0.3, -0.2, 0.1, -0.3, 0.2, -0.1, 0.3, -0.2, 0.1, -0.2, 0.3, -0.1, 0.2], m: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14] },
+    N8: { z: [1.5, -1.4, 1.7, -1.6, 1.3, -1.5, 1.6, -1.4], m: [0, 1, 2, 3, 4, 5, 6, 7] },
+    manual: { z: [0.2, -0.3, 0.4, -0.1, 0.3, null, null, null, null, null], m: [], parada: true },
+  };
+  $$("svg.mini").forEach((el) => {
+    const p = MINI[el.dataset.patron]; if (!p) return;
+    const W = 150, H = 72, mg = 8;
+    const y = (z) => H / 2 - z * (H / 2 - mg) / 4;
+    const x = (i) => mg + i * (W - 2 * mg) / (p.z.length - 1);
+    el.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    let s = `<line x1="${mg}" x2="${W - mg}" y1="${y(3)}" y2="${y(3)}" stroke="#ba1a1a" stroke-width="1.5"/>`;
+    s += p.disp ? "" : `<line x1="${mg}" x2="${W - mg}" y1="${y(-3)}" y2="${y(-3)}" stroke="#ba1a1a" stroke-width="1.5"/>`;
+    s += `<line x1="${mg}" x2="${W - mg}" y1="${y(p.disp ? -1 : 0)}" y2="${y(p.disp ? -1 : 0)}" stroke="#0f4c5c" stroke-width="1.5"/>`;
+    const pts = p.z.map((z, i) => (z === null ? null : [x(i), y(p.disp ? z - 1 : z)])).filter(Boolean);
+    s += `<polyline fill="none" stroke="#1b2a30" stroke-width="1.3" points="${pts.map((q) => q.join(",")).join(" ")}"/>`;
+    p.z.forEach((z, i) => { if (z === null) return; const m = p.m.includes(i);
+      s += `<circle cx="${x(i)}" cy="${y(p.disp ? z - 1 : z)}" r="${m ? 3.6 : 2.6}" fill="${m ? "#ffdad6" : "#fff"}" stroke="${m ? "#ba1a1a" : "#0f4c5c"}" stroke-width="1.4"/>`; });
+    if (p.parada) s += `<rect x="${W / 2 + 4}" y="${H / 2 - 14}" width="28" height="28" rx="6" fill="#ba1a1a"/><rect x="${W / 2 + 13}" y="${H / 2 - 6}" width="4" height="12" fill="#fff"/><rect x="${W / 2 + 19}" y="${H / 2 - 6}" width="4" height="12" fill="#fff"/>`;
+    el.innerHTML = s;
+  });
 
   // ---------------------------------------------------------------- impresión: mostrar todo
   window.addEventListener("beforeprint", () => { $$("details").forEach((d) => (d.open = true)); $$(".capitulo").forEach((c) => c.classList.remove("oculto-perfil")); });
