@@ -1,6 +1,6 @@
 # Manual de Usuario — CEP: Control Estadístico de Procesos
 
-> **El manual completo y actualizado es [MANUAL_USUARIO.pdf](MANUAL_USUARIO.pdf)** (fuente LaTeX
+> **El manual completo y actualizado es [MANUAL_USUARIO.html](MANUAL_USUARIO.html) (interactivo) o [MANUAL_USUARIO.pdf](MANUAL_USUARIO.pdf)** (fuente HTML
 > en `docs/manual/`, capturas en `docs/manual/img/`). Este archivo queda como guía de estructura
 > para el informe del equipo.
 >

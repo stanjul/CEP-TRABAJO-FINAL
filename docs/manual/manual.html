@@ -1,0 +1,1148 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manual de usuario de CEP</title>
+<meta name="description" content="Manual de usuario de CEP, programa de control estadístico de procesos: instalación, vista Operario y vista Ingeniería, con capturas explicadas.">
+<style>
+@font-face { font-family: "League Spartan"; font-weight: 100 900; font-display: swap;
+  src: url(fuentes/leaguespartan_v15_kJEqBuEW6A0lliaV_m88ja5TwvZwLZk.woff2) format("woff2"); }
+@font-face { font-family: "Montserrat"; font-style: normal; font-weight: 100 900; font-display: swap;
+  src: url(fuentes/montserrat_v31_JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format("woff2"); }
+@font-face { font-family: "Montserrat"; font-style: italic; font-weight: 100 900; font-display: swap;
+  src: url(fuentes/montserrat_v31_JTUFjIg1_i6t8kCHKm459Wx7xQYXK0vOoz6jq6R9WXh0pg.woff2) format("woff2"); }
+
+:root {
+  --petroleo-profundo: #003441;
+  --petroleo: #0f4c5c;
+  --hielo: #eef4f5;
+  --papel: #fbfcfc;
+  --tinta: #1b2a30;
+  --tinta-suave: #4d5b60;
+  --linea: #d3dcdf;
+  --control: #ba1a1a;
+  --control-suave: #ffdad6;
+  --menta: #a1f2e2;
+  --cielo: #87bbce;
+  --verde: #15803d;
+  --ambar: #b45309;
+  --ambar-fondo: #fff4e5;
+  --verde-fondo: #eaf6ee;
+  --rojo-fondo: #fdecec;
+  --gris: #70787c;
+  --ancho-texto: 70ch;
+  --titulos: "League Spartan", "Segoe UI", sans-serif;
+  --cuerpo: "Montserrat", "Segoe UI", sans-serif;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 1.5rem; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition: none !important; animation: none !important; } }
+body { margin: 0; background: var(--papel); color: var(--tinta); font: 400 16px/1.65 var(--cuerpo); }
+img { max-width: 100%; display: block; }
+a { color: var(--petroleo); text-underline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--cielo); outline-offset: 2px; border-radius: 4px; }
+h1, h2, h3, h4 { font-family: var(--titulos); color: var(--petroleo-profundo); line-height: 1.12; letter-spacing: -0.01em; }
+h2 { font-size: 2.35rem; font-weight: 700; margin: 0 0 0.4rem; }
+h3 { font-size: 1.55rem; font-weight: 650; margin: 2.6rem 0 0.5rem; }
+h4 { font-size: 1.18rem; font-weight: 650; margin: 1.8rem 0 0.3rem; }
+p, ul, ol, dl { max-width: var(--ancho-texto); }
+p { margin: 0 0 0.9rem; }
+li { margin: 0.25rem 0; }
+strong { font-weight: 650; }
+.boton { font-weight: 650; color: var(--petroleo-profundo); background: var(--hielo); border: 1px solid var(--linea);
+  border-radius: 6px; padding: 0.02em 0.4em; white-space: nowrap; font-size: 0.94em; }
+.texto-pantalla { font-style: italic; }
+.ruta { font-weight: 600; white-space: nowrap; }
+.ruta i { font-style: normal; color: var(--gris); padding: 0 0.25em; }
+kbd { font-family: var(--cuerpo); font-size: 0.85em; border: 1px solid var(--linea); border-bottom-width: 2px; border-radius: 4px; padding: 0 0.35em; background: #fff; }
+
+/* ---------- estructura */
+.marco { display: grid; grid-template-columns: 300px minmax(0, 1fr); min-height: 100vh; }
+.lateral { position: sticky; top: 0; height: 100vh; overflow-y: auto; background: var(--hielo);
+  border-right: 1px solid var(--linea); padding: 1.4rem 1.1rem 2rem; }
+.marca-cep { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; margin-bottom: 1.2rem; }
+.marca-cep svg { width: 38px; height: 38px; flex: none; }
+.marca-cep span { font-family: var(--titulos); font-weight: 700; font-size: 1.45rem; color: var(--petroleo-profundo); line-height: 1; }
+.marca-cep small { display: block; font-family: var(--cuerpo); font-weight: 500; font-size: 0.72rem; color: var(--tinta-suave); margin-top: 0.2rem; }
+.lateral label.etiqueta { display: block; font-size: 0.78rem; font-weight: 600; color: var(--tinta-suave); margin: 0 0 0.35rem; }
+.buscador { width: 100%; font: inherit; font-size: 0.9rem; padding: 0.55rem 0.7rem; border: 1px solid var(--linea); border-radius: 8px; background: #fff; }
+.perfiles { display: flex; gap: 0.3rem; margin: 1rem 0 1.2rem; background: #fff; border: 1px solid var(--linea); border-radius: 10px; padding: 0.25rem; }
+.perfiles button { flex: 1; font: 600 0.8rem/1.2 var(--cuerpo); padding: 0.5rem 0.3rem; border: 0; border-radius: 7px; background: transparent; color: var(--tinta-suave); cursor: pointer; }
+.perfiles button[aria-pressed="true"] { background: var(--petroleo); color: #fff; }
+.indice ol { list-style: none; padding: 0; margin: 0; max-width: none; }
+.indice > ol > li { margin: 0 0 0.15rem; }
+.indice a { display: block; text-decoration: none; color: var(--tinta); border-radius: 6px; padding: 0.32rem 0.55rem; font-size: 0.88rem; line-height: 1.35; }
+.indice > ol > li > a { font-weight: 650; }
+.indice ol ol a { padding-left: 1.4rem; font-size: 0.82rem; color: var(--tinta-suave); }
+.indice a:hover { background: #fff; }
+.indice a.actual { background: #fff; color: var(--petroleo); box-shadow: inset 3px 0 0 var(--petroleo); }
+.indice .vacio { font-size: 0.85rem; color: var(--tinta-suave); padding: 0.4rem 0.55rem; }
+.boton-menu { display: none; }
+.principal { min-width: 0; }
+.contenido { padding: 0 clamp(1.2rem, 4vw, 3.6rem) 6rem; max-width: 1080px; }
+
+/* ---------- portada */
+.portada { position: relative; background: var(--petroleo-profundo); color: #fff; padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1.2rem, 4vw, 3.6rem) 0; overflow: hidden; }
+.portada .version { font-size: 0.85rem; color: var(--cielo); font-weight: 500; margin: 0 0 1.1rem; }
+.portada h1 { color: #fff; font-size: clamp(3rem, 7vw, 5.4rem); font-weight: 800; margin: 0; letter-spacing: -0.02em; }
+.portada .bajada { font-size: 1.12rem; max-width: 56ch; color: #d6e6eb; margin: 1rem 0 2rem; }
+.carta-portada { display: block; width: 100%; height: 170px; margin-top: 0.5rem; }
+.caminos { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; position: relative; margin: -1px 0 0; padding: 1.6rem clamp(1.2rem, 4vw, 3.6rem) 2.2rem; background: var(--petroleo-profundo); }
+.camino { display: block; text-decoration: none; color: #fff; border: 1px solid rgba(135,187,206,0.45); border-radius: 12px; padding: 1.1rem 1.2rem; background: rgba(255,255,255,0.04); }
+.camino:hover { border-color: var(--menta); background: rgba(161,242,226,0.08); }
+.camino strong { display: block; font-family: var(--titulos); font-size: 1.3rem; font-weight: 650; color: var(--menta); margin-bottom: 0.25rem; }
+.camino span { font-size: 0.92rem; color: #d6e6eb; }
+
+/* ---------- capítulos */
+.capitulo { padding-top: 4rem; }
+.capitulo > header { border-bottom: 2px solid var(--petroleo); padding-bottom: 1rem; margin-bottom: 1.6rem; display: grid; grid-template-columns: auto 1fr; column-gap: 1.1rem; align-items: end; }
+.capitulo .num { font-family: var(--titulos); font-weight: 800; font-size: 3.6rem; line-height: 0.8; color: var(--cielo); }
+.capitulo .para { grid-column: 2; font-size: 0.85rem; color: var(--tinta-suave); margin: 0.2rem 0 0; }
+.capitulo .entrada { font-size: 1.08rem; color: var(--tinta-suave); }
+.oculto-perfil { display: none; }
+
+/* ---------- avisos */
+.aviso { max-width: var(--ancho-texto); border-radius: 10px; padding: 0.85rem 1.1rem 0.85rem 3.1rem; margin: 1.3rem 0; position: relative; border: 1px solid; }
+.aviso::before { position: absolute; left: 1rem; top: 0.85rem; width: 1.4rem; height: 1.4rem; border-radius: 50%; color: #fff; font: 700 0.9rem/1.4rem var(--titulos); text-align: center; }
+.aviso > strong:first-child { display: block; font-family: var(--titulos); font-size: 1.08rem; margin-bottom: 0.2rem; }
+.aviso p:last-child, .aviso ul:last-child { margin-bottom: 0; }
+.aviso.nota { background: var(--hielo); border-color: #c6d8dd; }
+.aviso.nota::before { content: "i"; background: var(--petroleo); }
+.aviso.consejo { background: var(--verde-fondo); border-color: #bfe0c9; }
+.aviso.consejo::before { content: "✓"; background: var(--verde); }
+.aviso.importante { background: var(--ambar-fondo); border-color: #f1d1a6; }
+.aviso.importante::before { content: "!"; background: var(--ambar); }
+.aviso.cuidado { background: var(--rojo-fondo); border-color: #f3c2c2; }
+.aviso.cuidado::before { content: "×"; background: var(--control); }
+.aviso.nota > strong:first-child { color: var(--petroleo); }
+.aviso.consejo > strong:first-child { color: var(--verde); }
+.aviso.importante > strong:first-child { color: var(--ambar); }
+.aviso.cuidado > strong:first-child { color: var(--control); }
+
+/* ---------- figuras */
+figure { margin: 1.6rem 0 2rem; }
+figure .lienzo { position: relative; border: 1px solid var(--linea); border-radius: 10px; overflow: hidden; background: #fff; box-shadow: 0 8px 24px -16px rgba(0,52,65,0.45); }
+figure.angosta { max-width: 640px; }
+figure.media { max-width: 820px; }
+figure img { width: 100%; cursor: zoom-in; }
+figcaption { font-size: 0.86rem; color: var(--tinta-suave); margin-top: 0.6rem; max-width: var(--ancho-texto); }
+figcaption b { color: var(--tinta); font-weight: 650; }
+.punto { position: absolute; left: var(--x); top: var(--y); transform: translate(-50%, -50%); width: 26px; height: 26px; border-radius: 50%;
+  border: 2px solid #fff; background: var(--control); color: #fff; font: 700 0.85rem/22px var(--titulos); text-align: center; padding: 0;
+  cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.35); transition: transform 0.15s ease, background 0.15s ease; }
+.punto:hover, .punto.activo { background: var(--petroleo-profundo); transform: translate(-50%, -50%) scale(1.18); }
+.leyenda { list-style: none; padding: 0; margin: 1rem 0 0; max-width: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 0.35rem 1.4rem; counter-reset: ley; }
+.leyenda li { counter-increment: ley; position: relative; padding: 0.45rem 0.6rem 0.45rem 2.6rem; border-radius: 8px; margin: 0; font-size: 0.93rem; cursor: default; transition: background 0.15s ease; }
+.leyenda li::before { content: counter(ley); position: absolute; left: 0.55rem; top: 0.48rem; width: 1.45rem; height: 1.45rem; border-radius: 50%; background: var(--control); color: #fff; font: 700 0.82rem/1.45rem var(--titulos); text-align: center; }
+.leyenda li.activo { background: var(--hielo); }
+.leyenda li.activo::before { background: var(--petroleo-profundo); }
+.leyenda li b { font-weight: 650; }
+.pareja { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+
+/* ---------- pasos y listas */
+ol.pasos { counter-reset: paso; list-style: none; padding: 0; }
+ol.pasos > li { counter-increment: paso; position: relative; padding-left: 2.6rem; margin: 0 0 0.75rem; }
+ol.pasos > li::before { content: counter(paso); position: absolute; left: 0; top: 0.05rem; width: 1.75rem; height: 1.75rem; border-radius: 50%; border: 2px solid var(--petroleo); color: var(--petroleo); font: 700 0.95rem/1.6rem var(--titulos); text-align: center; }
+
+/* ---------- tablas */
+.tabla { width: 100%; max-width: 900px; border-collapse: collapse; margin: 1.2rem 0 1.6rem; font-size: 0.93rem; }
+.tabla th { text-align: left; font-family: var(--titulos); font-weight: 650; font-size: 1rem; color: var(--petroleo-profundo); border-bottom: 2px solid var(--petroleo); padding: 0.5rem 0.7rem; }
+.tabla td { border-bottom: 1px solid var(--linea); padding: 0.6rem 0.7rem; vertical-align: top; }
+.estado { display: inline-block; font-weight: 650; font-size: 0.85rem; padding: 0.2rem 0.6rem; border-radius: 6px; color: #fff; white-space: nowrap; }
+.estado.verde { background: var(--verde); } .estado.ambar { background: var(--ambar); } .estado.rojo { background: var(--control); } .estado.gris { background: var(--gris); }
+
+/* ---------- glosario en línea */
+.termino { border-bottom: 1.5px dotted var(--petroleo); cursor: help; position: relative; }
+.termino:hover::after, .termino:focus::after { content: attr(data-def); position: absolute; left: 0; bottom: calc(100% + 8px); width: max-content; max-width: 320px;
+  background: var(--petroleo-profundo); color: #fff; font-size: 0.82rem; font-weight: 500; line-height: 1.45; padding: 0.55rem 0.7rem; border-radius: 8px; z-index: 20; box-shadow: 0 6px 18px rgba(0,0,0,0.25); }
+
+/* ---------- recorrido con avance */
+.recorrido { max-width: 820px; border: 1px solid var(--linea); border-radius: 12px; background: #fff; padding: 1.2rem 1.4rem; }
+.avance { display: flex; align-items: center; gap: 0.9rem; margin-bottom: 0.9rem; }
+.avance .barra { flex: 1; height: 8px; background: var(--hielo); border-radius: 99px; overflow: hidden; }
+.avance .barra i { display: block; height: 100%; width: 0; background: var(--verde); transition: width 0.25s ease; }
+.avance span { font-size: 0.85rem; font-weight: 600; color: var(--tinta-suave); white-space: nowrap; }
+.recorrido ol { list-style: none; padding: 0; margin: 0; max-width: none; }
+.recorrido li { border-top: 1px solid var(--linea); margin: 0; }
+.recorrido label { display: grid; grid-template-columns: 1.4rem 1fr; gap: 0.8rem; padding: 0.75rem 0.2rem; cursor: pointer; }
+.recorrido input { width: 1.15rem; height: 1.15rem; margin-top: 0.2rem; accent-color: var(--verde); }
+.recorrido b { font-family: var(--titulos); font-size: 1.08rem; font-weight: 650; color: var(--petroleo-profundo); }
+.recorrido input:checked + span b { color: var(--verde); }
+.recorrido small { display: block; font-size: 0.88rem; color: var(--tinta-suave); }
+
+/* ---------- explorador de reglas */
+.explorador { max-width: 900px; border: 1px solid var(--linea); border-radius: 12px; background: #fff; padding: 1.2rem 1.3rem 1.3rem; margin: 1.4rem 0 2rem; }
+.explorador .opciones { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-bottom: 0.9rem; }
+.explorador .opciones button { font: 600 0.84rem/1.2 var(--cuerpo); padding: 0.5rem 0.8rem; border-radius: 8px; border: 1px solid var(--linea); background: var(--hielo); color: var(--petroleo-profundo); cursor: pointer; }
+.explorador .opciones button[aria-pressed="true"] { background: var(--petroleo-profundo); color: #fff; border-color: var(--petroleo-profundo); }
+.explorador svg { width: 100%; height: auto; display: block; }
+.explorador .lectura { display: grid; grid-template-columns: auto 1fr; gap: 0.2rem 1rem; margin-top: 0.8rem; padding: 0.9rem 1rem; background: var(--hielo); border-radius: 10px; }
+.explorador .lectura dt { font-weight: 650; font-size: 0.86rem; color: var(--tinta-suave); }
+.explorador .lectura dd { margin: 0; font-size: 0.93rem; }
+
+/* ---------- preguntas */
+details.pregunta { max-width: 820px; border: 1px solid var(--linea); border-radius: 10px; background: #fff; margin: 0 0 0.6rem; }
+details.pregunta summary { cursor: pointer; font-weight: 650; padding: 0.85rem 1.1rem; list-style: none; position: relative; padding-right: 2.6rem; }
+details.pregunta summary::-webkit-details-marker { display: none; }
+details.pregunta summary::after { content: "+"; position: absolute; right: 1.1rem; top: 0.6rem; font: 700 1.4rem/1 var(--titulos); color: var(--petroleo); }
+details.pregunta[open] summary::after { content: "−"; }
+details.pregunta > div { padding: 0 1.1rem 0.9rem; }
+details.tecnico { max-width: var(--ancho-texto); border-left: 3px solid var(--cielo); padding: 0.2rem 0 0.2rem 1rem; margin: 1rem 0; }
+details.tecnico summary { cursor: pointer; font-weight: 650; color: var(--petroleo); }
+
+/* ---------- glosario */
+dl.glosario { display: grid; grid-template-columns: minmax(170px, 0.35fr) 1fr; gap: 0; max-width: 900px; }
+dl.glosario dt, dl.glosario dd { border-bottom: 1px solid var(--linea); padding: 0.6rem 0.4rem; margin: 0; }
+dl.glosario dt { font-family: var(--titulos); font-weight: 650; font-size: 1.05rem; color: var(--petroleo-profundo); }
+
+/* ---------- visor de imágenes */
+dialog.visor { border: 0; padding: 0; background: transparent; max-width: 96vw; max-height: 96vh; }
+dialog.visor::backdrop { background: rgba(0, 25, 32, 0.86); }
+dialog.visor img { max-width: 96vw; max-height: 90vh; width: auto; border-radius: 8px; cursor: zoom-out; }
+dialog.visor p { color: #d6e6eb; font-size: 0.85rem; margin: 0.5rem 0 0; text-align: center; max-width: none; }
+
+.pie { margin-top: 5rem; padding-top: 1.2rem; border-top: 1px solid var(--linea); font-size: 0.85rem; color: var(--tinta-suave); }
+
+/* ---------- pantallas pequeñas */
+@media screen and (max-width: 980px) {
+  .marco { grid-template-columns: 1fr; }
+  .lateral { position: fixed; inset: 0 auto 0 0; width: min(320px, 88vw); z-index: 40; transform: translateX(-100%); transition: transform 0.2s ease; box-shadow: 4px 0 24px rgba(0,0,0,0.2); }
+  .lateral.abierto { transform: none; }
+  .boton-menu { display: inline-flex; position: fixed; right: 1rem; bottom: 1rem; z-index: 50; font: 650 0.9rem var(--cuerpo); background: var(--petroleo); color: #fff; border: 0; border-radius: 99px; padding: 0.7rem 1.1rem; box-shadow: 0 6px 18px rgba(0,0,0,0.3); }
+  .pareja { grid-template-columns: 1fr; }
+  h2 { font-size: 1.9rem; }
+  .capitulo .num { font-size: 2.6rem; }
+  .punto { width: 24px; height: 24px; font-size: 0.8rem; line-height: 20px; }
+}
+
+/* ---------- impresión (PDF) */
+@media print {
+  @page { size: A4; margin: 16mm 14mm 18mm; }
+  body { font-size: 10.5pt; background: #fff; }
+  .lateral, .boton-menu, dialog.visor, .explorador .opciones, .recorrido .avance { display: none !important; }
+  .marco { display: block; }
+  .contenido { padding: 0; max-width: none; }
+  .oculto-perfil { display: block !important; }
+  .portada { padding: 18mm 12mm 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .caminos { padding: 6mm 12mm 12mm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .capitulo { padding-top: 0; break-before: page; }
+  h3, h4 { break-after: avoid; }
+  .aviso, .tabla tr, details, .explorador, .recorrido li, ol.pasos > li, .leyenda li, .lienzo, figcaption { break-inside: avoid; }
+  figcaption { break-before: avoid; }
+  /* Capturas altas: se limita el alto y el lienzo se ajusta a la imagen, así las marcas siguen en su sitio. */
+  figure { text-align: center; }
+  figure > .lienzo { display: inline-block; max-width: 100%; vertical-align: top; }
+  figure img { cursor: default; width: auto; max-width: 100%; max-height: 165mm; }
+  figure figcaption, figure .leyenda { text-align: left; }
+  .pareja figure img { max-height: 120mm; }
+  .portada h1 { font-size: 46pt; }
+  .caminos { grid-template-columns: repeat(3, 1fr); }
+  .aviso, .estado, .punto, .leyenda li::before, .camino, .num, .lienzo, .explorador, .lectura, ol.pasos > li::before { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .termino { border-bottom: 0; }
+  .termino::after { display: none; }
+  a { text-decoration: none; }
+  figure { margin: 1rem 0 1.4rem; }
+  .leyenda { grid-template-columns: 1fr 1fr; }
+  .leyenda li { font-size: 9pt; padding-top: 0.25rem; padding-bottom: 0.25rem; }
+}
+</style>
+</head>
+<body>
+<div class="marco">
+
+<!-- ===================================================================== lateral -->
+<nav class="lateral" id="lateral" aria-label="Índice del manual">
+  <a class="marca-cep" href="#inicio">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="4" fill="#003441" stroke="#87bbce" stroke-width="1.5"/><line x1="5" y1="9" x2="27" y2="9" stroke="#ffdad6" stroke-width="1.2" stroke-dasharray="2 1.5"/><line x1="5" y1="16" x2="27" y2="16" stroke="#87bbce" stroke-width="1.2"/><line x1="5" y1="23" x2="27" y2="23" stroke="#ffdad6" stroke-width="1.2" stroke-dasharray="2 1.5"/><polyline points="6,17 10,13 14,18 18,14 22,19 26,11" stroke="#a1f2e2" stroke-width="2" fill="none" stroke-linejoin="round" stroke-linecap="round"/></svg>
+    <span>CEP<small>Manual de usuario</small></span>
+  </a>
+  <label class="etiqueta" for="buscar">Buscar en el índice</label>
+  <input class="buscador" id="buscar" type="search" placeholder="Ej.: congelar, alertas, plantilla" autocomplete="off">
+  <div class="perfiles" role="group" aria-label="Mostrar capítulos para">
+    <button type="button" data-perfil="todos" aria-pressed="true">Todo</button>
+    <button type="button" data-perfil="operario" aria-pressed="false">Operario</button>
+    <button type="button" data-perfil="ingenieria" aria-pressed="false">Ingeniería</button>
+  </div>
+  <div class="indice" id="indice"></div>
+</nav>
+<button class="boton-menu" id="boton-menu" type="button" aria-controls="lateral" aria-expanded="false">Índice</button>
+
+<div class="principal">
+
+<!-- ===================================================================== portada -->
+<header class="portada" id="inicio">
+  <p class="version">Versión 1.0.0 · Noviembre de 2026</p>
+  <h1>Manual de usuario</h1>
+  <p class="bajada">CEP vigila la calidad de un proceso a partir de las muestras que se toman en la planta: avisa cuando algo cambia, dice si el proceso cumple lo que pide el cliente y prepara los informes. Este manual lo explica pantalla por pantalla.</p>
+  <svg class="carta-portada" viewBox="0 0 1000 170" preserveAspectRatio="none" aria-hidden="true">
+    <rect x="0" y="45" width="1000" height="80" fill="#ffffff" opacity="0.05"/>
+    <line x1="0" y1="45" x2="1000" y2="45" stroke="#ffdad6" stroke-width="1.5" stroke-dasharray="8 6" vector-effect="non-scaling-stroke"/>
+    <line x1="0" y1="85" x2="1000" y2="85" stroke="#87bbce" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+    <line x1="0" y1="125" x2="1000" y2="125" stroke="#ffdad6" stroke-width="1.5" stroke-dasharray="8 6" vector-effect="non-scaling-stroke"/>
+    <polyline fill="none" stroke="#a1f2e2" stroke-width="2.5" stroke-linejoin="round" vector-effect="non-scaling-stroke"
+      points="0,92 50,78 100,96 150,72 200,88 250,101 300,80 350,90 400,70 450,94 500,83 550,99 600,76 650,88 700,67 750,58 800,62 850,49 900,38 950,52 1000,60"/>
+    <circle cx="900" cy="38" r="7" fill="#ba1a1a" stroke="#ffffff" stroke-width="2"/>
+  </svg>
+</header>
+<nav class="caminos" aria-label="Por dónde empezar">
+  <a class="camino" href="#operario"><strong>Registro muestras en la planta</strong><span>Empieza por «Ideas clave» y luego ve a la vista Operario: registrar, leer el estado y atender alertas.</span></a>
+  <a class="camino" href="#recorrido"><strong>Configuro y analizo el control</strong><span>Sigue el recorrido de ocho pasos: desde definir la variable hasta el informe final.</span></a>
+  <a class="camino" href="#instalar"><strong>Es la primera vez que lo abro</strong><span>Instala el programa, conoce la pantalla y carga los datos de demostración para practicar.</span></a>
+</nav>
+
+<main class="contenido">
+
+<!-- ===================================================================== 1 -->
+<section class="capitulo" id="antes" data-perfil="todos">
+  <header><span class="num">1</span><h2>Antes de empezar</h2><p class="para">Para todos</p></header>
+  <p class="entrada">CEP es un programa de control estadístico de procesos. En la planta se toman muestras cada cierto tiempo (por ejemplo, cinco envases cada 15 minutos) y se anotan sus mediciones o sus defectos. CEP guarda esas muestras, las compara con el comportamiento habitual del proceso y avisa cuando algo cambia.</p>
+  <p>Funciona en un solo computador y no necesita internet. Todos los datos quedan en ese equipo, en un único archivo.</p>
+
+  <h3 id="dos-vistas">Dos vistas para dos trabajos distintos</h3>
+  <table class="tabla">
+    <thead><tr><th>Vista</th><th>Quién la usa</th><th>Para qué sirve</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Operario</strong></td><td>Personal de planta</td><td>Registrar las muestras, ver en palabras simples cómo va el proceso, atender las alertas y reportar problemas.</td></tr>
+      <tr><td><strong>Ingeniería</strong></td><td>Ingeniería de calidad, análisis o supervisión</td><td>Definir qué se controla, cargar datos, fijar los límites, analizar la capacidad, diseñar el muestreo, configurar las reglas y emitir informes.</td></tr>
+    </tbody>
+  </table>
+  <p>Se cambia de vista con los botones <span class="boton">Operario</span> e <span class="boton">Ingeniería</span> del encabezado. La vista Operario no usa términos técnicos y su menú nunca lleva a pantallas de Ingeniería.</p>
+
+  <h3 id="como-leer">Cómo leer este manual</h3>
+  <ul>
+    <li>Los botones que se pulsan se ven así: <span class="boton">Guardar muestra</span>.</li>
+    <li>Los textos que aparecen en pantalla van en cursiva: <span class="texto-pantalla">«El proceso va bien»</span>.</li>
+    <li>Una ruta como <span class="ruta">Ingeniería<i>›</i>Plantilla de carga</span> significa: elegir la vista Ingeniería y, en el menú de la izquierda, la pantalla Plantilla de carga.</li>
+    <li>Las palabras con <span class="termino" tabindex="0" data-def="Así se marcan los términos técnicos: al pasar el puntero (o tocar) aparece su definición.">subrayado punteado</span> muestran su definición al pasar el puntero.</li>
+    <li>En las capturas, los <b>círculos rojos numerados</b> señalan partes de la pantalla. Al pasar el puntero sobre un círculo se resalta su explicación debajo, y al revés. Haz clic en una imagen para verla en grande.</li>
+  </ul>
+  <p>Hay cuatro tipos de recuadros:</p>
+  <div class="aviso nota"><strong>Nota</strong><p>Información útil para entender lo que pasa.</p></div>
+  <div class="aviso consejo"><strong>Consejo</strong><p>Una forma de trabajar más rápido o con menos errores.</p></div>
+  <div class="aviso importante"><strong>Importante</strong><p>Algo que cambia el resultado si no se tiene en cuenta.</p></div>
+  <div class="aviso cuidado"><strong>Cuidado</strong><p>Una acción que afecta los datos o que no conviene hacer.</p></div>
+</section>
+
+<!-- ===================================================================== 2 -->
+<section class="capitulo" id="instalar" data-perfil="todos">
+  <header><span class="num">2</span><h2>Instalar y abrir CEP</h2><p class="para">Para todos</p></header>
+  <h3 id="requisitos">Qué se necesita</h3>
+  <ul>
+    <li>Windows 10 u 11 de 64 bits y unos 205 MB libres.</li>
+    <li>Microsoft Edge WebView2, que ya viene en Windows 11 y en los Windows 10 actualizados.</li>
+    <li>Opcional: <strong>MiKTeX</strong>, para que los informes PDF salgan con el formato LaTeX. Sin él, CEP genera el PDF con un formato alternativo y lo avisa.</li>
+  </ul>
+
+  <h3 id="instalacion">Instalación</h3>
+  <ol class="pasos">
+    <li>Haz doble clic en <b>CEP-Setup-1.0.0.exe</b>. Se instala para tu usuario y no pide permisos de administrador.</li>
+    <li>Si aparece <span class="texto-pantalla">«Windows protegió su PC»</span>, pulsa <span class="boton">Más información</span> y luego <span class="boton">Ejecutar de todas formas</span>.</li>
+    <li>Sigue el asistente. Al terminar tendrás un acceso directo en el escritorio y otro en el menú Inicio.</li>
+  </ol>
+  <div class="aviso nota"><strong>¿Por qué aparece ese aviso de Windows?</strong><p>Porque el instalador no tiene firma digital, algo que cuesta dinero y no hace falta para un programa de uso interno. El programa no se conecta a internet ni modifica nada fuera de su carpeta.</p></div>
+
+  <h3 id="abrir">Abrir el programa</h3>
+  <p>CEP se abre en su propia ventana, sin navegador. La primera vez puede tardar hasta un minuto mientras Windows lo revisa; las siguientes, unos segundos. Mientras tanto se ve una pantalla de carga.</p>
+  <p>Solo puede haber una ventana de CEP abierta. Si intentas abrir otra, verás el mensaje <span class="texto-pantalla">«CEP ya está abierto en este equipo. Busca su ventana en la barra de tareas»</span>. Al cerrar la ventana se cierra el programa.</p>
+
+  <h3 id="primera-vez">La primera vez: base vacía</h3>
+  <p>Al principio no hay procesos y la aplicación lo indica. Tienes dos caminos:</p>
+  <ul>
+    <li><strong>Trabajar con tus datos:</strong> crea la primera variable en <span class="ruta">Ingeniería<i>›</i>Variables a controlar</span> o arma directamente la <a href="#plantilla">plantilla de carga</a>.</li>
+    <li><strong>Practicar con datos de ejemplo:</strong> en <span class="ruta">Ingeniería<i>›</i>Base de datos y respaldos</span> pulsa <span class="boton">Cargar demostración</span>. Se carga un proceso de envasado y los ejemplos del libro de Montgomery.</li>
+  </ul>
+  <div class="aviso consejo"><strong>Practica antes de usar datos reales</strong><p>Los datos de demostración permiten probar todo sin miedo a equivocarse. Cuando quieras empezar con tu proceso, vuelve la base a un respaldo vacío (ver <a href="#base">Base de datos y respaldos</a>).</p></div>
+
+  <h3 id="datos">Dónde quedan tus datos</h3>
+  <p>Todo se guarda en <b>C:\Users\&lt;tu usuario&gt;\CEP\</b>, fuera de OneDrive:</p>
+  <table class="tabla">
+    <thead><tr><th>Archivo o carpeta</th><th>Qué contiene</th></tr></thead>
+    <tbody>
+      <tr><td><b>cep.db</b></td><td>La base de datos: procesos, muestras, alertas e historial.</td></tr>
+      <tr><td><b>reportes\</b></td><td>Los informes PDF y Excel generados.</td></tr>
+      <tr><td><b>respaldos\</b></td><td>Copias de la base: una cada vez que abres el programa (se guardan las últimas 20).</td></tr>
+      <tr><td><b>registro.log</b></td><td>Registro técnico de errores, útil si hay que diagnosticar un problema.</td></tr>
+    </tbody>
+  </table>
+  <div class="aviso importante"><strong>Desinstalar no borra los datos</strong><p>Si desinstalas o actualizas CEP, la carpeta <b>CEP</b> se conserva. Para empezar realmente de cero hay que volver a un respaldo vacío o borrar esa carpeta a mano.</p></div>
+</section>
+
+<!-- ===================================================================== 3 -->
+<section class="capitulo" id="ideas" data-perfil="todos">
+  <header><span class="num">3</span><h2>Ideas clave</h2><p class="para">Para todos · sin fórmulas</p></header>
+  <p class="entrada">Estas son las ideas que aparecen en todo el programa. Si las entiendes, el resto del manual se lee solo.</p>
+
+  <h3 id="proceso-variable">Proceso, variable y muestra</h3>
+  <ul>
+    <li>Un <strong>proceso</strong> es la línea o máquina que se vigila, por ejemplo <span class="texto-pantalla">«Línea de Envasado L-04»</span>.</li>
+    <li>Una <strong>variable</strong> es lo que se revisa en cada muestra. Puede ser una <b>medición</b> (un peso, un diámetro, una temperatura) o un <b>conteo</b> (cuántas unidades salieron malas, cuántas fallas tiene una pieza). Un proceso puede tener varias variables.</li>
+    <li>Una <strong>muestra</strong> es el grupo de unidades que se revisa cada cierto tiempo, por ejemplo 5 envases seguidos. En la parte técnica también se llama <span class="termino" tabindex="0" data-def="Grupo de unidades tomadas juntas, en las mismas condiciones, para que la variación dentro del grupo refleje solo la variación natural del proceso.">subgrupo</span>. Cada muestra tiene un número que no se repite: #1, #2, #3…</li>
+    <li>Cuántas unidades tiene cada muestra y cada cuánto se toma forman el <strong>plan de muestreo</strong>.</li>
+  </ul>
+
+  <h3 id="limites">Límites de control y valores aceptados</h3>
+  <p>Son dos cosas distintas y conviene no confundirlas:</p>
+  <div class="pareja">
+    <div class="aviso nota"><strong>Límites de control</strong><p>El rango en el que se mueve el proceso cuando funciona como siempre. <b>Los calcula CEP</b> a partir de los datos. En las gráficas son las <b>líneas rojas</b>; entre ellas está la zona normal.</p></div>
+    <div class="aviso nota"><strong>Valores aceptados</strong><p>Lo que exige el cliente, la norma o el plano: un mínimo, un máximo y un valor ideal. <b>Los define el ingeniero.</b> En las gráficas son las <b>líneas grises punteadas</b>.</p></div>
+  </div>
+  <p>Un proceso puede estar dentro de sus límites de control y aun así fabricar piezas fuera de lo aceptado (el proceso es estable, pero no es <a href="#capacidad">capaz</a>). También puede pasar lo contrario: todas las piezas sirven, pero el proceso cambió y eso merece una revisión.</p>
+
+  <h3 id="fases">Las dos etapas: Fase I y Fase II</h3>
+  <table class="tabla">
+    <thead><tr><th>Etapa</th><th>Qué se hace</th><th>Cómo se ve en CEP</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Fase I</strong><br>conociendo el proceso</td><td>Se juntan 20 a 25 muestras tomadas en condiciones normales, se calculan límites provisionales y se descartan las muestras afectadas por causas conocidas. Al terminar, el ingeniero <b>congela</b> los límites.</td><td>Estado gris <span class="texto-pantalla">«Conociendo el proceso»</span>.</td></tr>
+      <tr><td><strong>Fase II</strong><br>monitoreo</td><td>Cada muestra nueva se compara con los límites congelados. Si sale de lo normal o aparece un patrón extraño, se genera una alerta.</td><td>Estado verde, ámbar o rojo.</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="reglas">Cómo detecta CEP que algo cambió</h3>
+  <p>CEP no solo mira si un punto se sale de los límites. También busca <b>patrones</b> que, por azar, casi nunca ocurren en un proceso estable: muchos puntos seguidos del mismo lado, una subida constante, valores que se acercan al límite. Cada patrón es una <span class="termino" tabindex="0" data-def="Patrón que indica que el proceso cambió. CEP usa las 8 reglas de Nelson (N1 a N8) y una de Western Electric (WE4).">regla de detección</span>. Pruébalo: elige un patrón y mira qué puntos marcaría CEP.</p>
+
+  <div class="explorador" id="explorador">
+    <div class="opciones" role="group" aria-label="Elegir un patrón">
+      <button type="button" data-patron="normal" aria-pressed="true">Proceso normal</button>
+      <button type="button" data-patron="N1" aria-pressed="false">Un punto fuera</button>
+      <button type="button" data-patron="N2" aria-pressed="false">Nueve del mismo lado</button>
+      <button type="button" data-patron="N3" aria-pressed="false">Tendencia</button>
+      <button type="button" data-patron="N5" aria-pressed="false">Cerca del límite</button>
+      <button type="button" data-patron="N7" aria-pressed="false">Demasiado parejo</button>
+    </div>
+    <svg id="carta-reglas" viewBox="0 0 720 260" role="img" aria-label="Carta de control de ejemplo"></svg>
+    <dl class="lectura" aria-live="polite">
+      <dt>Qué se ve</dt><dd id="exp-ve"></dd>
+      <dt>Qué significa</dt><dd id="exp-significa"></dd>
+      <dt>En CEP</dt><dd id="exp-cep"></dd>
+    </dl>
+  </div>
+
+  <h3 id="estado">El estado del proceso</h3>
+  <p>El encabezado y la vista Operario muestran siempre el estado con un color y una frase. Es lo primero que hay que mirar:</p>
+  <table class="tabla">
+    <thead><tr><th>Estado</th><th>Qué significa</th><th>Qué hacer</th></tr></thead>
+    <tbody>
+      <tr><td><span class="estado verde">El proceso va bien</span></td><td>Fase II sin alertas pendientes.</td><td>Seguir tomando las muestras a tiempo.</td></tr>
+      <tr><td><span class="estado ambar">Revisar</span></td><td>Hay señales de que algo está cambiando.</td><td>Revisar la alerta, observar la máquina y anotar lo encontrado.</td></tr>
+      <tr><td><span class="estado rojo">Detener y avisar</span></td><td>El proceso se salió de lo normal, o hay una parada o un lote retenido.</td><td>Avisar al supervisor o al ingeniero antes de seguir y anotar en la alerta qué pudo pasar.</td></tr>
+      <tr><td><span class="estado gris">Conociendo el proceso</span></td><td>Fase I: los límites son provisionales.</td><td>Registrar las muestras como siempre.</td></tr>
+      <tr><td><span class="estado gris">Sin datos</span></td><td>La variable todavía no tiene muestras.</td><td>Registrar o cargar las primeras muestras.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ===================================================================== 4 -->
+<section class="capitulo" id="pantalla" data-perfil="todos">
+  <header><span class="num">4</span><h2>Conocer la pantalla</h2><p class="para">Para todos</p></header>
+  <p class="entrada">Todas las pantallas comparten el mismo encabezado y un menú a la izquierda. Pasa el puntero sobre los números para ubicar cada parte.</p>
+  <figure>
+    <div class="lienzo"><img src="img/op_general.png" alt="Pantalla principal de CEP en la vista Operario"></div>
+    <figcaption><b>Encabezado y menú.</b> Pantalla Registrar muestra, en la vista Operario.</figcaption>
+    <ol class="leyenda">
+      <li data-xy="17,7.6"><b>Proceso y variable activos.</b> Al pulsarlo se elige otra variable; todas las pantallas pasan a mostrar esa. La lista incluye <span class="boton">+ Nueva variable…</span>. CEP recuerda la última elegida.</li>
+      <li data-xy="47.4,7.6"><b>Operario / Ingeniería.</b> Cambia de vista.</li>
+      <li data-xy="67,7.6"><b>Turno y carta.</b> El turno en curso y, debajo, el tipo de gráfica, el tamaño de muestra y la etapa.</li>
+      <li data-xy="77.3,7.6"><b>Estado del proceso.</b> El mismo color y frase de la tabla de estados.</li>
+      <li data-xy="84.6,7.6"><b>Campana.</b> Cuántas alertas hay sin resolver; al pulsarla se abren las alertas.</li>
+      <li data-xy="92.7,7.6"><b>Usuario.</b> Quién está usando el programa. Al pulsarlo se cambia. No hay contraseñas: el nombre sirve para dejar constancia de quién hizo cada registro.</li>
+      <li data-xy="17.4,14.3"><b>Menú.</b> Las pantallas de la vista actual. Abajo, un recuadro con el plan de muestreo y cuándo toca la próxima muestra.</li>
+    </ol>
+  </figure>
+  <div class="aviso nota"><strong>Mensajes y confirmaciones</strong><p>El resultado de cada acción aparece como un mensaje breve en la esquina inferior derecha (por ejemplo <span class="texto-pantalla">«Muestra #26 guardada»</span>). Los errores dicen qué pasó y cómo arreglarlo. Las acciones importantes, como congelar límites o restaurar un respaldo, abren una ventana de confirmación que a menudo pide un motivo: ese motivo queda en el historial.</p></div>
+  <div class="aviso consejo"><strong>Escribe tu nombre al empezar el turno</strong><p>Si una acción necesita un nombre y no hay ninguno, CEP lo pide. Escribirlo al principio evita interrupciones y deja el historial ordenado.</p></div>
+</section>
+
+<!-- ===================================================================== 5 -->
+<section class="capitulo" id="recorrido" data-perfil="ingenieria">
+  <header><span class="num">5</span><h2>Recorrido: de cero a monitorear</h2><p class="para">Para Ingeniería</p></header>
+  <p class="entrada">El orden de trabajo para poner un proceso bajo control. Marca cada paso al terminarlo: el avance se guarda en este equipo.</p>
+  <div class="recorrido" id="lista-recorrido">
+    <div class="avance"><div class="barra"><i id="barra-avance"></i></div><span id="texto-avance">0 de 8 pasos</span></div>
+    <ol>
+      <li><label><input type="checkbox" data-paso="1"><span><b>Definir qué se controla</b><small>Crear el proceso y sus variables con el asistente. <a href="#variables">Variables a controlar</a></small></span></label></li>
+      <li><label><input type="checkbox" data-paso="2"><span><b>Juntar 20 a 25 muestras de Fase I</b><small>Con la <a href="#plantilla">plantilla de carga</a>, un <a href="#csv">archivo CSV</a> o registrándolas en la <a href="#registrar">vista Operario</a>.</small></span></label></li>
+      <li><label><input type="checkbox" data-paso="3"><span><b>Revisar los supuestos</b><small>Comprobar que los datos se comportan como esperan las gráficas. <a href="#supuestos">Validación de supuestos</a></small></span></label></li>
+      <li><label><input type="checkbox" data-paso="4"><span><b>Estabilizar y congelar los límites</b><small>Excluir solo las muestras con causa conocida y congelar. <a href="#graficos">Gráficos por variables</a></small></span></label></li>
+      <li><label><input type="checkbox" data-paso="5"><span><b>Evaluar la capacidad</b><small>¿El proceso cumple lo que pide el cliente? <a href="#capacidad">Capacidad</a></small></span></label></li>
+      <li><label><input type="checkbox" data-paso="6"><span><b>Ajustar el plan de muestreo</b><small>Cuántas unidades revisar y cada cuánto. <a href="#plan">Plan de muestreo</a></small></span></label></li>
+      <li><label><input type="checkbox" data-paso="7"><span><b>Monitorear</b><small>Registrar las muestras nuevas y atender las alertas. <a href="#operario">Vista Operario</a></small></span></label></li>
+      <li><label><input type="checkbox" data-paso="8"><span><b>Informar</b><small>Generar el informe PDF o el libro Excel. <a href="#reportes">Reportes</a></small></span></label></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ===================================================================== 6 -->
+<section class="capitulo" id="operario" data-perfil="operario">
+  <header><span class="num">6</span><h2>Vista Operario</h2><p class="para">Para el personal de planta</p></header>
+  <p class="entrada">Cuatro pantallas: <span class="boton">Registrar muestra</span>, <span class="boton">Cómo va el proceso</span>, <span class="boton">Alertas</span> e <span class="boton">Historial de muestras</span>. Todas muestran la variable elegida en el encabezado.</p>
+
+  <h3 id="registrar">Registrar una muestra</h3>
+  <p>Es la pantalla de inicio y la que más se usa.</p>
+  <figure>
+    <div class="lienzo"><img src="img/op_general.png" alt="Pantalla Registrar muestra"></div>
+    <figcaption><b>Registrar muestra.</b> Arriba el estado; a la izquierda el formulario; a la derecha las últimas muestras.</figcaption>
+    <ol class="leyenda">
+      <li data-xy="20.8,10.4"><b>Estado y qué hacer.</b> La frase dice qué hacer en ese momento.</li>
+      <li data-xy="71.5,14.5"><b>Próxima muestra.</b> Cuenta regresiva hasta la siguiente; dice <span class="texto-pantalla">«¡Ahora!»</span> cuando toca, o avisa si está atrasada.</li>
+      <li data-xy="96.4,15.2"><b>Reportar un problema.</b> Para avisar de una parada, un lote retenido o algo raro.</li>
+      <li data-xy="39.9,32"><b>Formulario.</b> Un campo por cada unidad de la muestra, más el lote (opcional).</li>
+      <li data-xy="50.2,82.3"><b>Guardar muestra.</b> Registra la muestra y la compara con los límites.</li>
+      <li data-xy="68.4,32"><b>Últimas muestras.</b> El promedio de cada muestra sobre la zona normal.</li>
+      <li data-xy="54.4,68.7"><b>Resumen.</b> Unidades dentro de lo aceptado, promedio frente al ideal y muestras para revisar.</li>
+      <li data-xy="31.3,91.5"><b>Modo demostración.</b> Solo aparece si el ingeniero lo activó.</li>
+    </ol>
+  </figure>
+
+  <h4>Paso a paso</h4>
+  <ol class="pasos">
+    <li>Toma las unidades que indica la pantalla (por ejemplo, 5 unidades seguidas) y mídelas.</li>
+    <li>Escribe cada valor en <span class="texto-pantalla">Unidad 1</span>, <span class="texto-pantalla">Unidad 2</span>… Puedes usar coma o punto decimal. La tecla <kbd>Enter</kbd> pasa al campo siguiente.</li>
+    <li>Mientras escribes, debajo aparece el <b>resultado en vivo</b>: el promedio, si está dentro de lo normal y cuántas unidades quedaron fuera de lo aceptado.</li>
+    <li>Si quieres, escribe el lote.</li>
+    <li>Pulsa <span class="boton">Guardar muestra</span>.</li>
+  </ol>
+  <div class="aviso nota"><strong>Si la variable es un conteo</strong><p>En lugar de un campo por unidad, el formulario pide cuántas unidades se revisaron y cuántas salieron defectuosas (o cuántas fallas se encontraron).</p></div>
+  <div class="aviso importante"><strong>Si la muestra queda fuera de lo normal</strong><p>Al guardarla se crea una alerta y el estado cambia de color. No borres ni cambies valores para que la alerta desaparezca: anota en la alerta qué pasó (ver <a href="#alertas">Alertas</a>).</p></div>
+
+  <h4>Cuando un valor parece mal escrito</h4>
+  <p>Si un valor está muy lejos de lo habitual, por ejemplo 5000 en lugar de 500,0, CEP pregunta antes de guardar.</p>
+  <figure class="media">
+    <div class="lienzo"><img src="img/op_sospechoso.png" alt="Aviso de valor mal escrito"></div>
+    <figcaption><b>¿Están bien escritos estos valores?</b> <span class="boton">Corregir</span> vuelve al formulario; <span class="boton">Sí, están bien</span> guarda igual.</figcaption>
+  </figure>
+
+  <h4>Deshacer la última muestra</h4>
+  <p>Durante los <b>10 minutos</b> siguientes a guardar aparece el recuadro <span class="texto-pantalla">«¿Te equivocaste en la muestra #25? Puedes deshacerla durante 09:25»</span> con el botón <span class="boton">Deshacer</span>. Al usarlo:</p>
+  <ul>
+    <li>se pide un motivo opcional, por ejemplo <span class="texto-pantalla">«Error al escribir un valor»</span>;</li>
+    <li>la muestra no se borra: queda <b>anulada</b> en el historial, con el motivo;</li>
+    <li>sus valores vuelven al formulario para corregirlos y guardarlos otra vez.</li>
+  </ul>
+  <div class="aviso consejo"><strong>¿Pasaron los 10 minutos?</strong><p>Avisa al ingeniero. Mientras el proceso está en Fase I, puede excluir esa muestra indicando la causa.</p></div>
+
+  <h4>Alertas y resumen del turno</h4>
+  <p>Más abajo, en la misma pantalla, están las alertas del turno con su botón <span class="boton">Anotar qué pasó</span> y el resumen <span class="texto-pantalla">«Este turno»</span>: muestras tomadas frente a las programadas, unidades dentro de lo aceptado, alertas y quién registra.</p>
+  <figure class="media">
+    <div class="lienzo"><img src="img/op_alertas_turno.png" alt="Alertas del turno y resumen del turno"></div>
+    <figcaption><b>Alertas del turno.</b> Las rojas son graves; la última está resuelta y muestra la causa y la acción anotadas.</figcaption>
+  </figure>
+  <div class="aviso nota"><strong>Modo demostración</strong><p>Si el ingeniero lo activó, aparece <span class="boton">Completar con valores simulados</span> con una lista para elegir el comportamiento (normal o con un corrimiento). Sirve para mostrar la aplicación sin datos reales y debe desactivarse al trabajar con un proceso real.</p></div>
+
+  <h3 id="como-va">Cómo va el proceso</h3>
+  <p>La misma gráfica en grande, con una guía para leerla y la lista de muestras que conviene revisar.</p>
+  <figure>
+    <div class="lienzo"><img src="img/op_proceso.png" alt="Pantalla Cómo va el proceso"></div>
+    <figcaption><b>Cómo va el proceso.</b> Al pasar el puntero por un punto se ve su número y su valor.</figcaption>
+    <ol class="leyenda">
+      <li data-xy="19,19.1"><b>La gráfica.</b> Cada punto es el promedio de una muestra; la línea del medio es el promedio habitual.</li>
+      <li data-xy="47.4,36.9"><b>Zona normal.</b> La franja sombreada entre las líneas rojas. Un punto fuera de ella genera una alerta.</li>
+      <li data-xy="36.2,23.7"><b>Valores aceptados.</b> Las líneas grises punteadas: lo que exige el cliente.</li>
+      <li data-xy="8.6,29.8"><b>Punto para revisar.</b> Rojo y con «!» encima.</li>
+      <li data-xy="84.9,19.1"><b>Cómo leer la gráfica.</b> La guía, siempre visible.</li>
+      <li data-xy="86.6,51.8"><b>Muestras para revisar.</b> Cada una con la razón en palabras.</li>
+      <li data-xy="2.4,55.9"><b>Resumen.</b> Unidades dentro de lo aceptado, promedio y muestras para revisar.</li>
+    </ol>
+  </figure>
+
+  <h3 id="alertas">Alertas</h3>
+  <p>Todas las alertas de la variable, con su explicación y su seguimiento.</p>
+  <figure>
+    <div class="lienzo"><img src="img/op_alertas.png" alt="Pantalla Alertas"></div>
+    <figcaption><b>Alertas.</b> Las graves se muestran en rojo.</figcaption>
+    <ol class="leyenda">
+      <li data-xy="43.9,5.5"><b>Filtros.</b> <span class="boton">Sin resolver</span>, <span class="boton">Resueltas</span> o <span class="boton">Todas</span>.</li>
+      <li data-xy="66.7,5.9"><b>Todas las variables.</b> Muestra las alertas de todos los procesos.</li>
+      <li data-xy="95.5,5.9"><b>Reportar un problema.</b></li>
+      <li data-xy="23.8,17"><b>Contadores.</b> Sin resolver, graves sin resolver, en revisión y resueltas.</li>
+      <li data-xy="1.8,29.7"><b>La alerta.</b> Hora, qué pasó, número de muestra y explicación en palabras. En letra pequeña, el código de la regla para el ingeniero.</li>
+      <li data-xy="39.2,31.8"><b>Estado.</b> Sin revisar, En revisión o Resuelto.</li>
+      <li data-xy="32.8,40.4"><b>Anotar qué pasó.</b> Para registrar la causa y la acción.</li>
+    </ol>
+  </figure>
+
+  <h4>Anotar qué pasó</h4>
+  <div class="pareja">
+    <div>
+      <ol class="pasos">
+        <li>Pulsa <span class="boton">Anotar qué pasó</span> en la alerta.</li>
+        <li>Escribe <span class="texto-pantalla">¿Qué lo causó?</span> si lo sabes, y <span class="texto-pantalla">¿Qué se hizo?</span>.</li>
+        <li>Elige el estado: <b>Sin revisar</b>, <b>En revisión</b> o <b>Resuelta</b>.</li>
+        <li>Pulsa <span class="boton">Guardar</span>.</li>
+      </ol>
+      <div class="aviso importante"><strong>Para resolver hacen falta causa y acción</strong><p>Una alerta solo se marca como resuelta si tiene las dos. Si todavía no se sabe la causa, déjala <b>En revisión</b>.</p></div>
+    </div>
+    <figure style="margin-top:0">
+      <div class="lienzo"><img src="img/op_anotar.png" alt="Ventana Anotar qué pasó"></div>
+      <figcaption><b>Anotar qué pasó.</b> Queda registrado quién lo anotó y cuándo.</figcaption>
+    </figure>
+  </div>
+  <p>Lo que anotes aparece después en las gráficas de Ingeniería y en los informes: es la memoria del proceso.</p>
+
+  <h4 id="problema">Reportar un problema</h4>
+  <p>El botón <span class="boton">Reportar un problema</span> crea una alerta manual. Eliges <span class="texto-pantalla">¿Qué pasó?</span> (<b>Se detuvo el proceso</b>, <b>Retuve un lote</b> o <b>Vi algo raro</b>) y lo describes brevemente.</p>
+  <div class="aviso importante"><strong>Paradas y lotes retenidos ponen el estado en rojo</strong><p>Hasta que la alerta se resuelva, el proceso muestra <span class="estado rojo">Detener y avisar</span>.</p></div>
+
+  <h3 id="historial">Historial de muestras</h3>
+  <figure>
+    <div class="lienzo"><img src="img/op_historial.png" alt="Pantalla Historial de muestras"></div>
+    <figcaption><b>Historial de muestras.</b> De la más reciente a la más antigua.</figcaption>
+  </figure>
+  <p>Cada fila muestra la fecha y hora, la etapa, los valores, el promedio, quién la registró, el lote y si quedó <b>Normal</b> o <b>Para revisar</b>. La lista desplegable filtra por etapa: Todas, Conociendo el proceso (Fase I), Monitoreo (Fase II), Archivadas y Anuladas. <span class="boton">Descargar CSV</span> guarda la tabla en un archivo que se abre con Excel.</p>
+</section>
+
+<!-- ===================================================================== 7 -->
+<section class="capitulo" id="preparar" data-perfil="ingenieria">
+  <header><span class="num">7</span><h2>Ingeniería: preparar el control</h2><p class="para">Para Ingeniería</p></header>
+  <p class="entrada">Antes de analizar hay que decir qué se controla y cargar las muestras. Estas tres pantallas lo resuelven.</p>
+
+  <h3 id="variables">Variables a controlar</h3>
+  <figure>
+    <div class="lienzo"><img src="img/ing_mis_variables.png" alt="Pantalla Variables a controlar"></div>
+    <figcaption><b>Variables a controlar.</b> A la izquierda, el menú completo de Ingeniería.</figcaption>
+  </figure>
+  <p>Cada tarjeta dice qué se registra, el plan de muestreo, los valores aceptados o el tipo de gráfica, la etapa y cuántas muestras tiene. Sus botones llevan a <span class="boton">Registrar muestras</span>, al <span class="boton">Plan de muestreo</span> y a <span class="boton">Ver gráfica</span>.</p>
+  <div class="aviso nota"><strong>¿Se puede borrar una variable?</strong><p>Solo si no tiene muestras: en ese caso aparece el botón <span class="boton">Eliminar</span>. Las variables con datos no se eliminan, para no perder la trazabilidad.</p></div>
+
+  <h4>Crear una variable con el asistente</h4>
+  <div class="pareja">
+    <ol class="pasos">
+      <li><b>Proceso.</b> Elige el proceso o <span class="texto-pantalla">Otro proceso (crear uno nuevo)</span>.</li>
+      <li><b>Qué se registra.</b> Nombre, unidad y cómo se registra cada unidad: <i>la mido</i>, <i>la clasifico buena o mala</i> o <i>cuento sus fallas</i>.</li>
+      <li><b>Muestreo.</b> Unidades por muestra y cada cuánto. El asistente <b>recomienda la gráfica</b> y explica por qué.</li>
+      <li><b>Especificaciones.</b> Mínimo, ideal y máximo aceptados (pueden quedar vacíos) y los decimales.</li>
+    </ol>
+    <figure style="margin-top:0">
+      <div class="lienzo"><img src="img/ing_asistente.png" alt="Asistente Nueva variable"></div>
+      <figcaption><b>Nueva variable.</b> Se abre con <span class="boton">Nueva variable</span> o desde el selector del encabezado.</figcaption>
+    </figure>
+  </div>
+
+  <h3 id="plantilla">Plantilla de carga</h3>
+  <p>La forma recomendada de cargar datos. CEP genera un Excel a la medida del proceso, se llena (en el computador o impreso, a mano) y se vuelve a subir. El Excel no deja escribir datos inválidos y la carga muestra un informe antes de guardar.</p>
+  <figure>
+    <div class="lienzo"><img src="img/ing_plantilla.png" alt="Pantalla Plantilla de carga"></div>
+    <figcaption><b>Armar la plantilla.</b> A la derecha, cómo quedará el Excel y qué controla.</figcaption>
+    <ol class="leyenda">
+      <li data-xy="9.8,19.5"><b>Proceso.</b> El proceso de la plantilla, o uno nuevo.</li>
+      <li data-xy="1.7,42.2"><b>Variables.</b> Marca las que tendrá la plantilla.</li>
+      <li data-xy="44,40.7"><b>Para establecer los límites.</b> Cuántas muestras de Fase I (se recomiendan 20 a 25).</li>
+      <li data-xy="55.2,40.7"><b>Monitoreo.</b> Cuántas muestras de Fase II.</li>
+      <li data-xy="16.4,52.1"><b>Variable nueva.</b> Con <span class="boton">Agregar variable nueva</span> se definen variables que aún no existen; se crean al subir la plantilla.</li>
+      <li data-xy="18.1,72.9"><b>Columnas adicionales.</b> Lote, operario y observaciones.</li>
+      <li data-xy="26.7,82.4"><b>Primera muestra.</b> Con la fecha y la frecuencia, la plantilla sugiere la fecha y hora de cada muestra.</li>
+      <li data-xy="34.1,94.9"><b>Descargar plantilla.</b></li>
+      <li data-xy="71.1,16.1"><b>Así quedará.</b> Vista previa de cada hoja.</li>
+    </ol>
+  </figure>
+  <h4>Qué trae el Excel</h4>
+  <ul>
+    <li>Una hoja de instrucciones y una hoja por variable, con las muestras numeradas, fecha y hora sugeridas y una columna por unidad.</li>
+    <li>Solo se escribe en las celdas de datos; números de muestra y cálculos están protegidos (sin contraseña).</li>
+    <li>Acepta solo números con coma decimal y conteos enteros; las defectuosas no pueden superar las revisadas.</li>
+    <li>Los valores fuera de lo aceptado se pintan de <b style="color:var(--ambar)">ámbar</b> al escribirlos.</li>
+    <li>Calcula solo el promedio y el rango (o el % de defectuosas) de cada muestra, y está lista para imprimir en horizontal.</li>
+  </ul>
+
+  <h4>Subir la plantilla llenada</h4>
+  <p>En <span class="texto-pantalla">2. Sube la plantilla llenada</span>, arrastra el archivo o haz clic para elegirlo. Antes de guardar nada, CEP muestra un <b>informe de revisión</b>:</p>
+  <figure>
+    <div class="lienzo"><img src="img/ing_plantilla_informe.png" alt="Informe de revisión de la plantilla"></div>
+    <figcaption><b>Informe de revisión.</b> En rojo los errores (esa muestra no se carga); en ámbar los avisos (se carga igual).</figcaption>
+  </figure>
+  <p>Con <span class="boton">Cargar N muestras</span> se guardan las muestras válidas; con <span class="boton">Cancelar</span> no se guarda nada. Si hay errores, corrígelos en el Excel y vuelve a subirlo.</p>
+  <div class="aviso importante"><strong>Las dos etapas se cargan en dos momentos</strong><p>Mientras la variable está en Fase I, solo entran las muestras de <span class="texto-pantalla">Para establecer los límites</span>; las de monitoreo quedan pendientes y el informe lo avisa. Después de <a href="#congelar">congelar los límites</a>, sube <b>el mismo archivo</b> otra vez: las ya cargadas no se duplican y ahora entran las de monitoreo.</p></div>
+  <div class="aviso consejo"><strong>Sube la plantilla las veces que quieras</strong><p>Mientras se va llenando, cada subida carga solo lo nuevo: las filas vacías se ignoran y las muestras ya cargadas no se repiten. Cada carga queda en el historial con el nombre del archivo y su huella SHA-256.</p></div>
+
+  <h3 id="csv">Datos y carga CSV</h3>
+  <p>Para importar archivos que ya existen (CSV, TXT, DAT o Excel), por ejemplo los que exporta otro sistema. Si los datos todavía no existen, conviene más la plantilla.</p>
+  <figure>
+    <div class="lienzo"><img src="img/ing_datos_a.png" alt="Carga de archivo y asignación de columnas"></div>
+    <figcaption><b>Carga y asignación de columnas.</b> CEP sugiere qué es cada columna; se puede cambiar.</figcaption>
+  </figure>
+  <ol class="pasos">
+    <li>Pulsa <span class="boton">Cargar Nuevo Dataset</span> o arrastra el archivo. El delimitador, la codificación y los encabezados se detectan solos.</li>
+    <li>En <span class="texto-pantalla">Motor de Mapeo de Columnas</span>, revisa el rol de cada columna: fecha y hora, identificador de subgrupo, valor, operario, lote o ignorar. Si cada fila es una muestra con sus valores en varias columnas, todas llevan el rol de valor.</li>
+    <li>Elige la <span class="texto-pantalla">Variable de destino</span> y, si el archivo no tiene columna de subgrupo, el tamaño <i>n</i>: las filas se agrupan de a <i>n</i> en orden.</li>
+    <li>Elige cómo tratar los faltantes (<i>Descartar fila incompleta</i>, <i>Imputar por media de subgrupo</i> o <i>Alerta estricta</i>) y los atípicos (<i>Regla Tukey 1.5×IQR</i>, <i>Umbral 3σ</i> o <i>Sin filtro</i>).</li>
+    <li>Revisa las pestañas <span class="texto-pantalla">Primeras filas</span>, <span class="texto-pantalla">Subgrupos formados</span> e <span class="texto-pantalla">Informe de limpieza</span>, y el resumen descriptivo.</li>
+    <li>Pulsa <span class="boton">Guardar Mapeo e Importar a la Variable</span>.</li>
+  </ol>
+  <figure>
+    <div class="lienzo"><img src="img/ing_datos_b.png" alt="Vista previa y resumen descriptivo"></div>
+    <figcaption><b>Vista previa y resumen descriptivo</b> antes de importar.</figcaption>
+  </figure>
+  <div class="aviso nota"><strong>Solo a variables en Fase I</strong><p>Los datos importados entran en la Fase I. Si la variable ya está en Fase II, la pantalla dice <span class="texto-pantalla">«no admite importación»</span>: usa la plantilla o la vista Operario.</p></div>
+</section>
+
+<!-- ===================================================================== 8 -->
+<section class="capitulo" id="analizar" data-perfil="ingenieria">
+  <header><span class="num">8</span><h2>Ingeniería: analizar</h2><p class="para">Para Ingeniería</p></header>
+  <p class="entrada">Aquí se fijan los límites, se revisa que los datos sean adecuados y se mide si el proceso cumple.</p>
+
+  <h3 id="graficos">Gráficos por variables</h3>
+  <p>La pantalla central del análisis para las variables que se miden.</p>
+  <figure>
+    <div class="lienzo"><img src="img/ing_var_f1_a.png" alt="Gráficos por variables en Fase I"></div>
+    <figcaption><b>Fase I</b>, con el ejemplo de los anillos de pistón de Montgomery.</figcaption>
+    <ol class="leyenda">
+      <li data-xy="48.7,4.1"><b>Etapa.</b> Fase I o Fase II, y si los límites son provisionales o están congelados.</li>
+      <li data-xy="2.2,8.3"><b>Tipo de gráfica.</b> X̄-R, X̄-S o I-MR. Solo se cambia en Fase I.</li>
+      <li data-xy="44.4,11.5"><b>Congelar límites.</b> En Fase II, este botón dice <span class="boton">Volver a Fase I</span>.</li>
+      <li data-xy="71.6,11.5"><b>Exportar gráficos</b> como imagen y abrir el reporte técnico.</li>
+      <li data-xy="1.4,15.3"><b>Tarjetas.</b> Línea central y límites de cada gráfica, constantes usadas y σ estimada.</li>
+      <li data-xy="87.1,17"><b>Diagnóstico.</b> Cuántos puntos tienen señal; <span class="boton">Auditar</span> lleva al primero.</li>
+      <li data-xy="40.5,31.9"><b>Gráfica de promedios.</b> Con las franjas a 1 y 2 σ que usan algunas reglas.</li>
+      <li data-xy="30.2,61.9"><b>Gráfica de dispersión</b> (R, S o MR): cuánto varían las unidades dentro de cada muestra.</li>
+      <li data-xy="81.5,32"><b>Auditoría de reglas.</b> Cuántas veces se cumplió cada regla y en qué muestras; cambia entre WE (4) y Nelson (8).</li>
+      <li data-xy="80.6,85"><b>Índices de capacidad.</b> Resumen; <span class="boton">Estudio completo</span> abre la pantalla de capacidad.</li>
+    </ol>
+  </figure>
+
+  <h4 id="depurar">Fase I: depurar las muestras</h4>
+  <figure>
+    <div class="lienzo"><img src="img/ing_var_f1_b.png" alt="Tabla de depuración de subgrupos"></div>
+    <figcaption><b>Depuración de subgrupos.</b> Cada muestra con su media, su dispersión, la regla que violó y la causa registrada.</figcaption>
+    <ol class="leyenda">
+      <li data-xy="23.1,12.2"><b>Solo con señal.</b> Acorta la lista a las muestras con señal o excluidas.</li>
+      <li data-xy="6.2,21.2"><b>Excluir.</b> Marca las muestras con causa conocida.</li>
+      <li data-xy="61.9,2.8"><b>Simulación.</b> Cómo cambiarían los límites y el Cpk antes de confirmar.</li>
+      <li data-xy="95.2,3"><b>Aplicar recálculo limpio.</b> Pide la causa (obligatoria) y la acción de cada muestra excluida.</li>
+      <li data-xy="62.1,16.8"><b>Causa y acción</b> registradas.</li>
+    </ol>
+  </figure>
+  <ol class="pasos">
+    <li>Marca <span class="texto-pantalla">Excluir</span> en las muestras afectadas por una causa conocida: un ajuste de máquina, un error de medición, una materia prima distinta.</li>
+    <li>Mira la <span class="texto-pantalla">Simulación de Recálculo</span>: cuánto cambian el límite superior y la línea central, el Cpk antes y después, y si quedarían señales.</li>
+    <li>Pulsa <span class="boton">Aplicar Recálculo Limpio</span> y escribe la causa de cada muestra.</li>
+    <li>Repite hasta que no queden señales sin explicación.</li>
+  </ol>
+  <div class="aviso cuidado"><strong>Solo se excluye con causa</strong><p>No excluyas muestras solo porque salen fuera de los límites. Si se excluyen sin motivo, los límites quedan más estrechos que la variación real del proceso y después aparecerán falsas alarmas.</p></div>
+
+  <h4 id="congelar">Congelar los límites</h4>
+  <p>Con la Fase I depurada, pulsa <span class="boton">Congelar Límites → Fase II</span>. La ventana indica con cuántas muestras se fijarán y pide un motivo. CEP advierte si quedan puntos con señal o si hay menos de 20 muestras, pero permite continuar. Desde ese momento, cada muestra nueva se compara con estos límites y la vista Operario muestra el estado en verde, ámbar o rojo.</p>
+
+  <h4 id="fase2">Fase II: monitoreo</h4>
+  <figure>
+    <div class="lienzo"><img src="img/ing_var_f2_a.png" alt="Gráficos por variables en Fase II"></div>
+    <figcaption><b>Fase II.</b> Las gráficas usan los límites congelados; cada señal lleva el código de la regla.</figcaption>
+  </figure>
+  <p>En esta etapa las muestras no se excluyen: las señales se atienden desde las alertas. La tabla <span class="texto-pantalla">Señales de Fase II</span> muestra la causa y la acción anotadas en cada alerta y su estado.</p>
+  <figure>
+    <div class="lienzo"><img src="img/ing_var_f2_b.png" alt="Seguimiento de señales de Fase II"></div>
+    <figcaption><b>Seguimiento de señales.</b> Resuelta, En investigación o Estable.</figcaption>
+  </figure>
+  <h4>Volver a la Fase I</h4>
+  <p>Si el proceso cambió de forma permanente (máquina nueva, otro proveedor, otro método), pulsa <span class="boton">Volver a Fase I</span>. Se pide un motivo y se elige la nueva base: conservar la anterior (las muestras de Fase II se archivan) o usar las de Fase II. Los límites anteriores quedan en el historial.</p>
+
+  <h3 id="atributos">Gráficos por atributos</h3>
+  <p>Funciona igual que la pantalla anterior, para las variables que se cuentan.</p>
+  <table class="tabla">
+    <thead><tr><th>Gráfica</th><th>Cuándo se usa</th></tr></thead>
+    <tbody>
+      <tr><td><strong>p</strong></td><td>Porcentaje de unidades defectuosas; el tamaño de muestra puede variar.</td></tr>
+      <tr><td><strong>np</strong></td><td>Cantidad de unidades defectuosas, con tamaño de muestra constante.</td></tr>
+      <tr><td><strong>c</strong></td><td>Cantidad de fallas por muestra, cuando la muestra es siempre igual.</td></tr>
+      <tr><td><strong>u</strong></td><td>Fallas por unidad, cuando el tamaño de la muestra cambia.</td></tr>
+    </tbody>
+  </table>
+  <figure>
+    <div class="lienzo"><img src="img/ing_atr_a.png" alt="Gráfica p"></div>
+    <figcaption><b>Gráfica p</b> de envases defectuosos. Las muestras #15 y #23 superan el límite superior.</figcaption>
+  </figure>
+  <p>Al final de la pantalla, un asistente responde qué gráfica usar con tres preguntas: qué se registra, si el tamaño de muestra es constante y si se prefiere ver una proporción o un conteo.</p>
+  <figure>
+    <div class="lienzo"><img src="img/ing_atr_b.png" alt="Asistente de gráfica de atributos"></div>
+    <figcaption><b>Asistente.</b> La recomendación viene con la razón en palabras.</figcaption>
+  </figure>
+
+  <h3 id="supuestos">Validación de supuestos</h3>
+  <p>Las gráficas de control dan por hecho que las mediciones siguen aproximadamente una <span class="termino" tabindex="0" data-def="La curva en forma de campana: la mayoría de los valores cerca del promedio y cada vez menos hacia los extremos.">distribución normal</span> y que cada una no depende de la anterior. Esta pantalla lo comprueba.</p>
+  <figure>
+    <div class="lienzo"><img src="img/ing_sup_a.png" alt="Validación de supuestos"></div>
+    <figcaption><b>Veredicto, pruebas de normalidad, gráfico Q-Q e histograma.</b></figcaption>
+  </figure>
+  <ul>
+    <li><b>Controles:</b> los datos a analizar (automático, Fase I o Fase II) y el nivel de significancia α (0,01, 0,05 o 0,10).</li>
+    <li><b>Veredicto:</b> una frase en verde si todo se cumple o en ámbar si hay observaciones.</li>
+    <li><b>Normalidad:</b> Anderson-Darling, Shapiro-Wilk y Lilliefors, cada una con su <span class="termino" tabindex="0" data-def="Número entre 0 y 1. Si es mayor que α, los datos no contradicen el supuesto; si es menor, sí.">p-valor</span> y la etiqueta Conforme o Rechaza H0.</li>
+    <li><b>Gráfico Q-Q:</b> si los puntos siguen la recta dentro de las bandas, los datos son compatibles con la normal.</li>
+  </ul>
+  <figure>
+    <div class="lienzo"><img src="img/ing_sup_b.png" alt="Independencia y Box-Cox"></div>
+    <figcaption><b>Independencia, rachas y transformación de Box-Cox.</b></figcaption>
+  </figure>
+  <ul>
+    <li><b>Independencia:</b> en el correlograma, las barras deben quedar dentro de las líneas rojas. Durbin-Watson cerca de 2 indica independencia.</li>
+    <li><b>Aleatoriedad:</b> prueba de rachas y tendencia por τ de Kendall.</li>
+    <li><b>Box-Cox:</b> si la normalidad se rechaza, indica qué transformación la corregiría. Si el intervalo incluye 1, no conviene transformar.</li>
+  </ul>
+  <div class="aviso importante"><strong>Datos redondeados</strong><p>Si el instrumento mide con poca resolución (por ejemplo, gramos enteros), muchos valores se repiten y las pruebas pueden rechazar la normalidad aunque el proceso sea normal; en el gráfico Q-Q se ven escalones. Revisa entonces si los datos son simétricos y si el Q-Q sigue la recta en general. La gráfica X̄ trabaja con promedios y es poco sensible a este efecto.</p></div>
+
+  <h3 id="capacidad">Capacidad del proceso</h3>
+  <p>Responde una pregunta concreta: <b>¿el proceso cumple lo que pide el cliente?</b> Requiere que la variable tenga mínimo, máximo o ambos.</p>
+  <figure>
+    <div class="lienzo"><img src="img/ing_capacidad.png" alt="Capacidad del proceso"></div>
+    <figcaption><b>Capacidad.</b> El veredicto arriba, los índices debajo y el detalle a continuación.</figcaption>
+    <ol class="leyenda">
+      <li data-xy="41.6,4.3"><b>Cómo se estima σ.</b> Con los rangos, las desviaciones, los rangos móviles o la σ fijada por el ingeniero.</li>
+      <li data-xy="63.1,2.6"><b>Datos.</b> Automático usa la Fase II si tiene al menos 20 muestras; si no, la Fase I.</li>
+      <li data-xy="1.4,12.2"><b>Veredicto.</b> Capaz, marginal o no capaz, en una frase.</li>
+      <li data-xy="1.4,23.3"><b>Cp.</b> Cuánto cabe la variación en la tolerancia, si el proceso estuviera centrado.</li>
+      <li data-xy="25.4,23.3"><b>Cpk.</b> Lo mismo, considerando dónde está el promedio.</li>
+      <li data-xy="49.8,23.3"><b>Cpu y Cpl.</b> Cada lado por separado.</li>
+      <li data-xy="74.2,23.3"><b>Fracción no conforme.</b> Esperada (en % y piezas por millón) y observada.</li>
+      <li data-xy="31.5,36.7"><b>Histograma</b> con mínimo, máximo, promedio y curva normal.</li>
+      <li data-xy="88.8,57.4"><b>Producto fuera de especificación</b> por debajo y por encima.</li>
+      <li data-xy="87.1,80.7"><b>Conclusiones</b> automáticas para revisar.</li>
+    </ol>
+  </figure>
+  <table class="tabla">
+    <thead><tr><th>Cpk</th><th>Veredicto</th><th>Qué significa</th></tr></thead>
+    <tbody>
+      <tr><td>1,33 o más</td><td><span class="estado verde">Capaz</span></td><td>El proceso cumple con margen.</td></tr>
+      <tr><td>Entre 1,00 y 1,33</td><td><span class="estado ambar">Marginal</span></td><td>Cumple, pero cualquier cambio puede sacar piezas de especificación.</td></tr>
+      <tr><td>Menos de 1,00</td><td><span class="estado rojo">No capaz</span></td><td>Se fabrica producto fuera de lo aceptado aunque el proceso esté estable.</td></tr>
+    </tbody>
+  </table>
+  <div class="aviso importante"><strong>Primero estable, después capaz</strong><p>Si el proceso tiene señales sin resolver, CEP advierte que los índices no son confiables. Atiende las alertas o depura la Fase I antes de interpretarlos.</p></div>
+  <details class="tecnico"><summary>Detalle técnico</summary><p>Cp = (LES − LEI) / 6σ; Cpu = (LES − μ) / 3σ; Cpl = (μ − LEI) / 3σ; Cpk = mín(Cpu, Cpl). La fracción esperada supone distribución normal; por eso conviene compararla con la observada y revisar los supuestos. Para variables por atributos, la capacidad se expresa como el nivel medio de defectos.</p></details>
+</section>
+
+<!-- ===================================================================== 9 -->
+<section class="capitulo" id="planificar" data-perfil="ingenieria">
+  <header><span class="num">9</span><h2>Ingeniería: planificar y decidir</h2><p class="para">Para Ingeniería</p></header>
+
+  <h3 id="plan">Plan de muestreo</h3>
+  <p>Ayuda a decidir cuántas unidades revisar y cada cuánto, buscando equilibrio entre detectar rápido los problemas, evitar las falsas alarmas y no recargar al personal.</p>
+  <figure>
+    <div class="lienzo"><img src="img/ing_plan.png" alt="Plan de muestreo"></div>
+    <figcaption><b>Plan de muestreo.</b> A la izquierda el plan propuesto; a la derecha, qué cambia respecto del actual.</figcaption>
+    <ol class="leyenda">
+      <li data-xy="18.1,25.1"><b>Unidades por muestra.</b> Con − y +. Más unidades detectan antes los cambios pequeños.</li>
+      <li data-xy="24.3,36.5"><b>Cada cuánto.</b> 15 min, 30 min, 1, 2 o 4 horas, u otro valor.</li>
+      <li data-xy="30.7,49.2"><b>Qué tan estrictos son los límites.</b> Más sensible (2,5σ), estándar (3σ) o más tolerante (3,5σ).</li>
+      <li data-xy="21.3,67.3"><b>Variabilidad (σ).</b> Calculada con los datos o fijada según el criterio del ingeniero.</li>
+      <li data-xy="22.4,89.7"><b>Cambio a detectar.</b> El tamaño del corrimiento del promedio que interesa.</li>
+      <li data-xy="64.7,20.7"><b>Comparación.</b> Tiempo para detectar, frecuencia de falsas alarmas y unidades por turno.</li>
+      <li data-xy="42.6,61.3"><b>Explicación en palabras</b> de lo que significa el plan.</li>
+      <li data-xy="95.2,69.7"><b>Guardar este plan.</b> Pide un motivo y lo aplica.</li>
+      <li data-xy="56,81.1"><b>Detalle técnico.</b> Curva ARL, tabla de desempeño y simulación.</li>
+    </ol>
+  </figure>
+  <div class="aviso consejo"><strong>Cómo leer la comparación</strong><p>Busca un plan que detecte el cambio que te importa en un tiempo razonable (por ejemplo, menos de un turno) sin dar falsas alarmas a cada rato y sin que revisar unidades se coma el tiempo del personal.</p></div>
+  <div class="aviso cuidado"><strong>Guardar un plan en Fase II</strong><p>Los límites se recalculan con el centro y la σ congelados. Si cambia el número de unidades por muestra, las muestras de monitoreo tomadas con el tamaño anterior pasan al archivo, porque ya no son comparables con los límites nuevos.</p></div>
+  <details class="tecnico"><summary>Detalle técnico: ARL y ATS</summary><p>El <b>ARL</b> es el número medio de muestras hasta que la gráfica da una señal. Con el proceso estable (ARL₀) conviene que sea alto: pocas falsas alarmas. Con el proceso corrido (ARL₁) conviene que sea bajo: detección rápida. El <b>ATS</b> es lo mismo expresado en tiempo (ARL × intervalo entre muestras). Para gráficas de atributos, CEP calcula el ARL exacto con la distribución binomial o de Poisson.</p></details>
+
+  <h3 id="aceptacion">Muestreo de aceptación</h3>
+  <p>Para decidir si se acepta o se rechaza un lote (por ejemplo, de materia prima) revisando solo una muestra. El plan es simple: se revisan <i>n</i> unidades y se acepta el lote si hay como máximo <i>c</i> defectuosas.</p>
+  <figure>
+    <div class="lienzo"><img src="img/ing_muestreo.png" alt="Muestreo de aceptación"></div>
+    <figcaption><b>Muestreo de aceptación.</b> Plan, curvas, dictamen del lote e historial.</figcaption>
+  </figure>
+  <ol class="pasos">
+    <li>Identifica el lote (código y descripción) y escribe el tamaño del lote <i>N</i>, la muestra <i>n</i>, el número de aceptación <i>c</i>, el <span class="termino" tabindex="0" data-def="Nivel de calidad aceptable: el porcentaje defectuoso con el que un lote debería aceptarse casi siempre.">AQL</span> y el <span class="termino" tabindex="0" data-def="Porcentaje defectuoso tolerable del lote: la calidad que se quiere rechazar casi siempre.">LTPD</span>.</li>
+    <li>O deja que CEP lo diseñe: escribe los riesgos α y β en <span class="texto-pantalla">Diseñar plan</span> y pulsa <span class="boton">Calcular n y c</span>.</li>
+    <li>Revisa la <b>curva OC</b> (probabilidad de aceptar según la calidad del lote), la <b>AOQ</b> (calidad media que sale) y la <b>ATI</b> (unidades inspeccionadas por lote).</li>
+    <li>Al inspeccionar, indica los defectuosos hallados con − y +: CEP muestra el dictamen, la fracción estimada y su intervalo de confianza.</li>
+    <li>Pulsa <span class="boton">Registrar Dictamen del Lote</span> para guardarlo en el historial de lotes.</li>
+  </ol>
+  <div class="aviso nota"><strong>Inspección severa y reducida</strong><p>Los botones <span class="texto-pantalla">Severa</span> y <span class="texto-pantalla">Reducida</span> aparecen desactivados: quedan fuera del alcance de esta versión.</p></div>
+</section>
+
+<!-- ===================================================================== 10 -->
+<section class="capitulo" id="administrar" data-perfil="ingenieria">
+  <header><span class="num">10</span><h2>Ingeniería: configurar, informar y respaldar</h2><p class="para">Para Ingeniería</p></header>
+
+  <h3 id="config">Límites y reglas</h3>
+  <p>La configuración de la variable activa y el historial de todos sus cambios.</p>
+  <figure>
+    <div class="lienzo"><img src="img/ing_conf_a.png" alt="Configuración de la variable"></div>
+    <figcaption><b>Revisión vigente, especificaciones y muestreo.</b></figcaption>
+  </figure>
+  <ul>
+    <li><b>Revisión vigente:</b> el número de versión (<span class="texto-pantalla">REV v2</span>), si los límites están congelados y la huella SHA-256 de la configuración.</li>
+    <li><b>Especificaciones:</b> mínimo, ideal y máximo; para una especificación de un solo lado se deja vacío el otro. También el nombre, la unidad y los decimales.</li>
+    <li><b>Muestreo y límites:</b> tipo de gráfica, tamaño de muestra, frecuencia, ancho de los límites y estimador de σ.</li>
+  </ul>
+  <p>Al cambiar algo, el botón de arriba pasa de <span class="texto-pantalla">Sin cambios pendientes</span> a <span class="boton">Guardar nueva revisión</span>, que pide una justificación.</p>
+  <div class="aviso nota"><strong>¿Por qué algunos campos no se pueden cambiar?</strong><p>Con los límites congelados, el tamaño de muestra, k y σ se cambian desde el <a href="#plan">plan de muestreo</a>, que recalcula los límites. El tipo de gráfica y el estimador de σ solo se cambian volviendo a la Fase I.</p></div>
+  <figure>
+    <div class="lienzo"><img src="img/ing_conf_b.png" alt="Reglas de detección"></div>
+    <figcaption><b>Reglas de detección.</b> Condición, tasa de falsa alarma, severidad y estado.</figcaption>
+  </figure>
+  <p>Las reglas se activan una a una o con <span class="boton">Preset WE</span> (4 reglas) y <span class="boton">Preset Nelson</span> (8 reglas). Las gráficas de dispersión solo evalúan la regla N1.</p>
+  <figure>
+    <div class="lienzo"><img src="img/ing_conf_c.png" alt="Historial, turnos y modo demostración"></div>
+    <figcaption><b>Historial de cambios, turnos y modo demostración.</b></figcaption>
+  </figure>
+  <ul>
+    <li><b>Historial de cambios:</b> fecha, usuario, parámetro, valor anterior y nuevo, justificación y versión. Se filtra y se descarga con <span class="boton">Exportar Historial (CSV)</span>.</li>
+    <li><b>Turnos de trabajo:</b> nombre, inicio y fin de cada turno; los usa el resumen del turno del operario.</li>
+    <li><b>Modo demostración:</b> muestra u oculta el botón de valores simulados en la vista Operario.</li>
+  </ul>
+
+  <h3 id="reportes">Reportes</h3>
+  <figure>
+    <div class="lienzo"><img src="img/ing_reportes.png" alt="Generador de reportes"></div>
+    <figcaption><b>Reportes.</b> Configuración a la izquierda y vista previa a la derecha.</figcaption>
+    <ol class="leyenda">
+      <li data-xy="21.6,15.7"><b>Plantilla del reporte.</b> Integral, Capacidad y supuestos, Control en proceso o Trazabilidad.</li>
+      <li data-xy="23.3,39.8"><b>Alcance.</b> El proceso y la variable (se cambia en el encabezado).</li>
+      <li data-xy="27.6,55"><b>Módulos a incluir.</b> Marca o desmarca capítulos.</li>
+      <li data-xy="71.1,3.6"><b>Generar y previsualizar.</b> Muestra la primera página.</li>
+      <li data-xy="86.2,7.1"><b>Exportar PDF.</b></li>
+      <li data-xy="90.5,10.7"><b>Exportar Excel.</b></li>
+      <li data-xy="66.4,16"><b>Vista previa.</b></li>
+      <li data-xy="70.2,90.8"><b>Historial de reportes.</b> Descargar otra vez y verificar.</li>
+    </ol>
+  </figure>
+  <ol class="pasos">
+    <li>Elige la plantilla del reporte y revisa el alcance.</li>
+    <li>Marca los módulos que quieres incluir.</li>
+    <li>Pulsa <span class="boton">Generar y Previsualizar</span>.</li>
+    <li>Pulsa <span class="boton">Exportar PDF</span> o <span class="boton">Exportar Excel (.xlsx)</span> y elige dónde guardarlo. Además queda una copia en la carpeta <b>reportes</b>.</li>
+  </ol>
+  <h4>Cómo es el informe PDF</h4>
+  <p>Está escrito para lectores que no son del área y <b>solo describe</b> lo que pasó, sin recomendaciones: el estado en una frase, un resumen «En pocas palabras», los indicadores con su significado, la gráfica con una guía de lectura, las muestras fuera de lo normal, el cumplimiento de la especificación, la verificación de los datos, el plan de muestreo, las alertas, los lotes, el historial de cambios, un anexo técnico y un glosario.</p>
+  <div class="pareja">
+    <figure><div class="lienzo"><img src="img/informe_p1.png" alt="Página 1 del informe"></div><figcaption><b>Página 1.</b> Estado, resumen e indicadores.</figcaption></figure>
+    <figure><div class="lienzo"><img src="img/informe_p2.png" alt="Página 2 del informe"></div><figcaption><b>Página 2.</b> La gráfica con su guía de lectura.</figcaption></figure>
+  </div>
+  <div class="aviso nota"><strong>Sin LaTeX también hay PDF</strong><p>Si el equipo no tiene MiKTeX, el PDF se genera con un formato alternativo con los mismos textos y la pantalla lo avisa. El libro Excel tiene una hoja por sección con los datos y resultados numéricos.</p></div>
+  <div class="aviso consejo"><strong>Comprobar que un informe no fue modificado</strong><p>En el historial de reportes, la verificación recalcula la huella SHA-256 del archivo y la compara con la registrada al generarlo. Si alguien cambió el archivo, no coincide.</p></div>
+
+  <h3 id="base">Base de datos y respaldos</h3>
+  <figure class="media">
+    <div class="lienzo"><img src="img/ing_base_datos.png" alt="Base de datos y respaldos"></div>
+    <figcaption><b>Base de datos y respaldos.</b></figcaption>
+  </figure>
+  <ul>
+    <li><b>Tus datos:</b> cuántos procesos, variables y muestras hay, dónde está la base y su tamaño.</li>
+    <li><span class="boton">Respaldar ahora</span> guarda una copia. Además, CEP hace una cada vez que se abre (se guardan las últimas 20).</li>
+    <li><span class="boton">Descargar una copia</span> guarda la base completa en un archivo .db, para archivarla o llevarla a otro equipo.</li>
+    <li>En la lista de respaldos, cada copia se descarga o se recupera con <span class="boton">Volver a este</span>.</li>
+    <li><span class="boton">Elegir archivo .db</span> reemplaza todos los datos por los de una copia descargada antes.</li>
+    <li><span class="boton">Cargar demostración</span> aparece solo con la base vacía.</li>
+  </ul>
+  <div class="aviso cuidado"><strong>Volver a un respaldo reemplaza todo</strong><p>La base vuelve completa al estado de esa copia: se pierde lo registrado después, en todos los procesos. Antes de hacerlo, CEP guarda una copia de la base actual que aparece en la misma lista, así que siempre se puede deshacer.</p></div>
+  <div class="aviso consejo"><strong>Pasar los datos a otro computador</strong><p>En el equipo de origen, <span class="boton">Descargar una copia</span>. En el de destino, con CEP instalado, <span class="boton">Elegir archivo .db</span>.</p></div>
+</section>
+
+<!-- ===================================================================== 11 -->
+<section class="capitulo" id="problemas" data-perfil="todos">
+  <header><span class="num">11</span><h2>Problemas frecuentes</h2><p class="para">Para todos</p></header>
+  <p class="entrada">Pulsa una pregunta para ver la respuesta.</p>
+  <details class="pregunta"><summary>Escribí mal un valor y ya guardé la muestra.</summary><div><p>Durante 10 minutos, usa <span class="boton">Deshacer</span> en Registrar muestra. Pasado ese plazo, avisa al ingeniero: en Fase I puede excluirla indicando la causa.</p></div></details>
+  <details class="pregunta"><summary>La próxima muestra aparece «atrasada».</summary><div><p>Ya pasó el tiempo de la frecuencia desde la última muestra. Regístrala, o pide al ingeniero que revise la frecuencia en el plan de muestreo.</p></div></details>
+  <details class="pregunta"><summary>El estado está en rojo y no sé por qué.</summary><div><p>Abre <span class="boton">Alertas</span>: las graves sin resolver (puntos fuera de los límites, valores cerca del límite, paradas o lotes retenidos) ponen el estado en rojo. Anota la causa y la acción y márcalas como resueltas.</p></div></details>
+  <details class="pregunta"><summary>Subí la plantilla y las muestras de monitoreo no se cargaron.</summary><div><p>Es lo esperado mientras la variable está en Fase I. Congela los límites en Gráficos y vuelve a subir el mismo archivo.</p></div></details>
+  <details class="pregunta"><summary>Quiero cambiar el tipo de gráfica y no me deja.</summary><div><p>El tipo de gráfica y el estimador de σ solo se cambian en Fase I. Si los límites ya están congelados, primero usa <span class="boton">Volver a Fase I</span>.</p></div></details>
+  <details class="pregunta"><summary>No puedo eliminar una variable.</summary><div><p>Solo se eliminan variables sin muestras, para no perder la trazabilidad.</p></div></details>
+  <details class="pregunta"><summary>Quiero quitar todo lo que cargué.</summary><div><p>En Base de datos y respaldos, usa <span class="boton">Volver a este</span> en un respaldo anterior a la carga. Ten en cuenta que afecta a todos los procesos.</p></div></details>
+  <details class="pregunta"><summary>La validación de supuestos rechaza la normalidad.</summary><div><p>Revisa si los datos están redondeados (escalones en el gráfico Q-Q) y si son simétricos. Ver el recuadro «Datos redondeados» en <a href="#supuestos">Validación de supuestos</a>.</p></div></details>
+  <details class="pregunta"><summary>La capacidad dice que los índices no son confiables.</summary><div><p>El proceso tiene señales sin resolver. Atiende las alertas o depura la Fase I antes de interpretar los índices.</p></div></details>
+  <details class="pregunta"><summary>El PDF dice que se usó el formato alternativo.</summary><div><p>El equipo no tiene LaTeX. Instala MiKTeX si quieres ese formato; el contenido es el mismo.</p></div></details>
+  <details class="pregunta"><summary>Windows muestra «Windows protegió su PC» al instalar.</summary><div><p>Pulsa <span class="boton">Más información</span> y <span class="boton">Ejecutar de todas formas</span>. Aparece porque el instalador no tiene firma digital.</p></div></details>
+</section>
+
+<!-- ===================================================================== 12 -->
+<section class="capitulo" id="glosario" data-perfil="todos">
+  <header><span class="num">12</span><h2>Glosario</h2><p class="para">Para todos</p></header>
+  <dl class="glosario">
+    <dt>Alerta</dt><dd>Aviso que genera CEP cuando una muestra cumple una regla de detección, o que crea una persona al reportar un problema.</dd>
+    <dt>AOQ y AOQL</dt><dd>Calidad media que sale después de inspeccionar los lotes, y su valor máximo.</dd>
+    <dt>AQL</dt><dd>Nivel de calidad aceptable: el porcentaje defectuoso con el que un lote debería aceptarse casi siempre.</dd>
+    <dt>ARL y ATS</dt><dd>Cuántas muestras (ARL) o cuánto tiempo (ATS) tarda, en promedio, la gráfica en dar una señal.</dd>
+    <dt>ATI</dt><dd>Cantidad media de unidades inspeccionadas por lote.</dd>
+    <dt>Causa asignable</dt><dd>Causa identificable de una variación anormal: un ajuste, un material, un error. Se opone a la causa común, la variación natural del proceso.</dd>
+    <dt>Cp, Cpk, Cpu, Cpl</dt><dd>Índices de capacidad: comparan la variación del proceso con la tolerancia. Cpk considera además dónde está el promedio.</dd>
+    <dt>Fase I y Fase II</dt><dd>Etapa de estimación de los límites y etapa de monitoreo con los límites congelados.</dd>
+    <dt>Fracción no conforme</dt><dd>Proporción de producto fuera de los valores aceptados, en porcentaje o en piezas por millón (ppm).</dd>
+    <dt>LC, LCS, LCI</dt><dd>Línea central y límites de control superior e inferior.</dd>
+    <dt>LES, LEI</dt><dd>Límites de especificación superior e inferior: los valores aceptados.</dd>
+    <dt>LTPD</dt><dd>Porcentaje defectuoso tolerable del lote: la calidad que se quiere rechazar casi siempre.</dd>
+    <dt>Muestra o subgrupo</dt><dd>Grupo de unidades revisadas juntas.</dd>
+    <dt>p-valor</dt><dd>Número que usa una prueba estadística para decidir. Si es menor que α, se rechaza el supuesto.</dd>
+    <dt>Reglas de Nelson y Western Electric</dt><dd>Patrones que indican que el proceso cambió (N1 a N8 y WE4).</dd>
+    <dt>SHA-256</dt><dd>Huella digital de un archivo o una configuración: cambia si se modifica cualquier dato.</dd>
+    <dt>σ (sigma)</dt><dd>Desviación estándar: mide cuánto varía el proceso.</dd>
+  </dl>
+  <p class="pie">CEP — Control Estadístico de Procesos · Manual de usuario, versión 1.0.0. Las capturas muestran la aplicación con los datos de demostración.</p>
+</section>
+
+</main>
+</div>
+</div>
+
+<dialog class="visor" id="visor" aria-label="Imagen ampliada"><img id="visor-img" alt=""><p>Clic o Esc para cerrar</p></dialog>
+
+<script>
+(() => {
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+  const guardar = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+  const leer = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+
+  // ---------------------------------------------------------------- índice
+  const indice = $("#indice");
+  function armarIndice() {
+    const ol = document.createElement("ol");
+    $$(".capitulo").forEach((cap) => {
+      if (cap.classList.contains("oculto-perfil")) return;
+      const h2 = $("h2", cap);
+      const li = document.createElement("li");
+      li.innerHTML = `<a href="#${cap.id}">${$(".num", cap).textContent}. ${h2.textContent}</a>`;
+      const sub = $$("h3[id]", cap);
+      if (sub.length) {
+        const ol2 = document.createElement("ol");
+        sub.forEach((h3) => { const l = document.createElement("li"); l.innerHTML = `<a href="#${h3.id}">${h3.textContent}</a>`; ol2.appendChild(l); });
+        li.appendChild(ol2);
+      }
+      ol.appendChild(li);
+    });
+    indice.replaceChildren(ol);
+    filtrarIndice();
+  }
+  function filtrarIndice() {
+    const q = $("#buscar").value.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    let visibles = 0;
+    $$("li", indice).forEach((li) => {
+      const t = li.textContent.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const ok = !q || t.includes(q);
+      li.hidden = !ok; if (ok) visibles++;
+    });
+    let vacio = $(".vacio", indice);
+    if (!visibles) { if (!vacio) { vacio = document.createElement("p"); vacio.className = "vacio"; indice.appendChild(vacio); } vacio.textContent = "Ningún título coincide. Prueba con otra palabra."; }
+    else if (vacio) vacio.remove();
+  }
+  $("#buscar").addEventListener("input", filtrarIndice);
+
+  // ---------------------------------------------------------------- perfil
+  function aplicarPerfil(p) {
+    $$(".perfiles button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.perfil === p)));
+    $$(".capitulo").forEach((c) => c.classList.toggle("oculto-perfil", p !== "todos" && c.dataset.perfil !== "todos" && c.dataset.perfil !== p));
+    guardar("cep-manual-perfil", p);
+    armarIndice();
+  }
+  $$(".perfiles button").forEach((b) => b.addEventListener("click", () => aplicarPerfil(b.dataset.perfil)));
+  aplicarPerfil(leer("cep-manual-perfil") || "todos");
+
+  // ---------------------------------------------------------------- capítulo actual en el índice
+  const obs = new IntersectionObserver((entradas) => {
+    entradas.forEach((e) => {
+      if (!e.isIntersecting) return;
+      $$(".indice a").forEach((a) => a.classList.toggle("actual", a.getAttribute("href") === "#" + e.target.id));
+    });
+  }, { rootMargin: "0px 0px -75% 0px" });
+  $$(".capitulo, h3[id]").forEach((el) => obs.observe(el));
+
+  // ---------------------------------------------------------------- menú en pantallas pequeñas
+  const lateral = $("#lateral"), botonMenu = $("#boton-menu");
+  botonMenu.addEventListener("click", () => { const a = lateral.classList.toggle("abierto"); botonMenu.setAttribute("aria-expanded", String(a)); });
+  lateral.addEventListener("click", (e) => { if (e.target.closest("a")) { lateral.classList.remove("abierto"); botonMenu.setAttribute("aria-expanded", "false"); } });
+
+  // ---------------------------------------------------------------- capturas anotadas
+  $$("figure").forEach((fig) => {
+    const items = $$(".leyenda li[data-xy]", fig);
+    const lienzo = $(".lienzo", fig);
+    items.forEach((li, i) => {
+      const [x, y] = li.dataset.xy.split(",");
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "punto"; b.textContent = i + 1;
+      b.style.setProperty("--x", x + "%"); b.style.setProperty("--y", y + "%");
+      b.setAttribute("aria-label", `Parte ${i + 1}: ${li.querySelector("b") ? li.querySelector("b").textContent : ""}`);
+      const on = () => { b.classList.add("activo"); li.classList.add("activo"); };
+      const off = () => { b.classList.remove("activo"); li.classList.remove("activo"); };
+      b.addEventListener("mouseenter", on); b.addEventListener("mouseleave", off);
+      b.addEventListener("focus", on); b.addEventListener("blur", off);
+      b.addEventListener("click", (e) => { e.stopPropagation(); li.scrollIntoView({ block: "nearest", behavior: "smooth" }); on(); setTimeout(off, 1600); });
+      li.addEventListener("mouseenter", on); li.addEventListener("mouseleave", off);
+      lienzo.appendChild(b);
+    });
+  });
+
+  // ---------------------------------------------------------------- visor de imágenes
+  const visor = $("#visor"), visorImg = $("#visor-img");
+  $$("figure img").forEach((img) => img.addEventListener("click", () => {
+    visorImg.src = img.src; visorImg.alt = img.alt;
+    if (visor.showModal) visor.showModal();
+  }));
+  visor.addEventListener("click", () => visor.close());
+
+  // ---------------------------------------------------------------- recorrido
+  const casillas = $$("#lista-recorrido input");
+  function actualizarAvance() {
+    const n = casillas.filter((c) => c.checked).length;
+    $("#barra-avance").style.width = (n / casillas.length * 100) + "%";
+    $("#texto-avance").textContent = n === casillas.length ? "¡Recorrido completo!" : `${n} de ${casillas.length} pasos`;
+    guardar("cep-manual-recorrido", JSON.stringify(casillas.map((c) => c.checked)));
+  }
+  try { const g = JSON.parse(leer("cep-manual-recorrido") || "[]"); casillas.forEach((c, i) => (c.checked = !!g[i])); } catch (e) {}
+  casillas.forEach((c) => c.addEventListener("change", actualizarAvance));
+  actualizarAvance();
+
+  // ---------------------------------------------------------------- explorador de reglas
+  const PATRONES = {
+    normal: { z: [0.4, -0.6, 0.9, -0.2, -1.1, 0.5, 1.3, -0.4, 0.1, -0.9, 0.7, -1.4, 0.3, 1.0, -0.5, 0.2, -0.8, 1.2, -0.3, 0.6], marca: [],
+      ve: "Los puntos suben y bajan sin orden, alrededor de la línea central y dentro de los límites.",
+      sig: "El proceso solo tiene su variación natural (causas comunes). No hay que hacer nada.",
+      cep: "Sin alertas. Estado «El proceso va bien»." },
+    N1: { z: [0.4, -0.6, 0.9, -0.2, -1.1, 0.5, 1.3, -0.4, 0.1, -0.9, 0.7, -1.4, 0.3, 3.5, -0.5, 0.2, -0.8, 1.2, -0.3, 0.6], marca: [13],
+      ve: "Un punto quedó por encima del límite superior.",
+      sig: "Algo distinto pasó en esa muestra: un ajuste, un material, un error de medición. Por azar ocurre unas 3 veces cada 1.000 muestras.",
+      cep: "Regla N1 · alerta grave «Valor fuera de lo normal». Estado «Detener y avisar»." },
+    N2: { z: [0.4, -0.6, 0.9, -0.2, -1.1, 0.5, -0.4, 0.6, 0.3, 1.1, 0.4, 0.8, 1.3, 0.2, 0.9, 0.5, 1.4, -0.8, 0.3, -0.6], marca: [7, 8, 9, 10, 11, 12, 13, 14, 15, 16].slice(1),
+      ve: "Nueve puntos seguidos quedaron por encima de la línea central, aunque ninguno salió de los límites.",
+      sig: "El promedio del proceso se corrió hacia arriba. Suele pasar tras un cambio de lote, de turno o de ajuste.",
+      cep: "Regla N2 · advertencia «El proceso parece haberse corrido». Estado «Revisar»." },
+    N3: { z: [0.4, -0.6, 0.9, -0.2, -1.1, 0.5, -0.4, 0.1, -0.9, -1.5, -1.0, -0.4, 0.2, 0.8, 1.5, -0.3, 0.6, -0.8, 0.3, -0.2], marca: [9, 10, 11, 12, 13, 14],
+      ve: "Seis puntos seguidos, cada uno más alto que el anterior.",
+      sig: "Hay una tendencia: algo se desgasta, se calienta o se desajusta poco a poco.",
+      cep: "Regla N3 · advertencia «Tendencia». Estado «Revisar»." },
+    N5: { z: [0.4, -0.6, 0.9, -0.2, -1.1, 0.5, 1.3, -0.4, 0.1, -0.9, 0.7, 2.4, 1.1, 2.6, -0.5, 0.2, -0.8, 1.2, -0.3, 0.6], marca: [11, 13],
+      ve: "Dos de tres puntos seguidos quedaron muy cerca del límite superior, del mismo lado.",
+      sig: "El proceso se está acercando al límite: es una señal temprana de un corrimiento.",
+      cep: "Regla N5 · alerta grave «Valores cerca del límite». Estado «Detener y avisar»." },
+    N7: { z: [0.4, -0.6, 0.9, -0.2, 0.3, -0.2, 0.4, -0.3, 0.1, -0.4, 0.2, -0.1, 0.3, -0.3, 0.2, -0.2, 0.1, -0.4, 0.3, -0.1], marca: [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+      ve: "Quince puntos seguidos, todos muy pegados a la línea central.",
+      sig: "Parece buena noticia, pero indica que los límites están mal calculados o que se mezclan datos de fuentes distintas.",
+      cep: "Regla N7 · alerta «Variación demasiado pareja». Conviene que el ingeniero revise los límites." },
+  };
+  const svg = $("#carta-reglas");
+  const W = 720, H = 260, IZQ = 84, DER = 20, ARR = 18, ABA = 30;
+  const yDe = (z) => ARR + (4 - z) / 8 * (H - ARR - ABA);
+  const xDe = (i) => IZQ + i * (W - IZQ - DER) / 19;
+  function dibujar(nombre) {
+    const p = PATRONES[nombre];
+    let s = "";
+    s += `<rect x="${IZQ}" y="${yDe(3)}" width="${W - IZQ - DER}" height="${yDe(-3) - yDe(3)}" fill="#0f4c5c" opacity="0.06"/>`;
+    [2, 1, -1, -2].forEach((z) => (s += `<line x1="${IZQ}" x2="${W - DER}" y1="${yDe(z)}" y2="${yDe(z)}" stroke="#d3dcdf" stroke-dasharray="3 4"/>`));
+    s += `<line x1="${IZQ}" x2="${W - DER}" y1="${yDe(3)}" y2="${yDe(3)}" stroke="#ba1a1a" stroke-width="2"/>`;
+    s += `<line x1="${IZQ}" x2="${W - DER}" y1="${yDe(-3)}" y2="${yDe(-3)}" stroke="#ba1a1a" stroke-width="2"/>`;
+    s += `<line x1="${IZQ}" x2="${W - DER}" y1="${yDe(0)}" y2="${yDe(0)}" stroke="#0f4c5c" stroke-width="2"/>`;
+    const rot = [[3, "Límite sup."], [0, "Promedio"], [-3, "Límite inf."]];
+    rot.forEach(([z, t]) => (s += `<text x="${IZQ - 6}" y="${yDe(z) + 4}" text-anchor="end" font-size="10.5" font-family="Montserrat, sans-serif" fill="${z ? "#ba1a1a" : "#0f4c5c"}">${t}</text>`));
+    s += `<polyline fill="none" stroke="#1b2a30" stroke-width="1.8" stroke-linejoin="round" points="${p.z.map((z, i) => `${xDe(i)},${yDe(z)}`).join(" ")}"/>`;
+    p.z.forEach((z, i) => {
+      const m = p.marca.includes(i);
+      s += `<circle cx="${xDe(i)}" cy="${yDe(z)}" r="${m ? 6.5 : 4.5}" fill="${m ? "#ffdad6" : "#ffffff"}" stroke="${m ? "#ba1a1a" : "#0f4c5c"}" stroke-width="2"/>`;
+    });
+    if (p.marca.length) {
+      const i = p.marca[p.marca.length - 1];
+      s += `<text x="${xDe(i)}" y="${yDe(p.z[i]) - 12}" text-anchor="middle" font-size="13" font-weight="700" font-family="League Spartan, sans-serif" fill="#ba1a1a">!</text>`;
+    }
+    p.z.forEach((_, i) => { if (i % 2 === 0) s += `<text x="${xDe(i)}" y="${H - 10}" text-anchor="middle" font-size="10" font-family="Montserrat, sans-serif" fill="#70787c">${i + 1}</text>`; });
+    svg.innerHTML = s;
+    $("#exp-ve").textContent = p.ve; $("#exp-significa").textContent = p.sig; $("#exp-cep").textContent = p.cep;
+    $$("#explorador .opciones button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.patron === nombre)));
+  }
+  $$("#explorador .opciones button").forEach((b) => b.addEventListener("click", () => dibujar(b.dataset.patron)));
+  dibujar("N2");
+
+  // ---------------------------------------------------------------- impresión: mostrar todo
+  window.addEventListener("beforeprint", () => { $$("details").forEach((d) => (d.open = true)); $$(".capitulo").forEach((c) => c.classList.remove("oculto-perfil")); });
+})();
+</script>
+</body>
+</html>
