@@ -227,7 +227,7 @@
       ["Muestras tomadas", `${t.subgrupos_tomados} de ${t.subgrupos_programados} programadas`],
       [attr() ? "Unidades buenas" : "Unidades dentro de lo aceptado",
         t.fraccion_conforme === null ? (attr() && !OPER.esP(V) ? "No aplica a conteos de fallas" : "Todavía sin datos") : pct(t.fraccion_conforme, 1)],
-      ["Alertas", t.alarmas ? `${t.alarmas} (${t.alarmas_resueltas} resueltas)` : "Ninguna"],
+      ["Alertas", t.alarmas ? `${t.alarmas} (${t.alarmas_resueltas} ${t.alarmas_resueltas === 1 ? "resuelta" : "resueltas"})` : "Ninguna"],
       ["Quién registra", CEP.usuario() || "Sin identificar (toca tu nombre arriba a la derecha)"],
     ];
     $("turno-datos").innerHTML = filas.map(([a, b]) => `<div class="flex items-center justify-between gap-space-md py-space-sm">

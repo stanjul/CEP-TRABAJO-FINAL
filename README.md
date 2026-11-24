@@ -16,7 +16,7 @@ muestreo de aceptación y reportes PDF / Excel. Interfaz basada en el diseño ex
 - [Descripción técnica del software](docs/DESCRIPCION_SOFTWARE.pdf) (PDF; fuente LaTeX en
   `docs/descripcion/`, versión en texto en [DESCRIPCION_SOFTWARE.md](docs/DESCRIPCION_SOFTWARE.md))
 - [Instalación y solución de problemas](docs/INSTALACION.md)
-- [Manual de usuario](docs/MANUAL_USUARIO.md)
+- [Manual de usuario](docs/MANUAL_USUARIO.pdf) (PDF detallado con capturas; fuente LaTeX en `docs/manual/`)
 - API interactiva: `http://127.0.0.1:8000/docs`
 - Convenciones del código: [CLAUDE.md](CLAUDE.md)
 

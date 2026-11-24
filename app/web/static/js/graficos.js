@@ -134,8 +134,10 @@
       customdata: serie.valores.map((_, i) => i),
     });
     // Etiqueta de regla sobre los puntos con señal (selectiva, no en todos los puntos).
+    // En un eje de categorías la x de una anotación es la posición (0, 1, 2…), no la etiqueta:
+    // con xs[i] = "24" Plotly la ubicaba en la posición 24, lejos del punto.
     malos.forEach((reglas, i) => anots.push({
-      x: xs[i], y: serie.valores[i], yshift: 14, showarrow: false, text: op.simple ? "<b>!</b>" : reglas[0],
+      x: i, y: serie.valores[i], yshift: 14, showarrow: false, text: op.simple ? "<b>!</b>" : reglas[0],
       font: { family: "Montserrat, sans-serif", size: 9, color: C.alarma },
     }));
 

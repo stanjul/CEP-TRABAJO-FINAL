@@ -251,7 +251,7 @@ def _indicadores(contenido: dict) -> list[list[str]]:
     alarmas = contenido.get("alarmas") or []
     if alarmas:
         resueltas = sum(a["estado"] == "resuelta" for a in alarmas)
-        filas.append(["Alertas registradas", f"{len(alarmas)} ({resueltas} resueltas)", "Avisos generados por muestras fuera de lo normal o reportados a mano."])
+        filas.append(["Alertas registradas", f"{len(alarmas)} ({_n(resueltas, 'resuelta', 'resueltas')})", "Avisos generados por muestras fuera de lo normal o reportados a mano."])
     return filas
 
 
