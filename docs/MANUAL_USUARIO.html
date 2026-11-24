@@ -204,6 +204,17 @@ dialog.visor p { color: #d6e6eb; font-size: 0.85rem; margin: 0.5rem 0 0; text-al
 
 .pie { margin-top: 5rem; padding-top: 1.2rem; border-top: 1px solid var(--linea); font-size: 0.85rem; color: var(--tinta-suave); }
 
+/* ---------- descargar el PDF */
+.descargar { display: flex; align-items: center; justify-content: center; gap: 0.5rem; font: 650 0.88rem/1.2 var(--cuerpo); text-decoration: none;
+  background: var(--petroleo); color: #fff; border-radius: 8px; padding: 0.6rem 0.8rem; margin: 0 0 0.4rem; cursor: pointer; }
+.descargar:hover { background: var(--petroleo-profundo); }
+.descargar svg { width: 1.1rem; height: 1.1rem; flex: none; }
+.descargar[aria-disabled="true"] { opacity: 0.6; cursor: progress; }
+.descargar-estado { font-size: 0.78rem; color: var(--tinta-suave); margin: 0 0 0.8rem; min-height: 1em; }
+.acciones-portada { margin: -0.8rem 0 1.6rem; }
+.descargar.en-portada { display: inline-flex; background: var(--menta); color: var(--petroleo-profundo); padding: 0.7rem 1.1rem; font-size: 0.95rem; }
+.descargar.en-portada:hover { background: #ffffff; }
+
 /* ---------- tutoriales */
 .objetivo { display: grid; grid-template-columns: 1.4fr 1.2fr 0.7fr; gap: 0; max-width: 900px; border: 1px solid var(--linea); border-radius: 12px; background: #fff; margin: 0 0 1.8rem; overflow: hidden; }
 .objetivo > div { padding: 0.9rem 1.1rem; border-left: 1px solid var(--linea); }
@@ -246,7 +257,7 @@ svg.mini { width: 150px; height: 72px; background: var(--hielo); border-radius: 
 @media print {
   @page { size: A4; margin: 16mm 14mm 18mm; }
   body { font-size: 10.5pt; background: #fff; }
-  .lateral, .boton-menu, dialog.visor, .explorador .opciones, .recorrido .avance { display: none !important; }
+  .lateral, .boton-menu, dialog.visor, .explorador .opciones, .recorrido .avance, .acciones-portada { display: none !important; }
   .marco { display: block; }
   .contenido { padding: 0; max-width: none; }
   .oculto-perfil { display: block !important; }
@@ -286,6 +297,8 @@ svg.mini { width: 150px; height: 72px; background: var(--hielo); border-radius: 
     <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="4" fill="#003441" stroke="#87bbce" stroke-width="1.5"/><line x1="5" y1="9" x2="27" y2="9" stroke="#ffdad6" stroke-width="1.2" stroke-dasharray="2 1.5"/><line x1="5" y1="16" x2="27" y2="16" stroke="#87bbce" stroke-width="1.2"/><line x1="5" y1="23" x2="27" y2="23" stroke="#ffdad6" stroke-width="1.2" stroke-dasharray="2 1.5"/><polyline points="6,17 10,13 14,18 18,14 22,19 26,11" stroke="#a1f2e2" stroke-width="2" fill="none" stroke-linejoin="round" stroke-linecap="round"/></svg>
     <span>CEP<small>Manual de usuario</small></span>
   </a>
+  <a class="descargar" href="MANUAL_USUARIO.pdf" download><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Descargar el manual en PDF</a>
+  <p class="descargar-estado" aria-live="polite"></p>
   <label class="etiqueta" for="buscar">Buscar en el índice</label>
   <input class="buscador" id="buscar" type="search" placeholder="Ej.: congelar, alertas, plantilla" autocomplete="off">
   <div class="perfiles" role="group" aria-label="Mostrar capítulos para">
@@ -304,6 +317,7 @@ svg.mini { width: 150px; height: 72px; background: var(--hielo); border-radius: 
   <p class="version">Versión 1.0.1 · Noviembre de 2026</p>
   <h1>Manual de usuario</h1>
   <p class="bajada">CEP vigila la calidad de un proceso a partir de las muestras que se toman en la planta: avisa cuando algo cambia, dice si el proceso cumple lo que pide el cliente y prepara los informes. Este manual lo explica pantalla por pantalla.</p>
+  <p class="acciones-portada"><a class="descargar en-portada" href="MANUAL_USUARIO.pdf" download><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Descargar en PDF</a></p>
   <svg class="carta-portada" viewBox="0 0 1000 170" preserveAspectRatio="none" aria-hidden="true">
     <rect x="0" y="45" width="1000" height="80" fill="#ffffff" opacity="0.05"/>
     <line x1="0" y1="45" x2="1000" y2="45" stroke="#ffdad6" stroke-width="1.5" stroke-dasharray="8 6" vector-effect="non-scaling-stroke"/>
@@ -1261,6 +1275,44 @@ svg.mini { width: 150px; height: 72px; background: var(--hielo); border-radius: 
 
   // ---------------------------------------------------------------- impresión: mostrar todo
   window.addEventListener("beforeprint", () => { $$("details").forEach((d) => (d.open = true)); $$(".capitulo").forEach((c) => c.classList.remove("oculto-perfil")); });
+  // ---------------------------------------------------------------- descargar el PDF
+  // Abierto desde el computador: el enlace apunta al PDF con el mismo nombre que este archivo.
+  // Publicado como página de Claude: el PDF va publicado al lado y se entrega con la capacidad «downloads».
+  const enlacesPdf = $$("a.descargar");
+  const estadoPdf = $(".descargar-estado");
+  const avisar = (t) => { if (estadoPdf) estadoPdf.textContent = t; };
+  if (window.claude && typeof window.claude.use === "function") {
+    enlacesPdf.forEach((a) => { a.removeAttribute("href"); a.removeAttribute("download"); a.setAttribute("role", "button"); a.hidden = true; });
+    window.claude.use("downloads").then((descargas) => {
+      if (!descargas) return;   // esta vista no permite descargas: el botón queda oculto
+      enlacesPdf.forEach((a) => {
+        a.hidden = false; a.tabIndex = 0;
+        const descargar = async () => {
+          if (a.getAttribute("aria-disabled") === "true") return;
+          a.setAttribute("aria-disabled", "true"); avisar("Preparando el PDF…");
+          try {
+            const r = await fetch("MANUAL_USUARIO.pdf");
+            if (!r.ok) throw { code: "unavailable" };
+            await descargas.save({ filename: "Manual de usuario CEP.pdf", data: await r.blob() });
+            avisar("Listo: el PDF quedó guardado.");
+          } catch (e) {
+            const codigo = e && e.code;
+            if (codigo === "declined") avisar("Descarga cancelada.");
+            else if (codigo === "rate_limited") avisar("Ya hay una descarga en curso. Intenta de nuevo en unos segundos.");
+            else if (codigo === "host_unavailable") avisar("Esta app no puede guardar archivos. Abre el manual en un navegador o en un computador.");
+            else avisar("No se pudo descargar el PDF en esta vista.");
+          } finally { a.removeAttribute("aria-disabled"); }
+        };
+        a.addEventListener("click", (e) => { e.preventDefault(); descargar(); });
+        a.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); descargar(); } });
+      });
+    }).catch(() => {});
+  } else {
+    const base = decodeURIComponent(location.pathname.split("/").pop() || "");
+    const pdf = /\.html?$/i.test(base) ? base.replace(/\.html?$/i, ".pdf") : "MANUAL_USUARIO.pdf";
+    enlacesPdf.forEach((a) => a.setAttribute("href", encodeURIComponent(pdf)));
+  }
+
   window.__manualListo = true;   // lo espera construir_manual.py antes de imprimir el PDF
 })();
 </script>
