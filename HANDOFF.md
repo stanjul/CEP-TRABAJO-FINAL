@@ -117,6 +117,11 @@ Montserrat en Excel (si no está instalada, Excel usa otra). Ver CLAUDE.md «Pla
   primera vez (Defender + caché de fuentes de matplotlib), ~10 s después; la ventana aparece al
   instante con pantalla de carga. Ver CLAUDE.md «Programa de escritorio» y la skill `construir-cep`.
   No probado: Windows 10 sin WebView2 y un equipo limpio distinto de este.
+- **v1.0.1 (2026-11-24):** marcas de señal ("!" y códigos de regla) en su punto en las cartas
+  (anotaciones en eje de categorías usan la posición), plural «1 resuelta», manual de usuario HTML
+  interactivo + PDF (`docs/manual/`), descripción técnica en PDF, logos en `docs/marca/`.
+  `CEP-Setup-1.0.1.exe` verificado empaquetado (versión, correcciones, demo, PDF LaTeX). Se instala
+  encima de la 1.0.0 conservando los datos.
 - **Git (2026-11-23):** instalado con winget (2.56.1). Repositorio local en la carpeta del proyecto,
   rama `main`, primer commit `a689e30`. `Programa/` queda **fuera** (pedido del usuario), igual que
   `.venv/`, `data/*.db`, `data/reportes/` y `respaldos/`. Autor: identidad global ya configurada

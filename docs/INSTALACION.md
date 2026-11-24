@@ -7,12 +7,12 @@ Hay dos formas de usarla:
 
 | Forma | Para quién | Qué se necesita |
 |---|---|---|
-| **Programa de escritorio** (`CEP-Setup-1.0.0.exe`) | Quien solo va a usar la aplicación | Windows 10/11 de 64 bits. Nada más. |
+| **Programa de escritorio** (`CEP-Setup-1.0.1.exe`) | Quien solo va a usar la aplicación | Windows 10/11 de 64 bits. Nada más. |
 | **Desde el código** (`run.bat` / `run.sh`) | Quien la desarrolla o la revisa por dentro | Python 3.11+ (ver §1 en adelante) |
 
 ## 0. Programa de escritorio (recomendado)
 
-1. Doble clic en **`CEP-Setup-1.0.0.exe`** (unos 70 MB). No pide permisos de administrador: se
+1. Doble clic en **`CEP-Setup-1.0.1.exe`** (unos 70 MB). No pide permisos de administrador: se
    instala para el usuario actual. Si Windows muestra «Windows protegió su PC» (el programa no
    está firmado digitalmente), elegir **Más información → Ejecutar de todas formas**.
 2. Abrir **CEP** desde el menú Inicio o el acceso directo del escritorio. Se abre en su propia
@@ -50,7 +50,7 @@ construir.bat
 
 Instala PyInstaller y pywebview (`requirements-build.txt`), corre las pruebas, empaqueta con
 PyInstaller (`instalador\cep.spec`, unos 4 minutos) y arma el instalador con Inno Setup
-(`instalador\cep.iss`). Resultado: `instalador\salida\CEP-Setup-1.0.0.exe`. La construcción
+(`instalador\cep.iss`). Resultado: `instalador\salida\CEP-Setup-1.0.1.exe`. La construcción
 intermedia va a `%USERPROFILE%\.cep-construccion` (fuera de OneDrive y de AppData: el Python de la
 Microsoft Store redirige en silencio lo que se escribe en AppData).
 

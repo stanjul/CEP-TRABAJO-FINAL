@@ -40,7 +40,7 @@ app = FastAPI(
     title="CEP — Control Estadístico de Procesos",
     description="API del trabajo final de CEP: cartas de control, supuestos, capacidad, diseño ARL, "
                 "muestreo de aceptación y reportes.",
-    version="1.0.0",
+    version="1.0.1",
     default_response_class=JSONSeguro,
     lifespan=ciclo_de_vida,
 )

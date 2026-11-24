@@ -1,6 +1,6 @@
 # Descripción técnica del software CEP
 
-**CEP — Control Estadístico de Procesos**, versión 1.0.0
+**CEP — Control Estadístico de Procesos**, versión 1.0.1
 Programa de escritorio para Windows (y aplicación web local) que implementa el control estadístico
 de procesos de punta a punta: captura de datos, cartas de control en Fase I y Fase II, validación
 de supuestos, capacidad, diseño de cartas por ARL/ATS, muestreo de aceptación y reportes con
@@ -86,7 +86,7 @@ Material Symbols) se sirven desde la propia aplicación: no hay solicitudes a in
 
 ### 3.1 Programa de escritorio (distribución a usuarios)
 
-- **Instalador:** `CEP-Setup-1.0.0.exe` (≈ 69 MB). Instala por usuario, sin permisos de
+- **Instalador:** `CEP-Setup-1.0.1.exe` (≈ 69 MB). Instala por usuario, sin permisos de
   administrador (≈ 205 MB instalados), crea accesos directos y un desinstalador.
 - **Ejecución:** `CEP.exe` levanta el servidor en `127.0.0.1` en un puerto libre (8000–8099) y
   abre una ventana propia con WebView2. Al cerrar la ventana se detiene el servidor. Se impide una

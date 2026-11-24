@@ -6,7 +6,7 @@ Western Electric con alarmas trazables, validación de supuestos, capacidad, dis
 muestreo de aceptación y reportes PDF / Excel. Interfaz basada en el diseño exportado de Google Stitch.
 
 ## Inicio rápido
-- **Usuarios (Windows):** instalar `CEP-Setup-1.0.0.exe`. Programa de escritorio con ventana propia;
+- **Usuarios (Windows):** instalar `CEP-Setup-1.0.1.exe`. Programa de escritorio con ventana propia;
   los datos quedan en `C:\Users\<usuario>\CEP` (fuera de OneDrive). Se genera con `construir.bat` (ver
   [INSTALACION.md](docs/INSTALACION.md) §0).
 - **Desde el código, Windows:** doble clic en `run.bat` · **Linux / macOS:** `./run.sh`

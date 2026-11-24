@@ -4,7 +4,7 @@
 ; C:\Users\<usuario>\CEP (fuera de OneDrive) y NO se borran al desinstalar.
 
 #define Nombre "CEP — Control Estadístico de Procesos"
-#define Version "1.0.0"
+#define Version "1.0.1"
 #ifndef Fuente
   #define Fuente "..\dist\CEP"
 #endif

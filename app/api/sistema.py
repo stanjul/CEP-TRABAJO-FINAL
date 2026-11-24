@@ -21,7 +21,7 @@ from app.db.semilla import sembrar
 from app.db.sesion import obtener_sesion
 
 router = APIRouter(prefix="/sistema", tags=["Sistema y respaldos"])
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 
 
 class PedidoRespaldo(BaseModel):
