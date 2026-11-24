@@ -1261,6 +1261,7 @@ svg.mini { width: 150px; height: 72px; background: var(--hielo); border-radius: 
 
   // ---------------------------------------------------------------- impresión: mostrar todo
   window.addEventListener("beforeprint", () => { $$("details").forEach((d) => (d.open = true)); $$(".capitulo").forEach((c) => c.classList.remove("oculto-perfil")); });
+  window.__manualListo = true;   // lo espera construir_manual.py antes de imprimir el PDF
 })();
 </script>
 </body>

@@ -76,7 +76,16 @@ async def imprimir_pdf() -> None:
 
             await cdp("Page.enable")
             await cdp("Page.navigate", url=SALIDA_HTML.as_uri())
-            await asyncio.sleep(4)
+            # Esperar a que la página termine su código (marcas, explorador, dibujos): el HTML pesa ~7 MB.
+            for _ in range(120):
+                await asyncio.sleep(0.5)
+                r = await cdp("Runtime.evaluate", expression="document.readyState === 'complete' && window.__manualListo === true",
+                              returnByValue=True)
+                if r.get("result", {}).get("value") is True:
+                    break
+            else:
+                raise RuntimeError("La página del manual no terminó de cargar.")
+            await asyncio.sleep(1)
             # Todo visible para imprimir: preguntas abiertas y todos los capítulos.
             await cdp("Runtime.evaluate", expression=(
                 "document.querySelectorAll('details').forEach(d => d.open = true);"
