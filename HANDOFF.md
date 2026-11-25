@@ -143,7 +143,7 @@ Montserrat en Excel (si no está instalada, Excel usa otra). Ver CLAUDE.md «Pla
   turno, aviso al guardar fuera de turno («Guardar igual» → muestra sin turno). Ingeniería › Límites
   y reglas: tarjetas de turno con días L–D y «Primera muestra a los … min», Turno actual e
   Historial. Historial de muestras con columna Turno. Manual (§9 «Turnos» y §12 Límites y reglas)
-  y descripción técnica actualizados (72 operaciones, 296 tests). **Instalador aún sin esta función.**
+  y descripción técnica actualizados (72 operaciones, 296 tests). Instalador 1.0.1 reconstruido con turnos (23:08), verificado empaquetado (/api/turnos, terminar, fuera_de_turno) e instalado en el PC.
 - **Git (2026-11-23):** instalado con winget (2.56.1). Repositorio local en la carpeta del proyecto,
   rama `main`, primer commit `a689e30`. `Programa/` queda **fuera** (pedido del usuario), igual que
   `.venv/`, `data/*.db`, `data/reportes/` y `respaldos/`. Autor: identidad global ya configurada
