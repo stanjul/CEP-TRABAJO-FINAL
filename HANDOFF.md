@@ -128,7 +128,8 @@ Montserrat en Excel (si no está instalada, Excel usa otra). Ver CLAUDE.md «Pla
   m, horizonte_h, k, sigma). Pantalla Plan de muestreo: sección «Carga muestral y potencia» (camino A
   aumentar n, camino B reducir t; potencia 1−β, 1−βᵐ, 1−β^⌊T/h⌋, ATS₁, ATS₀; curvas; «Usar este plan»).
   Solo cartas X̄/I (atributos: pendiente). `GRAF.curvas` admite `rangoY` y `leyendaAbajo`. 285 tests.
-  **El instalador 1.0.1 instalado NO incluye esta sección**: hay que reconstruir para usarla en el .exe.
+  Instalador 1.0.1 reconstruido con esta sección (misma versión, para no desalinear el manual) e
+  instalado en el PC del usuario; verificado empaquetado (pantalla y GET /carga).
 - **Git (2026-11-23):** instalado con winget (2.56.1). Repositorio local en la carpeta del proyecto,
   rama `main`, primer commit `a689e30`. `Programa/` queda **fuera** (pedido del usuario), igual que
   `.venv/`, `data/*.db`, `data/reportes/` y `respaldos/`. Autor: identidad global ya configurada
