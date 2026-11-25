@@ -35,6 +35,18 @@ def ver_plan(variable_id: int, n: int | None = Query(None, ge=1, le=10_000),
         raise HTTPException(422, str(e))
 
 
+@router.get("/variables/{variable_id}/carga", summary="Carga muestral objetivo: aumentar n o reducir el intervalo, con potencia")
+def ver_carga(variable_id: int,
+              carga: float | None = Query(None, gt=0, le=100_000, description="Carga objetivo (unidades por hora); por defecto el doble de la actual"),
+              cambio: float | None = Query(None, gt=0, description="Cambio de la media a detectar, en unidades de la variable; por defecto 1σ"),
+              m: int = Query(5, ge=1, le=200, description="Muestras consecutivas después del cambio"),
+              horizonte_h: float | None = Query(None, gt=0, le=24 * 30, description="Horizonte común en horas; por defecto m·h actual"),
+              k: float | None = Query(None, ge=1, le=6), sigma: float | None = Query(None, gt=0),
+              db: Session = Depends(obtener_sesion)):
+    v = sv.obtener_variable(db, variable_id)
+    return sv.carga_objetivo(db, v, carga, cambio, m, horizonte_h, k, sigma)
+
+
 @router.post("/variables/{variable_id}/plan", summary="Guardar el plan de muestreo (queda en el historial)")
 def guardar_plan(variable_id: int, datos: PlanMuestreo, db: Session = Depends(obtener_sesion)):
     v = sv.obtener_variable(db, variable_id)

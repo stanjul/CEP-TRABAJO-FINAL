@@ -164,6 +164,136 @@ def carga_muestral(n: float, frecuencia_min: float, horas_turno: float = 8.0) ->
     }
 
 
+# ---------------------------------------------------------------------------
+# Carga muestral objetivo: potencia y probabilidad de detección (cartas X̄ / I)
+# ---------------------------------------------------------------------------
+
+def evaluar_carga(n: int, frecuencia_min: float, k: float, delta: float, m: int = 5,
+                  horizonte_min: float | None = None) -> dict:
+    """Desempeño de un plan de n unidades cada h = `frecuencia_min` minutos frente a un corrimiento
+    de la media de δσ (hacia arriba o hacia abajo: la carta tiene dos límites).
+
+        carga r              = n / h                            (unidades por hora)
+        potencia por muestra = 1 − β,  β = Φ(k − δ√n) − Φ(−k − δ√n)
+        ARL₁                 = 1 / (1 − β)          ATS₁ = h / (1 − β)
+        P(detectar en las primeras m muestras)  = 1 − β^m
+        P(detectar en las primeras T minutos)   = 1 − β^⌊T/h⌋   (muestras tomadas en ese tiempo)
+        ARL₀ = 1/α,  α = 2Φ(−k)                ATS₀ = h/α      (tiempo medio entre falsas alarmas)
+
+    Supone que el cambio ocurre justo después de una muestra (la primera muestra afectada es la siguiente).
+    """
+    if n < 1 or frecuencia_min <= 0 or m < 1:
+        raise ValueError("n, la frecuencia y m deben ser positivos.")
+    h = frecuencia_min / 60.0
+    b = beta(k, n, delta)
+    pot = 1.0 - b
+    a = alfa(k)
+    T = horizonte_min if horizonte_min is not None else m * frecuencia_min
+    muestras_T = int(math.floor(T / frecuencia_min + 1e-9))
+    return {
+        "n": int(n), "frecuencia_min": float(frecuencia_min), "k": k, "delta": delta,
+        "carga_hora": n / h,
+        "beta": b, "potencia": pot,
+        "arl1": (1.0 / pot) if pot > 0 else math.inf,
+        "ats1_horas": (h / pot) if pot > 0 else math.inf,
+        "m": int(m), "p_m": 1.0 - b ** m,
+        "horizonte_min": float(T), "muestras_en_horizonte": muestras_T, "p_horizonte": 1.0 - b ** muestras_T,
+        "alfa": a, "arl0": 1.0 / a, "ats0_horas": h / a,
+    }
+
+
+def caminos_carga(n: int, frecuencia_min: float, carga_objetivo: float, n_fijo: bool = False) -> dict:
+    """Dos formas de llevar la carga muestral r = n/h a un objetivo r* (unidades por hora):
+
+        Camino A (aumentar n):   misma frecuencia h,  n_A = r*·h      (redondeado; ≥ 2 en cartas X̄)
+        Camino B (reducir t):    mismo n,             h_B = n / r*    (en minutos, redondeado; ≥ 1)
+
+    Como n y los minutos son enteros, la carga lograda puede diferir un poco del objetivo; se informa
+    la real. Con valores individuales (`n_fijo`), cada muestra es una unidad y solo existe el camino B.
+    """
+    if carga_objetivo <= 0:
+        raise ValueError("La carga objetivo debe ser mayor que cero.")
+    a = None
+    if not n_fijo:
+        n_a = max(2, int(round(carga_objetivo * frecuencia_min / 60.0)))
+        a = {"n": n_a, "frecuencia_min": float(frecuencia_min), "carga_hora": n_a * 60.0 / frecuencia_min}
+    f_b = max(1, int(round(n * 60.0 / carga_objetivo)))
+    b = {"n": int(n), "frecuencia_min": float(f_b), "carga_hora": n * 60.0 / f_b}
+    return {"objetivo": carga_objetivo, "a": a, "b": b}
+
+
+def comparar_carga(n: int, frecuencia_min: float, k: float, sigma: float, cambio: float, carga_objetivo: float,
+                   m: int = 5, horizonte_min: float | None = None, n_fijo: bool = False,
+                   puntos: int = 41) -> dict:
+    """Plan actual frente a los dos caminos hacia la carga objetivo, para un cambio de la media de
+    `cambio` unidades de la variable (δ = cambio/σ). El horizonte común por defecto es m·h del plan
+    actual, para comparar los caminos en el mismo tiempo de producción.
+
+    Devuelve los tres planes evaluados (`evaluar_carga`) y dos curvas: potencia por muestra según el
+    tamaño del cambio (en unidades) y probabilidad acumulada de detección según las horas transcurridas.
+    """
+    if sigma is None or sigma <= 0:
+        raise ValueError("Se necesita la variabilidad del proceso (σ) para calcular la potencia.")
+    if cambio <= 0:
+        raise ValueError("El cambio a detectar debe ser mayor que cero.")
+    delta = cambio / sigma
+    T = horizonte_min if horizonte_min is not None else m * frecuencia_min
+    rutas = caminos_carga(n, frecuencia_min, carga_objetivo, n_fijo)
+    planes = {"actual": evaluar_carga(n, frecuencia_min, k, delta, m, T)}
+    for clave in ("a", "b"):
+        r = rutas[clave]
+        planes[clave] = evaluar_carga(r["n"], r["frecuencia_min"], k, delta, m, T) if r else None
+
+    tope = max(2.0 * cambio, 3.0 * sigma)
+    cambios = [tope * i / (puntos - 1) for i in range(puntos)]
+    curva_pot = {c: [1.0 - beta(k, p["n"], x / sigma) for x in cambios] for c, p in planes.items() if p}
+    t_max = 2.0 * T / 60.0
+    horas = [t_max * i / 200 for i in range(201)]
+    curva_acum = {c: [1.0 - beta(k, p["n"], delta) ** int(math.floor(t * 60.0 / p["frecuencia_min"] + 1e-9))
+                      for t in horas] for c, p in planes.items() if p}
+    return {"sigma": sigma, "cambio": cambio, "delta": delta, "m": int(m), "horizonte_min": float(T),
+            "objetivo": carga_objetivo, "planes": planes,
+            "curva_potencia": {"cambios": cambios, "series": curva_pot},
+            "curva_acumulada": {"horas": horas, "series": curva_acum}}
+
+
+def textos_carga(res: dict, unidad: str = "", decimales: int = 2, horas_turno: float = 8.0) -> list[str]:
+    """Conclusiones en palabras de `comparar_carga`: detección con cada plan, cuál camino detecta
+    antes en el mismo tiempo y qué pasa con las falsas alarmas. Solo describe; no decide por el usuario."""
+    u = f" {unidad}" if unidad else ""
+    pct = lambda x: f"{_num(100 * x, 1)} %"
+    plan_txt = lambda p: (f"{p['n']} {'unidad' if p['n'] == 1 else 'unidades'} cada "
+                          f"{_num(p['frecuencia_min'], 0)} min")
+    cambio = f"{_num(res['cambio'], decimales)}{u}"
+    act, a, b = res["planes"]["actual"], res["planes"]["a"], res["planes"]["b"]
+    T = res["horizonte_min"] / 60.0
+    t_txt = duracion_legible(T, horas_turno)
+    out = [f"Con el plan actual ({plan_txt(act)}), un cambio de {cambio} en el promedio se detecta en la muestra "
+           f"siguiente con una probabilidad del {pct(act['potencia'])}, y en las primeras {act['m']} muestras con "
+           f"un {pct(act['p_m'])}."]
+    for nombre, p in (("Aumentando n", a), ("Reduciendo el intervalo", b)):
+        if p:
+            out.append(f"{nombre} ({plan_txt(p)}, {_num(p['carga_hora'], 1)} unidades por hora): "
+                       f"{pct(p['potencia'])} por muestra y {pct(p['p_m'])} en las primeras {p['m']} muestras.")
+    if a and b:
+        if abs(a["p_horizonte"] - b["p_horizonte"]) < 0.005:
+            out.append(f"En las primeras {t_txt} los dos caminos detectan el cambio con una probabilidad parecida "
+                       f"({pct(a['p_horizonte'])} y {pct(b['p_horizonte'])}).")
+        else:
+            mejor, peor = ("aumentar n", "reducir el intervalo") if a["p_horizonte"] > b["p_horizonte"] else \
+                          ("reducir el intervalo", "aumentar n")
+            out.append(f"En las primeras {t_txt}, el camino de {mejor} detecta el cambio con "
+                       f"{pct(max(a['p_horizonte'], b['p_horizonte']))} de probabilidad, frente a "
+                       f"{pct(min(a['p_horizonte'], b['p_horizonte']))} al {peor}.")
+    elif b and not a:
+        out.append("Con valores individuales cada muestra es una unidad: la carga solo cambia con la frecuencia.")
+    if b and b["ats0_horas"] < act["ats0_horas"] * 0.99:
+        out.append(f"Reducir el intervalo hace que las falsas alarmas lleguen más seguido: una cada "
+                   f"{duracion_legible(b['ats0_horas'], horas_turno)} en vez de cada "
+                   f"{duracion_legible(act['ats0_horas'], horas_turno)}.")
+    return out
+
+
 def _num(x: float, d: int = 1) -> str:
     """Número con coma decimal y punto de miles (formato de la interfaz)."""
     t = f"{x:,.{d}f}"

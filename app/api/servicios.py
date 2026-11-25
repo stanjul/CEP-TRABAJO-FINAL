@@ -723,6 +723,45 @@ def plan_muestreo(db: Session, v: Variable, n: int | None = None, frecuencia_min
             "avisos": _avisos_plan(db, v, n_prop)}
 
 
+def carga_objetivo(db: Session, v: Variable, carga: float | None = None, cambio: float | None = None, m: int = 5,
+                   horizonte_h: float | None = None, k: float | None = None, sigma: float | None = None) -> dict:
+    """Carga muestral objetivo: compara el plan vigente con los dos caminos para llegar a `carga`
+    (unidades por hora): aumentar n o reducir el intervalo. Mide la potencia frente a un cambio de la
+    media de `cambio` unidades de la variable. Solo para mediciones (cartas X̄ e I)."""
+    from app.core import diseno_arl as core_arl
+
+    if es_atributos(v):
+        raise HTTPException(400, "La carga muestral objetivo con potencia está disponible para variables que se miden "
+                                 "(gráficas de promedios o de valores individuales).")
+    ref = referencia_plan(db, v)
+    s = sigma or ref.get("sigma")
+    if not s:
+        raise HTTPException(400, "Todavía no hay datos para estimar la variabilidad del proceso (σ). Carga algunas "
+                                 "muestras o fija la σ en el plan de muestreo.")
+    individual = v.tipo_carta == "imr"
+    n = 1 if individual else v.n
+    k = k or v.k_sigma
+    carga_actual = n * 60.0 / v.frecuencia_min
+    carga = carga or 2 * carga_actual
+    if cambio is None:
+        cambio = round(s, v.decimales) or s
+    T = horizonte_h * 60 if horizonte_h else None
+    try:
+        res = core_arl.comparar_carga(n, v.frecuencia_min, k, s, cambio, carga, m, T, n_fijo=individual)
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    ht = horas_por_turno(db)
+    avisos = []
+    a = res["planes"]["a"]
+    if a and v.tipo_carta == "xbar_r" and a["n"] > 10:
+        avisos.append(f"Con {a['n']} unidades por muestra conviene la gráfica de promedios y desviación (X̄-S); "
+                      "el tipo de gráfica se cambia en la Fase I.")
+    if a and a["n"] != v.n:
+        avisos += _avisos_plan(db, v, a["n"])
+    return {**res, "variable": variable_a_dict(v), "referencia": ref, "horas_turno": ht, "carga_actual": carga_actual,
+            "textos": core_arl.textos_carga(res, v.unidad, v.decimales, ht), "avisos": avisos}
+
+
 def _avisos_plan(db: Session, v: Variable, n_nuevo: int) -> list[str]:
     """Qué pasará con los datos ya registrados si se cambia n (en lenguaje simple)."""
     if n_nuevo == v.n or v.tipo_carta in ("p", "u", "c", "imr"):

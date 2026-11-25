@@ -131,3 +131,74 @@ def test_monte_carlo_coincide_con_teoria(n, delta):
     sim = d.simular_arl(3, n, delta, replicas=4000, semilla=7)
     assert sim["ic95"][0] - 0.1 <= sim["arl_teorico"] <= sim["ic95"][1] + 0.1
     assert abs(sim["error_relativo"]) < 0.06
+
+
+# ---------------------------------------------------------------------------
+# Carga muestral objetivo: potencia y detección en m muestras / en un horizonte
+# ---------------------------------------------------------------------------
+
+def test_evaluar_carga_ejemplo_montgomery():
+    """Montgomery (n = 4, k = 3, δ = 1,5): β ≈ 0,50, potencia ≈ 0,50 y ARL₁ ≈ 2. Con h = 60 min,
+    ATS₁ = 2 h y la probabilidad de detectar en 3 muestras es 1 − β³ ≈ 0,875."""
+    e = d.evaluar_carga(4, 60, 3.0, 1.5, m=3)
+    assert e["beta"] == pytest.approx(0.5, abs=0.002)
+    assert e["potencia"] == pytest.approx(0.5, abs=0.002)
+    assert e["arl1"] == pytest.approx(2.0, abs=0.01)
+    assert e["ats1_horas"] == pytest.approx(2.0, abs=0.01)
+    assert e["p_m"] == pytest.approx(1 - e["beta"] ** 3)
+    assert e["carga_hora"] == pytest.approx(4.0)
+    assert e["ats0_horas"] == pytest.approx(370.4, abs=0.1)
+
+
+def test_evaluar_carga_horizonte_cuenta_muestras_enteras():
+    """En 70 min con muestras cada 30 min se toman 2 muestras: P = 1 − β²."""
+    e = d.evaluar_carga(5, 30, 3.0, 1.0, m=5, horizonte_min=70)
+    assert e["muestras_en_horizonte"] == 2
+    assert e["p_horizonte"] == pytest.approx(1 - e["beta"] ** 2)
+
+
+def test_caminos_carga():
+    """Carga actual 5 cada 30 min = 10 u/h; objetivo 20 u/h → A: 10 cada 30 min; B: 5 cada 15 min."""
+    r = d.caminos_carga(5, 30, 20)
+    assert (r["a"]["n"], r["a"]["frecuencia_min"]) == (10, 30)
+    assert (r["b"]["n"], r["b"]["frecuencia_min"]) == (5, 15)
+    assert r["a"]["carga_hora"] == pytest.approx(20) and r["b"]["carga_hora"] == pytest.approx(20)
+    # Redondeos: objetivo 13 u/h → n_A = 6.5 → 6 (redondeo bancario de Python: 6); h_B = 300/13 ≈ 23 min.
+    r = d.caminos_carga(5, 30, 13)
+    assert r["a"]["n"] in (6, 7) and r["b"]["frecuencia_min"] == 23
+    # Valores individuales: solo existe el camino de reducir el intervalo.
+    r = d.caminos_carga(1, 60, 2, n_fijo=True)
+    assert r["a"] is None and r["b"]["frecuencia_min"] == 30
+    with pytest.raises(ValueError):
+        d.caminos_carga(5, 30, 0)
+
+
+def test_comparar_carga_caso_peso():
+    """Peso de llenado (σ = 2,651 mL), cambio de 2 mL, carga de 10 a 20 u/h, horizonte 2,5 h:
+    aumentar n detecta más (≈79 % frente a ≈63 %) y reducir el intervalo duplica las falsas alarmas."""
+    r = d.comparar_carga(5, 30, 3.0, 2.651, 2.0, 20.0, m=5)
+    act, a, b = r["planes"]["actual"], r["planes"]["a"], r["planes"]["b"]
+    assert r["delta"] == pytest.approx(2.0 / 2.651)
+    assert act["potencia"] == pytest.approx(0.095, abs=0.002)
+    assert a["potencia"] == pytest.approx(0.270, abs=0.002)
+    assert b["potencia"] == pytest.approx(act["potencia"])           # mismo n: misma potencia por muestra
+    assert act["p_m"] == pytest.approx(0.392, abs=0.002)
+    assert a["p_m"] == pytest.approx(0.792, abs=0.002)
+    assert r["horizonte_min"] == 150
+    assert b["muestras_en_horizonte"] == 10 and b["p_horizonte"] == pytest.approx(0.630, abs=0.002)
+    assert a["p_horizonte"] > b["p_horizonte"]
+    assert b["ats0_horas"] == pytest.approx(act["ats0_horas"] / 2)
+    # Curvas: potencia creciente con el cambio y acumulada creciente con el tiempo.
+    pot = r["curva_potencia"]["series"]["a"]
+    assert pot[0] == pytest.approx(d.alfa(3.0)) and all(x <= y + 1e-12 for x, y in zip(pot, pot[1:]))
+    acum = r["curva_acumulada"]["series"]["b"]
+    assert acum[0] == 0 and all(x <= y + 1e-12 for x, y in zip(acum, acum[1:]))
+    textos = d.textos_carga(r, "mL", 0)
+    assert any("aumentar n" in t for t in textos) and any("falsas alarmas" in t for t in textos)
+
+
+def test_comparar_carga_valida_entradas():
+    with pytest.raises(ValueError):
+        d.comparar_carga(5, 30, 3.0, 0, 2.0, 20.0)
+    with pytest.raises(ValueError):
+        d.comparar_carga(5, 30, 3.0, 2.0, 0, 20.0)

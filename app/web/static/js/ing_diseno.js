@@ -308,6 +308,113 @@
     btn.innerHTML = '<span class="material-symbols-outlined text-sm">play_arrow</span>Simular';
   }
 
+  // ------------------------------------------------------------------ Carga muestral objetivo
+  // Compara el plan vigente con los dos caminos hacia una carga objetivo (aumentar n o reducir el
+  // intervalo), con potencia, detección en m muestras y en un horizonte común (GET /variables/{id}/carga).
+  let CG = null, tCarga = null, cargaLista = false, horizonteManual = false;
+  const programarCarga = () => { clearTimeout(tCarga); tCarga = setTimeout(consultarCarga, 300); };
+  const planTxt = (p) => `${p.n} ${p.n === 1 ? "unidad" : "unidades"} ${CEP.cadaCuanto(p.frecuencia_min)}`;
+
+  async function consultarCarga() {
+    if (!V || esAtrib()) return;
+    const q = new URLSearchParams();
+    const m = Math.max(1, Math.round(+$("cg-m").value || 5));
+    q.set("m", m);
+    if (cargaLista) {
+      const o = num($("cg-objetivo").value), c = num($("cg-cambio").value), h = num($("cg-horizonte").value);
+      if (o > 0) q.set("carga", o);
+      if (c > 0) q.set("cambio", c);
+      if (horizonteManual && h > 0) q.set("horizonte_h", h);
+    }
+    const s = sigmaElegida();
+    if (s) q.set("sigma", s);
+    try {
+      CG = await api(`/variables/${V.id}/carga?${q}`);
+    } catch (e) {
+      $("cg-tabla").innerHTML = "";
+      $("cg-textos").innerHTML = `<li class="font-body-md text-body-md text-on-surface-variant">${esc(e.message)}</li>`;
+      return;
+    }
+    if (!cargaLista) {
+      $("cg-objetivo").value = fmt(CG.objetivo, 1);
+      $("cg-cambio").value = fmt(CG.cambio, V.decimales);
+      cargaLista = true;
+    }
+    if (!horizonteManual) $("cg-horizonte").value = fmt(CG.horizonte_min / 60, 2);
+    pintarCarga();
+  }
+
+  function pintarCarga() {
+    const P = CG.planes, ht = CG.horas_turno, u = V.unidad ? ` ${V.unidad}` : "";
+    const act = P.actual;
+    $("cg-unidad").textContent = V.unidad ? `(${V.unidad})` : "";
+    $("cg-actual").textContent = `${fmt(CG.carga_actual, 1)} unidades/h`;
+    $("cg-actual-plan").textContent = `${planTxt(act)} · ${fmt(CG.carga_actual * ht, 0)} por turno de ${fmt(ht, 0)} h`;
+    $("cg-cambio-sigma").textContent = `≈ ${fmt(CG.delta, 2)} σ (σ = ${fmt(CG.sigma, V.decimales + 1)}${u}, de ${CG.referencia.origen})`;
+    document.querySelector('[data-usar="a"]').classList.toggle("hidden", !P.a);
+    const T = CG.horizonte_min / 60;
+    const planes = [act, P.a, P.b];
+    // Resalta el mejor valor de cada fila entre los planes disponibles.
+    const celda = (vals, fmtFn, mayorEsMejor, sub) => {
+      const nums = vals.map((v) => (v === null || v === undefined ? null : v));
+      const validos = nums.filter((x) => x !== null && Number.isFinite(x));
+      const mejor = validos.length ? (mayorEsMejor ? Math.max(...validos) : Math.min(...validos)) : null;
+      return nums.map((v, i) => {
+        if (!planes[i]) return `<td class="py-space-sm px-space-md align-top font-body-sm text-body-sm text-on-surface-variant">${i === 1 ? "No aplica: con valores individuales cada muestra es una unidad." : "—"}</td>`;
+        const top = mayorEsMejor !== null && v !== null && mejor !== null && Math.abs(v - mejor) < 1e-12 && validos.length > 1;
+        return `<td class="py-space-sm px-space-md align-top ${i ? "bg-primary-fixed/20" : ""}">
+          <div class="font-body-lg text-body-lg ${top ? "font-bold text-primary" : "font-semibold text-on-surface"}">${fmtFn(v, planes[i])}</div>
+          ${sub ? `<div class="font-body-sm text-body-sm text-on-surface-variant">${sub(planes[i])}</div>` : ""}</td>`;
+      }).join("");
+    };
+    const g = (clave) => planes.map((p) => (p ? p[clave] : null));
+    const filas = [
+      ["Plan", celda(planes.map(() => 0), (_, p) => planTxt(p), null, null)],
+      ["Carga muestral", celda(g("carga_hora"), (v) => `${fmt(v, 1)} unidades/h`, null, (p) => `${fmt(p.carga_hora * ht, 0)} unidades por turno`)],
+      ["Potencia: detectar en la muestra siguiente", celda(g("potencia"), (v) => pct(v, 1), true, (p) => `β = ${fmt(p.beta, 4)}`)],
+      [`Detectar en las primeras ${act.m} muestras`, celda(g("p_m"), (v) => pct(v, 1), true, (p) => `en ${duracion(p.m * p.frecuencia_min / 60, ht)}`)],
+      [`Detectar en las primeras ${fmt(T, 2)} h`, celda(g("p_horizonte"), (v) => pct(v, 1), true, (p) => `${p.muestras_en_horizonte} muestras en ese tiempo`)],
+      ["Tiempo medio para detectar", celda(g("ats1_horas"), (v) => duracion(v, ht), false, (p) => muestras(p.arl1))],
+      ["Una falsa alarma, en promedio, cada", celda(g("ats0_horas"), (v) => duracion(v, ht), true, (p) => muestras(p.arl0))],
+    ];
+    $("cg-tabla").innerHTML = filas.map(([t, tds]) => `<tr><th class="py-space-sm pr-space-md align-top font-body-md text-body-md font-normal text-on-surface-variant">${t}</th>${tds}</tr>`).join("");
+    $("cg-textos").innerHTML = (CG.textos || []).map((x) => `<li class="flex items-start gap-space-xs font-body-md text-body-md text-on-surface">
+      <span class="material-symbols-outlined text-base text-primary-container mt-0.5">chevron_right</span><span>${esc(x)}</span></li>`).join("");
+    const avisos = CG.avisos || [];
+    $("cg-avisos").classList.toggle("hidden", !avisos.length);
+    $("cg-avisos").classList.toggle("flex", !!avisos.length);
+    $("cg-avisos-txt").innerHTML = avisos.map((x) => `<p>${esc(x)}</p>`).join("");
+
+    $("cg-pot-sub").textContent = "Según el tamaño del cambio del promedio (hacia arriba o hacia abajo)."
+      + (P.b.n === act.n ? " El camino B usa las mismas unidades por muestra que el plan actual: su curva es la misma." : "");
+    const nombres = { actual: `Actual (${planTxt(act)})`, a: P.a ? `A: ${planTxt(P.a)}` : "", b: `B: ${planTxt(P.b)}` };
+    const colores = { actual: "#70787c", a: "#0f4c5c", b: "#b45309" };
+    const orden = ["actual", "a", "b"].filter((c) => CG.curva_potencia.series[c]);
+    GRAF.curvas($("graf-potencia"), orden.map((c) => ({ nombre: nombres[c], x: CG.curva_potencia.cambios, y: CG.curva_potencia.series[c],
+      color: colores[c], guion: c === "actual" ? "dash" : "solid" })), {
+      alto: 360, leyendaAbajo: true, rangoY: [0, 1.04],
+      tituloX: `Cambio del promedio${V.unidad ? ` (${V.unidad})` : ""}`, tituloY: "Probabilidad de detectar", tickY: ".0%",
+      etiquetaX: "cambio", etiquetaY: "potencia", formatoX: ":.2f", formatoY: ":.1%", refs: [{ x: CG.cambio, color: "#ba1a1a" }],
+    });
+    GRAF.curvas($("graf-acumulada"), orden.map((c) => ({ nombre: nombres[c], x: CG.curva_acumulada.horas, y: CG.curva_acumulada.series[c],
+      color: colores[c], guion: c === "actual" ? "dash" : "solid" })), {
+      alto: 360, leyendaAbajo: true, rangoY: [0, 1.04],
+      tituloX: "Horas desde el cambio", tituloY: "Probabilidad de haber detectado", tickY: ".0%",
+      etiquetaX: "horas", etiquetaY: "probabilidad", formatoX: ":.2f", formatoY: ":.1%", refs: [{ x: T, color: "#ba1a1a" }],
+    });
+  }
+
+  function usarCamino(clave) {
+    const p = CG && CG.planes[clave];
+    if (!p) return;
+    $("pl-n").value = p.n;
+    $("pl-f").value = Math.round(p.frecuencia_min);
+    marcarChips();
+    programar();
+    $("pl-form").scrollIntoView({ behavior: "smooth", block: "start" });
+    toast(`Plan propuesto: ${planTxt(p)}. Revisa la comparación y pulsa «Guardar este plan» para aplicarlo.`);
+  }
+
   // ------------------------------------------------------------------ Inicio
   async function iniciar(ctx) {
     if (!ctx.variable) return;
@@ -334,7 +441,16 @@
     $("pl-guardar").onclick = () => guardar(false);
     $("pl-restaurar").onclick = () => { ponerControles(); $("pl-c0").value = ""; $("pl-c1").value = ""; consultar(); };
     $("btn-simular").onclick = simular;
+    // Carga muestral objetivo (solo mediciones)
+    $("cg-contenido").classList.toggle("hidden", esAtrib());
+    $("cg-no-aplica").classList.toggle("hidden", !esAtrib());
+    ["cg-objetivo", "cg-cambio", "cg-m"].forEach((id) => $(id).addEventListener("input", programarCarga));
+    $("cg-horizonte").addEventListener("input", () => { horizonteManual = $("cg-horizonte").value.trim() !== ""; programarCarga(); });
+    document.querySelectorAll("[data-usar]").forEach((b) => (b.onclick = () => usarCamino(b.dataset.usar)));
+    document.querySelectorAll('input[name="pl-sigma-modo"]').forEach((r) => r.addEventListener("change", programarCarga));
+    $("pl-sigma").addEventListener("input", programarCarga);
     await consultar();
+    await consultarCarga();
   }
 
   CEP.arrancar(iniciar);

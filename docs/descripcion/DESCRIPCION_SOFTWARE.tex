@@ -112,7 +112,7 @@ Base teórica & Montgomery, \emph{Introduction to Statistical Quality Control}. 
   \textbf{Interfaz} — ventana propia (WebView2 vía pywebview) o navegador en modo servidor\\
   16 pantallas Jinja2 + JavaScript por pantalla + Plotly.js (todo local)};
 \node[caja, text width=0.86\linewidth, below=0.9cm of web] (api) {%
-  \textbf{\texttt{app/api}} — FastAPI: 67 operaciones REST en 15 grupos (un router por módulo)\\
+  \textbf{\texttt{app/api}} — FastAPI: 68 operaciones REST en 15 grupos (un router por módulo)\\
   \texttt{servicios.py}: combina base de datos y núcleo, sin fórmulas propias};
 \node[caja, text width=0.39\linewidth, below left=0.9cm and -0.43\linewidth of api] (db) {%
   \textbf{\texttt{app/db}} — SQLAlchemy 2\\SQLite (un archivo \texttt{cep.db})\\migraciones y respaldos};
@@ -142,7 +142,7 @@ Persistencia & SQLAlchemy 2.1 sobre SQLite\\
 Interfaz & Jinja2 3.1, JavaScript sin framework, Tailwind CSS (local), Plotly.js 2.35 (local)\\
 Reportes & LaTeX (\texttt{pdflatex}, MiKTeX/TeX Live) + Jinja2; respaldo con ReportLab 5.1; Excel con openpyxl 3.1; figuras con Matplotlib 3.11\\
 Escritorio & pywebview 6.2 (Microsoft Edge WebView2), PyInstaller 6.22, Inno Setup 6\\
-Pruebas & pytest (278 pruebas automáticas)\\
+Pruebas & pytest (285 pruebas automáticas)\\
 \bottomrule
 \end{tabularx}
 
@@ -402,6 +402,16 @@ obligatorias, registradas en el historial).
   explicación en palabras. Al guardar el plan en Fase~II, los límites se recalculan con el centro
   y la $\sigma$ congelados; un cambio de $n$ archiva las muestras de monitoreo tomadas con el
   tamaño anterior.
+\item \textbf{Carga muestral objetivo} (cartas $\bar{X}$ e I): a partir de la carga actual
+  $r = n/h$ (unidades por hora) y una carga objetivo $r^*$, se comparan dos caminos: aumentar $n$
+  ($n = r^* h$) o reducir el intervalo ($h = n/r^*$). Para un cambio de la media de $\Delta$
+  unidades de la variable ($\delta = \Delta/\sigma$, en cualquier dirección) se informan
+  \[
+  1-\beta \;(\text{potencia por muestra}),\qquad 1-\beta^{m}\;(\text{primeras } m \text{ muestras}),\qquad
+  1-\beta^{\lfloor T/h \rfloor}\;(\text{primeras } T \text{ horas}),
+  \]
+  además de $\text{ATS}_1 = h/(1-\beta)$ y $\text{ATS}_0 = h/\alpha$, con curvas de potencia y de
+  detección acumulada. Cualquiera de los caminos se lleva al plan propuesto para guardarlo.
 \end{itemize}
 
 \subsection{Módulo 7 — Muestreo de aceptación}
@@ -487,7 +497,7 @@ textos sin jerga en la vista Operario.
 \needspace{16\baselineskip}
 \section{API REST}
 
-La API tiene 67 operaciones bajo el prefijo \texttt{/api}, documentadas en \texttt{/docs}:
+La API tiene 68 operaciones bajo el prefijo \texttt{/api}, documentadas en \texttt{/docs}:
 
 \begin{center}
 \begin{tabular}{@{}lr@{\qquad\qquad}lr@{}}
@@ -495,7 +505,7 @@ La API tiene 67 operaciones bajo el prefijo \texttt{/api}, documentadas en \text
 \textbf{Grupo} & \textbf{Operaciones} & \textbf{Grupo} & \textbf{Operaciones}\\
 \midrule
 Procesos y variables & 9 & Plantilla de carga & 4\\
-Configuración & 9 & Cartas de control & 4\\
+Configuración & 10 & Cartas de control & 4\\
 Sistema y respaldos & 9 & Diseño ARL/ATS & 3\\
 Reportes & 6 & Atributos & 2\\
 Subgrupos & 5 & Operario & 1\\
@@ -525,7 +535,7 @@ mensajes en español que indican cómo corregirlos.
 % ---------------------------------------------------------------- 9
 \section{Validación y calidad}
 \begin{itemize}
-\item \textbf{278 pruebas automáticas} (pytest): cada módulo del núcleo tiene su archivo de
+\item \textbf{285 pruebas automáticas} (pytest): cada módulo del núcleo tiene su archivo de
   pruebas, además de pruebas de la API con base temporal, de las pantallas y de la generación de
   archivos.
 \item \textbf{Valores de referencia de Montgomery:} cartas $\bar{X}$-R (anillos de pistón), I-MR

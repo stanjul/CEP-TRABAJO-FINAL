@@ -242,10 +242,13 @@
       : { type: "line", xref: "paper", yref: "y", x0: 0, x1: 1, y0: r.y, y1: r.y, line: { color: r.color || C.tenue, width: 1, dash: "dot" } });
     Plotly.react(el, trazas, layoutBase({
       height: op.alto || 320, shapes: formas, showlegend: series.length > 1, hovermode: "x unified",
-      legend: { orientation: "h", x: 0, y: 1.12, font: { family: "Montserrat, sans-serif", size: 11, color: C.tinta2 } },
-      margin: { l: 60, r: 20, t: series.length > 1 ? 34 : 10, b: 40 },
+      legend: op.leyendaAbajo
+        ? { orientation: "h", x: 0, y: -0.2, yanchor: "top", font: { family: "Montserrat, sans-serif", size: 11, color: C.tinta2 } }
+        : { orientation: "h", x: 0, y: 1.12, font: { family: "Montserrat, sans-serif", size: 11, color: C.tinta2 } },
+      margin: { l: 60, r: 20, t: op.leyendaAbajo ? 12 : (op.margenSup ?? (series.length > 1 ? 34 : 10)), b: op.leyendaAbajo ? 96 : 40 },
       xaxis: { title: { text: op.tituloX || "", font: FUENTE }, tickformat: op.tickX || "" },
-      yaxis: { title: { text: op.tituloY || "", font: FUENTE }, tickformat: op.tickY || "", type: op.logY ? "log" : "linear", rangemode: "tozero" },
+      yaxis: { title: { text: op.tituloY || "", font: FUENTE }, tickformat: op.tickY || "", type: op.logY ? "log" : "linear",
+        rangemode: "tozero", ...(op.rangoY ? { range: op.rangoY, autorange: false } : {}) },
     }), CONFIG);
   }
 

@@ -122,6 +122,13 @@ Montserrat en Excel (si no está instalada, Excel usa otra). Ver CLAUDE.md «Pla
   interactivo + PDF (`docs/manual/`), descripción técnica en PDF, logos en `docs/marca/`.
   `CEP-Setup-1.0.1.exe` verificado empaquetado (versión, correcciones, demo, PDF LaTeX). Se instala
   encima de la 1.0.0 conservando los datos.
+- **Carga muestral objetivo (2026-11-24, después de la 1.0.1):** pedido del usuario según lo que enseñó
+  el profesor (carga = n/t). `diseno_arl.evaluar_carga`, `caminos_carga`, `comparar_carga`,
+  `textos_carga`; servicio `carga_objetivo`; GET `/variables/{id}/carga` (carga, cambio en unidades,
+  m, horizonte_h, k, sigma). Pantalla Plan de muestreo: sección «Carga muestral y potencia» (camino A
+  aumentar n, camino B reducir t; potencia 1−β, 1−βᵐ, 1−β^⌊T/h⌋, ATS₁, ATS₀; curvas; «Usar este plan»).
+  Solo cartas X̄/I (atributos: pendiente). `GRAF.curvas` admite `rangoY` y `leyendaAbajo`. 285 tests.
+  **El instalador 1.0.1 instalado NO incluye esta sección**: hay que reconstruir para usarla en el .exe.
 - **Git (2026-11-23):** instalado con winget (2.56.1). Repositorio local en la carpeta del proyecto,
   rama `main`, primer commit `a689e30`. `Programa/` queda **fuera** (pedido del usuario), igual que
   `.venv/`, `data/*.db`, `data/reportes/` y `respaldos/`. Autor: identidad global ya configurada

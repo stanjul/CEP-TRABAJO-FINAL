@@ -986,6 +986,31 @@ svg.mini { width: 150px; height: 72px; background: var(--hielo); border-radius: 
   </figure>
   <div class="aviso cuidado"><strong>Guardar un plan en Fase II</strong><p>Los límites se recalculan con el centro y la σ congelados. Si cambia el número de unidades por muestra, las muestras de monitoreo tomadas con el tamaño anterior pasan al archivo.</p></div>
 
+  <h4 id="carga">Carga muestral y potencia</h4>
+  <p>Debajo del plan, la sección <span class="texto-pantalla">Carga muestral y potencia</span> responde: <b>si reviso más unidades por hora, ¿cuánto antes detecto un cambio, y conviene más tomar muestras más grandes o más seguidas?</b> La carga muestral es n ÷ intervalo; por ejemplo, 5 unidades cada 30 min son 10 unidades por hora.</p>
+  <figure>
+    <div class="lienzo"><img src="img/ing_carga.png" alt="Carga muestral y potencia: comparación de caminos"></div>
+    <figcaption><b>Carga de 10 a 20 unidades por hora</b> para detectar un cambio de 0,5 g en el promedio.</figcaption>
+  </figure>
+  <ol class="pasos">
+    <li>Escribe la <b>carga objetivo</b> en unidades por hora. CEP arma dos caminos: <b>A</b>, aumentar las unidades por muestra con el mismo intervalo, y <b>B</b>, mantener las unidades y tomar muestras más seguido.</li>
+    <li>Escribe el <b>cambio del promedio a detectar</b> en la unidad de la variable (por ejemplo, 2 mL). CEP lo traduce a σ. El cambio vale hacia arriba o hacia abajo.</li>
+    <li>Elige cuántas <b>muestras consecutivas</b> mirar después del cambio (5 por defecto) y el <b>horizonte</b> en horas para comparar los tres planes en el mismo tiempo.</li>
+    <li>Lee la tabla. El valor más favorable de cada fila aparece resaltado:
+      <ul>
+        <li><b>Potencia:</b> probabilidad de detectar el cambio en la primera muestra después de que ocurre.</li>
+        <li><b>Detectar en las primeras m muestras</b> y <b>en las primeras T horas</b>.</li>
+        <li><b>Tiempo medio para detectar</b> y <b>cada cuánto aparece una falsa alarma</b>.</li>
+      </ul></li>
+    <li>Si te convence un camino, pulsa <span class="boton">Usar este plan</span>: pasa al plan propuesto de arriba, donde lo revisas y lo guardas con <span class="boton">Guardar este plan</span>.</li>
+  </ol>
+  <figure>
+    <div class="lienzo"><img src="img/ing_carga_graficos.png" alt="Curvas de potencia y de detección acumulada"></div>
+    <figcaption><b>Izquierda:</b> potencia según el tamaño del cambio. <b>Derecha:</b> probabilidad de haber detectado el cambio según las horas transcurridas. La línea roja punteada marca el cambio y el horizonte elegidos.</figcaption>
+  </figure>
+  <div class="aviso importante"><strong>Compara en el mismo tiempo</strong><p>En el camino B, «las primeras 5 muestras» pasan en menos tiempo que en el plan actual. Por eso la tabla también compara en un mismo horizonte de horas. Para cambios pequeños suele convenir aumentar n; reducir el intervalo además hace que las falsas alarmas lleguen más seguido.</p></div>
+  <details class="tecnico"><summary>Detalle técnico</summary><p>δ = cambio / σ; β = Φ(k − δ√n) − Φ(−k − δ√n); potencia = 1 − β; detectar en m muestras = 1 − βᵐ; en T horas = 1 − β<sup>⌊T/h⌋</sup>; ATS₁ = h / (1 − β); ATS₀ = h / α con α = 2Φ(−k). Se supone que el cambio ocurre justo después de una muestra. Disponible para cartas X̄ e I; con valores individuales solo existe el camino de reducir el intervalo.</p></details>
+
   <h3 id="aceptacion">Muestreo de aceptación</h3>
   <p>Para decidir si se acepta o se rechaza un lote (por ejemplo, de materia prima) revisando solo una muestra: se revisan <i>n</i> unidades y se acepta si hay como máximo <i>c</i> defectuosas.</p>
   <figure><div class="lienzo"><img src="img/ing_muestreo.png" alt="Muestreo de aceptación"></div></figure>

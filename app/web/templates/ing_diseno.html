@@ -175,6 +175,73 @@
     </details>
   </div>
 </div>
+
+<!-- ===================== CARGA MUESTRAL OBJETIVO ===================== -->
+<section class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-lg" id="cg-seccion" aria-live="polite">
+  <div class="flex flex-col gap-space-xs">
+    <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Carga muestral y potencia</h2>
+    <p class="font-body-md text-body-md text-on-surface-variant max-w-3xl">La carga muestral es cuántas unidades se revisan por hora
+      (unidades por muestra ÷ intervalo). Escribe la carga a la que quieres llegar y el cambio del promedio que te interesa detectar:
+      la app compara los dos caminos posibles, aumentar las unidades por muestra o reducir el intervalo.</p>
+  </div>
+  <p class="hidden font-body-md text-body-md text-on-surface-variant p-space-md rounded-lg bg-surface-container-low" id="cg-no-aplica">
+    Por ahora esta comparación está disponible para variables que se miden (gráficas de promedios o de valores individuales).</p>
+
+  <div class="flex flex-col gap-space-lg" id="cg-contenido">
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-space-md items-end">
+      <div class="flex flex-col gap-1 p-space-md rounded-lg bg-surface-container-low">
+        <span class="font-label-sm text-label-sm text-outline">Carga actual</span>
+        <span class="font-headline-sm text-headline-sm font-bold text-primary" id="cg-actual">—</span>
+        <span class="font-body-sm text-body-sm text-on-surface-variant" id="cg-actual-plan">—</span>
+      </div>
+      <label class="flex flex-col gap-1"><span class="font-body-sm text-body-sm font-semibold text-on-surface">Carga objetivo (unidades por hora)</span>
+        <input class="h-11 rounded-lg border-outline-variant font-body-md text-body-md" id="cg-objetivo" type="text" inputmode="decimal"/></label>
+      <label class="flex flex-col gap-1"><span class="font-body-sm text-body-sm font-semibold text-on-surface">Cambio del promedio a detectar <span id="cg-unidad"></span></span>
+        <input class="h-11 rounded-lg border-outline-variant font-body-md text-body-md" id="cg-cambio" type="text" inputmode="decimal"/>
+        <span class="font-body-sm text-body-sm text-on-surface-variant" id="cg-cambio-sigma">—</span></label>
+      <label class="flex flex-col gap-1"><span class="font-body-sm text-body-sm font-semibold text-on-surface">Muestras consecutivas después del cambio</span>
+        <input class="h-11 rounded-lg border-outline-variant font-body-md text-body-md" id="cg-m" type="number" min="1" max="200" step="1" value="5"/></label>
+      <label class="flex flex-col gap-1"><span class="font-body-sm text-body-sm font-semibold text-on-surface">Comparar en las primeras (horas)</span>
+        <input class="h-11 rounded-lg border-outline-variant font-body-md text-body-md" id="cg-horizonte" type="text" inputmode="decimal"/>
+        <span class="font-body-sm text-body-sm text-on-surface-variant">El mismo tiempo para los tres planes.</span></label>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left min-w-[640px]">
+        <thead><tr class="font-body-sm text-body-sm text-on-surface-variant align-bottom">
+          <th class="py-space-xs pr-space-md font-normal"></th>
+          <th class="py-space-xs px-space-md font-semibold text-on-surface">Plan actual</th>
+          <th class="py-space-xs px-space-md font-semibold text-primary bg-primary-fixed/20 rounded-t-lg">Camino A · aumentar n
+            <button class="mt-space-xs h-9 px-space-sm rounded-lg bg-surface-container-lowest hover:bg-surface-container text-primary font-label-md text-label-md font-semibold flex items-center gap-1" data-usar="a" type="button"><span class="material-symbols-outlined text-sm">north_west</span>Usar este plan</button></th>
+          <th class="py-space-xs pl-space-md font-semibold text-primary bg-primary-fixed/20 rounded-t-lg">Camino B · reducir el intervalo
+            <button class="mt-space-xs h-9 px-space-sm rounded-lg bg-surface-container-lowest hover:bg-surface-container text-primary font-label-md text-label-md font-semibold flex items-center gap-1" data-usar="b" type="button"><span class="material-symbols-outlined text-sm">north_west</span>Usar este plan</button></th>
+        </tr></thead>
+        <tbody class="divide-y divide-surface-container" id="cg-tabla"></tbody>
+      </table>
+    </div>
+    <ul class="flex flex-col gap-space-xs" id="cg-textos"></ul>
+    <div class="hidden items-start gap-space-sm p-space-md rounded-lg bg-surface-container-high" id="cg-avisos">
+      <span class="material-symbols-outlined text-primary-container">info</span>
+      <div class="flex flex-col gap-1 font-body-md text-body-md text-on-surface" id="cg-avisos-txt"></div>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-space-lg">
+      <div class="flex flex-col gap-space-xs">
+        <span class="font-body-lg text-body-lg font-semibold text-on-surface">Potencia: probabilidad de detectar en la muestra siguiente</span>
+        <span class="font-body-sm text-body-sm text-on-surface-variant" id="cg-pot-sub">Según el tamaño del cambio del promedio (hacia arriba o hacia abajo).</span>
+        <div class="grafico" id="graf-potencia"></div>
+      </div>
+      <div class="flex flex-col gap-space-xs">
+        <span class="font-body-lg text-body-lg font-semibold text-on-surface">Probabilidad de haber detectado el cambio</span>
+        <span class="font-body-sm text-body-sm text-on-surface-variant">Según el tiempo transcurrido desde que ocurrió.</span>
+        <div class="grafico" id="graf-acumulada"></div>
+      </div>
+    </div>
+    <p class="font-body-sm text-body-sm text-on-surface-variant">Fórmulas: δ = cambio / σ · β = Φ(k − δ√n) − Φ(−k − δ√n) ·
+      potencia por muestra = 1 − β · P(detectar en las primeras m muestras) = 1 − βᵐ · en T horas: 1 − β<sup>⌊T/h⌋</sup> ·
+      ATS₁ = h / (1 − β) · falsas alarmas: ATS₀ = h / α. Se supone que el cambio ocurre justo después de una muestra.</p>
+  </div>
+</section>
 {% endblock %}
 {% block scripts %}
 <script src="/static/js/graficos.js"></script>

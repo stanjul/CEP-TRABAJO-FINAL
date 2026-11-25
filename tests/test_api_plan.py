@@ -226,3 +226,27 @@ def test_migracion_agrega_columna(tmp_path):
     columnas = [fila[1] for fila in con.execute("PRAGMA table_info(variables)")]
     con.close()
     assert "sigma_monitoreo" in columnas
+
+
+# ---------------------------------------------------------------------------
+# Carga muestral objetivo (GET /variables/{id}/carga)
+# ---------------------------------------------------------------------------
+
+def test_carga_objetivo_variable_medida(c):
+    """Peso neto (5 unidades cada 15 min = 20 u/h): por defecto objetivo 40 u/h y cambio de 1σ."""
+    r = c.get("/api/variables/1/carga").json()
+    assert r["carga_actual"] == pytest.approx(20)
+    assert r["objetivo"] == pytest.approx(40)
+    assert r["planes"]["a"]["n"] == 10 and r["planes"]["b"]["frecuencia_min"] == pytest.approx(7.5, abs=0.6)
+    assert r["delta"] == pytest.approx(r["cambio"] / r["sigma"])
+    assert r["textos"] and r["horizonte_min"] == pytest.approx(5 * 15)
+    r2 = c.get("/api/variables/1/carga?carga=30&cambio=1&m=3&horizonte_h=1").json()
+    assert r2["cambio"] == 1 and r2["m"] == 3 and r2["horizonte_min"] == 60
+    assert r2["planes"]["actual"]["muestras_en_horizonte"] == 4
+
+
+def test_carga_objetivo_individuales_y_atributos(c):
+    r = c.get("/api/variables/4/carga").json()   # I-MR: solo el camino de reducir el intervalo
+    assert r["planes"]["a"] is None and r["planes"]["b"]["n"] == 1
+    e = c.get("/api/variables/2/carga")           # carta p: no aplica
+    assert e.status_code == 400 and "miden" in e.json()["detail"]

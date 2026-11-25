@@ -38,7 +38,7 @@ qué fracción del producto se espera fuera de ella y con qué plan de muestreo 
 └───────────────────────────────┬──────────────────────────────────────────┘
                                 │ HTTP/JSON (127.0.0.1)
 ┌───────────────────────────────┴──────────────────────────────────────────┐
-│ app/api — FastAPI: 67 operaciones REST en 15 grupos (routers por módulo) │
+│ app/api — FastAPI: 68 operaciones REST en 15 grupos (routers por módulo) │
 │   servicios.py: orquesta base de datos + núcleo (sin fórmulas propias)   │
 └──────────────┬───────────────────────────────────────┬───────────────────┘
                │                                       │
@@ -65,7 +65,7 @@ API, los reportes y la consola (`datos_prueba/demo_core.py`).
 | Interfaz | Jinja2 3.1, JavaScript sin framework, Tailwind CSS (local), Plotly.js 2.35 (local) |
 | Reportes | LaTeX (`pdflatex`, MiKTeX/TeX Live) + Jinja2; respaldo con ReportLab 5.1; Excel con openpyxl 3.1; figuras con Matplotlib 3.11 |
 | Escritorio | pywebview 6.2 (Microsoft Edge WebView2), PyInstaller 6.22, Inno Setup 6 |
-| Pruebas | pytest (278 pruebas automáticas) |
+| Pruebas | pytest (285 pruebas automáticas) |
 
 Todos los recursos de la interfaz (Tailwind, Plotly, tipografías League Spartan y Montserrat, íconos
 Material Symbols) se sirven desde la propia aplicación: no hay solicitudes a internet en ejecución.
@@ -254,6 +254,13 @@ obligatorias, registradas en el historial).
   **carga muestral** (unidades por hora y por turno), con explicación en palabras. Al guardar el
   plan en Fase II, los límites se recalculan con el centro y la σ congelados; un cambio de *n*
   archiva las muestras de monitoreo tomadas con el tamaño anterior.
+- **Carga muestral objetivo** (cartas X̄ e I): a partir de la carga actual r = n/h (unidades por hora)
+  y una carga objetivo r*, se comparan dos caminos: aumentar *n* (n = r*·h) o reducir el intervalo
+  (h = n/r*). Para un cambio de la media de Δ unidades de la variable (δ = Δ/σ, en cualquier
+  dirección) se informan la potencia por muestra 1 − β, la probabilidad de detectar en las primeras
+  *m* muestras (1 − βᵐ) y en un horizonte común de T horas (1 − β^⌊T/h⌋), ATS₁ = h/(1 − β) y
+  ATS₀ = h/α, con curvas de potencia y de detección acumulada. Cualquiera de los caminos se lleva al
+  plan propuesto para guardarlo.
 
 ### Módulo 7 — Muestreo de aceptación
 
@@ -325,12 +332,12 @@ la vista Operario.
 
 ## 7. API REST
 
-67 operaciones bajo el prefijo `/api`, documentadas en `/docs`:
+68 operaciones bajo el prefijo `/api`, documentadas en `/docs`:
 
 | Grupo | Operaciones | Grupo | Operaciones |
 |---|---|---|---|
 | Procesos y variables | 9 | Plantilla de carga | 4 |
-| Configuración | 9 | Cartas de control | 4 |
+| Configuración | 10 | Cartas de control | 4 |
 | Sistema y respaldos | 9 | Diseño ARL/ATS | 3 |
 | Reportes | 6 | Atributos | 2 |
 | Subgrupos | 5 | Operario | 1 |
@@ -357,7 +364,7 @@ cómo corregirlos.
 
 ## 9. Validación y calidad
 
-- **278 pruebas automáticas** (pytest): cada módulo del núcleo tiene su archivo de pruebas, más
+- **285 pruebas automáticas** (pytest): cada módulo del núcleo tiene su archivo de pruebas, más
   pruebas de la API con base temporal, de las pantallas y de la generación de archivos.
 - **Valores de referencia de Montgomery:** cartas X̄-R (anillos de pistón), I-MR (préstamos), p
   (jugo de naranja), c (circuitos), u (computadoras), capacidad, ARL y muestreo de aceptación.
