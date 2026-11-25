@@ -122,9 +122,19 @@ class EventoManual(BaseModel):
 
 
 class Turno(BaseModel):
-    nombre: str
-    inicio: str = Field(pattern=r"^\d{2}:\d{2}$")
-    fin: str = Field(pattern=r"^\d{2}:\d{2}$")
+    """Turno programado. Días como datetime.weekday() (0 = lunes); arranque = minutos hasta la primera
+    muestra (vacío: un intervalo de muestreo después del inicio)."""
+
+    nombre: str = Field(min_length=1, max_length=40)
+    inicio: str = Field(pattern=r"^([01]\d|2[0-3]):[0-5]\d$")
+    fin: str = Field(pattern=r"^([01]\d|2[0-3]):[0-5]\d$")
+    dias: list[int] = Field(default_factory=lambda: [0, 1, 2, 3, 4, 5, 6])
+    arranque_min: int | None = Field(None, ge=0, le=600)
+
+
+class AccionTurno(BaseModel):
+    nombre: str | None = Field(None, description="Turno programado a iniciar (por defecto el próximo)")
+    usuario: str | None = None
 
 
 class SimulacionARL(BaseModel):

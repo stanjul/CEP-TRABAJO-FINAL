@@ -125,6 +125,8 @@ figure { margin: 1.6rem 0 2rem; }
 figure .lienzo { position: relative; border: 1px solid var(--linea); border-radius: 10px; overflow: hidden; background: #fff; box-shadow: 0 8px 24px -16px rgba(0,52,65,0.45); }
 figure.angosta { max-width: 640px; }
 figure.media { max-width: 820px; }
+figure.chica { max-width: 560px; }
+figure.columna { max-width: 300px; }
 figure img { width: 100%; cursor: zoom-in; }
 figcaption { font-size: 0.86rem; color: var(--tinta-suave); margin-top: 0.6rem; max-width: var(--ancho-texto); }
 figcaption b { color: var(--tinta); font-weight: 650; }
@@ -732,6 +734,21 @@ svg.mini { width: 150px; height: 72px; background: var(--hielo); border-radius: 
     <div class="aviso importante"><strong>No cambies los valores para que la alerta desaparezca</strong><p>Si la muestra salió así, es información valiosa. Anota en la alerta qué pasó (ver <a href="#alertas">Entender y atender las alertas</a>).</p></div>
   </div></div>
 
+  <h3 id="turnos">Turnos: empezar y terminar</h3>
+  <p>La cuenta regresiva de la próxima muestra solo corre <b>durante un turno</b>. Fuera de turno (de noche, el domingo, en una parada larga) CEP no marca muestras atrasadas. El ingeniero define los turnos de la planta (por ejemplo Mañana, Tarde y Noche) con sus horas y sus días de trabajo.</p>
+  <ul>
+    <li><b>El turno empieza solo</b> a su hora de inicio, y <b>termina solo</b> a su hora de fin. Cada turno queda con un número (#1, #2, #3…) y cada muestra registrada queda unida a su turno.</li>
+    <li><b>La primera muestra</b> no se pide al instante: toca un intervalo de muestreo después del inicio (o los minutos que haya fijado el ingeniero), para dar tiempo a que salga producto.</li>
+    <li>Si el turno termina antes, pulsa <span class="boton">Terminar turno</span>, debajo de <span class="boton">Reportar un problema</span>. La cuenta regresiva se detiene. Para volver a empezar, pulsa <span class="boton">Iniciar turno</span> y elige cuál.</li>
+  </ul>
+  <div class="pareja">
+    <figure><div class="lienzo"><img src="img/g_turno_en_curso.png" alt="Turno en curso"></div><figcaption><b>En turno:</b> la cuenta regresiva corre y, debajo, el turno y hasta qué hora va.</figcaption></figure>
+    <figure><div class="lienzo"><img src="img/g_turno_fuera.png" alt="Fuera de turno"></div><figcaption><b>Fuera de turno:</b> no hay cuenta regresiva; dice cuándo empieza el próximo turno.</figcaption></figure>
+  </div>
+  <p>Si guardas una muestra sin un turno abierto, CEP avisa antes. <span class="boton">Volver</span> te deja iniciar el turno primero; <span class="boton">Guardar igual</span> la registra como <b>sin turno</b>.</p>
+  <figure class="chica"><div class="lienzo"><img src="img/g_turno_aviso.png" alt="Aviso de muestra fuera de turno"></div></figure>
+  <div class="aviso consejo"><strong>El turno aparece en todas partes</strong><p>El encabezado muestra el turno en curso, el recuadro <span class="texto-pantalla">Este turno</span> resume sus muestras y alertas, y el <span class="boton">Historial de muestras</span> tiene una columna <b>Turno</b>.</p></div>
+
   <h3 id="corregir">Si te equivocas</h3>
   <h4>Un valor mal escrito</h4>
   <p>Si un valor está muy lejos de lo habitual (por ejemplo 5000 en lugar de 500,0), CEP pregunta antes de guardar. <span class="boton">Corregir</span> vuelve al formulario; <span class="boton">Sí, están bien</span> guarda igual.</p>
@@ -1040,6 +1057,16 @@ svg.mini { width: 150px; height: 72px; background: var(--hielo); border-radius: 
   </ul>
   <figure><div class="lienzo"><img src="img/ing_conf_b.png" alt="Reglas de detección"></div><figcaption><b>Reglas de detección.</b> Se activan una a una o con <span class="boton">Preset WE</span> y <span class="boton">Preset Nelson</span>.</figcaption></figure>
   <figure><div class="lienzo"><img src="img/ing_conf_c.png" alt="Historial, turnos y modo demostración"></div><figcaption><b>Historial de cambios, turnos de trabajo y modo demostración.</b></figcaption></figure>
+  <h4>Turnos de trabajo</h4>
+  <p>El recuadro <span class="texto-pantalla">Turnos de trabajo</span> define el horario de la planta, común a todas las variables:</p>
+  <ul>
+    <li><b>Nombre, inicio y fin</b> (24 horas). Un turno puede cruzar la medianoche, por ejemplo Noche de 22:00 a 06:00.</li>
+    <li><b>Días de trabajo:</b> pulsa L M X J V S D para activarlos o desactivarlos. Un día apagado no abre ese turno.</li>
+    <li><b>Primera muestra a los … min:</b> cuánto esperar desde el inicio antes de pedir la primera muestra. Vacío (<i>auto</i>) es un intervalo de muestreo de cada variable.</li>
+    <li><span class="boton">+ Turno</span> agrega otro y <span class="boton">Guardar turnos</span> guarda el horario (queda en el historial de cambios). Dos turnos no pueden superponerse el mismo día.</li>
+    <li><span class="texto-pantalla">Turno actual</span> muestra el turno abierto con <span class="boton">Terminar turno</span>, o el próximo con <span class="boton">Iniciar turno</span>. Debajo, <span class="texto-pantalla">Historial de turnos</span> lista cada turno con sus horas reales, sus muestras y cómo terminó.</li>
+  </ul>
+  <figure class="columna"><div class="lienzo"><img src="img/g_turno_config.png" alt="Configuración de turnos"></div><figcaption><b>Tres turnos:</b> Mañana y Tarde de lunes a sábado; Noche de lunes a viernes.</figcaption></figure>
 
   <h3 id="base">Base de datos y respaldos</h3>
   <figure class="media"><div class="lienzo"><img src="img/ing_base_datos.png" alt="Base de datos y respaldos"></div></figure>

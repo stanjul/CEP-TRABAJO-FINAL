@@ -130,6 +130,20 @@ Montserrat en Excel (si no está instalada, Excel usa otra). Ver CLAUDE.md «Pla
   Solo cartas X̄/I (atributos: pendiente). `GRAF.curvas` admite `rangoY` y `leyendaAbajo`. 285 tests.
   Instalador 1.0.1 reconstruido con esta sección (misma versión, para no desalinear el manual) e
   instalado en el PC del usuario; verificado empaquetado (pantalla y GET /carga).
+- **Turnos de trabajo (2026-11-24):** pedido del usuario: que la cuenta regresiva no corra fuera del
+  trabajo. Turnos programados en Ajuste `turnos` (nombre, inicio, fin, `dias` 0=lunes, `arranque_min`;
+  `app/core/turnos.py` valida nombres, horas y **superposiciones** semanales). Turnos reales en la
+  tabla `turnos` (`TurnoRegistro`: número, programado/real, `cierre` hora|manual, quién) y
+  `Subgrupo.turno_id`. `servicios.sincronizar_turnos` abre/cierra "al despertar" (sin hilos): un
+  turno cierra a su hora; uno terminado a mano no se reabre en la misma ventana. Iniciar a mano
+  dentro del horario termina a la hora normal; fuera, dura lo programado. Router `/turnos`
+  (estado, iniciar, terminar, historial). Próxima muestra = última del turno + h, o inicio +
+  arranque (h si vacío, decisión del usuario: «al iniciar puede no haber producto»); fuera de turno
+  no hay cuenta regresiva (`estado_muestreo` = fuera_de_turno). Operario: botón Iniciar/Terminar
+  turno, aviso al guardar fuera de turno («Guardar igual» → muestra sin turno). Ingeniería › Límites
+  y reglas: tarjetas de turno con días L–D y «Primera muestra a los … min», Turno actual e
+  Historial. Historial de muestras con columna Turno. Manual (§9 «Turnos» y §12 Límites y reglas)
+  y descripción técnica actualizados (72 operaciones, 296 tests). **Instalador aún sin esta función.**
 - **Git (2026-11-23):** instalado con winget (2.56.1). Repositorio local en la carpeta del proyecto,
   rama `main`, primer commit `a689e30`. `Programa/` queda **fuera** (pedido del usuario), igual que
   `.venv/`, `data/*.db`, `data/reportes/` y `respaldos/`. Autor: identidad global ya configurada

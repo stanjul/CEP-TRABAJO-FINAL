@@ -146,6 +146,14 @@
         if (!ok) return;
       }
     }
+    if (R.estado_muestreo === "fuera_de_turno") {
+      const ok = await CEP.modal({
+        titulo: "No hay un turno abierto",
+        texto: "La muestra quedará registrada <b>fuera de turno</b>. Si la línea está trabajando, inicia el turno primero con el botón «Iniciar turno».",
+        aceptar: "Guardar igual", cancelar: "Volver",
+      });
+      if (!ok) return;
+    }
     const usuario = await CEP.exigirUsuario();
     if (!usuario) return;
     const btn = $("btn-submit-subgroup");
@@ -220,9 +228,79 @@
     }));
   }
 
+  // ------------------------------------------------------------------ Turno
+  const hhmm = (iso) => (iso ? String(iso).slice(11, 16) : "");
+  /** «hoy a las 06:00», «mañana a las 06:00» o «el lunes a las 06:00». */
+  function cuando(iso) {
+    const d = new Date(iso), hoy = new Date();
+    const manana = new Date(hoy); manana.setDate(hoy.getDate() + 1);
+    const dia = d.toDateString() === hoy.toDateString() ? "hoy" : d.toDateString() === manana.toDateString() ? "mañana"
+      : `el ${d.toLocaleDateString("es", { weekday: "long" })}`;
+    return `${dia} a las ${hhmm(iso)}`;
+  }
+
+  function pintarEstadoTurno() {
+    const ab = R.turno_abierto, prox = R.proximo_turno, est = R.estado_muestreo;
+    $("cd-etiqueta").textContent = est === "fuera_de_turno" ? "Fuera de turno" : "Próxima muestra";
+    if (est !== "en_turno") {
+      const el = $("spc-countdown");
+      el.textContent = "—";
+      el.className = "font-metric-display text-metric-display font-bold text-outline";
+    }
+    if (ab) {
+      $("op-turno").textContent = `Turno #${ab.numero} · ${ab.nombre}, hasta las ${hhmm(ab.fin_programado)}`;
+      if (est === "sin_mas_muestras") {
+        $("op-plan").textContent = "No quedan más muestras en este turno.";
+        $("aside-proxima").textContent = `No quedan muestras en el turno ${ab.nombre} (termina a las ${hhmm(ab.fin_programado)}).`;
+      }
+    } else {
+      const txt = prox ? `El turno ${prox.nombre} empieza ${cuando(prox.desde)}.` : "No hay turnos programados.";
+      $("op-plan").textContent = txt;
+      $("op-turno").textContent = "La cuenta regresiva se reanuda al iniciar el turno.";
+      $("aside-proxima").textContent = `Fuera de turno. ${txt}`;
+    }
+    $("btn-turno-texto").textContent = ab ? "Terminar turno" : "Iniciar turno";
+    $("btn-turno-icono").textContent = ab ? "stop_circle" : "play_circle";
+  }
+
+  async function accionTurno() {
+    const usuario = await CEP.exigirUsuario();
+    if (!usuario) return;
+    const ab = R.turno_abierto;
+    try {
+      if (ab) {
+        const ok = await CEP.modal({
+          titulo: `Terminar el turno #${ab.numero} · ${ab.nombre}`,
+          texto: `La cuenta regresiva se detiene hasta el próximo turno. Queda registrado que lo terminaste a las ${new Date().toTimeString().slice(0, 5)}.`,
+          aceptar: "Terminar turno", peligro: true,
+        });
+        if (!ok) return;
+        await api("/turnos/terminar", { json: { usuario } });
+        toast(`Turno #${ab.numero} terminado.`);
+      } else {
+        const est = await api("/turnos/estado");
+        const nombres = est.programados.map((t) => [t.nombre, `${t.nombre} (${t.inicio} a ${t.fin})`]);
+        const r = await CEP.modal({
+          titulo: "Iniciar un turno",
+          texto: "Úsalo cuando la línea empieza a trabajar fuera de la hora programada.",
+          campos: [{ nombre: "nombre", etiqueta: "¿Qué turno es?", tipo: "select", opciones: nombres,
+                     valor: est.proximo ? est.proximo.nombre : nombres[0][0] }],
+          aceptar: "Iniciar turno",
+        });
+        if (!r) return;
+        const t = await api("/turnos/iniciar", { json: { nombre: r.nombre, usuario } });
+        toast(`Turno #${t.numero} · ${t.nombre} iniciado.`);
+      }
+      await refrescar();
+      CEP.pintarEstado(V);
+    } catch (e) { toast(e.message, "error"); }
+  }
+
   function pintarTurno() {
     const t = R.turno;
-    $("turno-titulo").textContent = `Este turno · ${t.nombre} (${t.inicio} a ${t.fin})`;
+    $("turno-titulo").textContent = t.id === null ? "Turnos · todavía no hay turnos registrados"
+      : t.abierto ? `Este turno · #${t.numero} ${t.nombre} (${t.inicio} a ${t.fin})`
+        : `Último turno · #${t.numero} ${t.nombre} (${t.inicio} a ${t.fin}, terminado)`;
     const filas = [
       ["Muestras tomadas", `${t.subgrupos_tomados} de ${t.subgrupos_programados} programadas`],
       [attr() ? "Unidades buenas" : "Unidades dentro de lo aceptado",
@@ -245,7 +323,7 @@
   // ------------------------------------------------------------------ Relojes
   const mmss = (s) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
   function tic() {
-    if (proxima) {
+    if (proxima && R.estado_muestreo === "en_turno") {
       const seg = Math.round((proxima - Date.now()) / 1000);
       const el = $("spc-countdown");
       if (seg >= 0) {
@@ -269,7 +347,8 @@
   async function refrescar() {
     R = await api(`/variables/${V.id}/operario`);
     V = R.variable;
-    proxima = new Date(Date.now() + R.segundos_para_muestra * 1000);  // diferencia calculada en el servidor
+    // Diferencia calculada en el servidor; null fuera de turno o si no quedan muestras en el turno.
+    proxima = R.segundos_para_muestra === null ? null : new Date(Date.now() + R.segundos_para_muestra * 1000);
     OPER.pintarEstado(R, V);
     const n = (R.carta.etiquetas || []).length;
     $("graf-titulo").textContent = n > 1 ? `Últimas ${n} muestras` : n === 1 ? "Primera muestra" : "Últimas muestras";
@@ -279,6 +358,7 @@
     pintarTurno();
     pintarCaptura();
     $("aside-frecuencia").textContent = CEP.cadaCuanto(V.frecuencia_min);
+    pintarEstadoTurno();
     tic();
   }
 
@@ -289,6 +369,7 @@
     $("captura").addEventListener("submit", registrar);
     $("btn-simular").onclick = simular;
     $("btn-deshacer").onclick = deshacer;
+    $("btn-turno").onclick = accionTurno;
     $("btn-problema").onclick = async () => { if (await ALARMAS.reportarEvento(V.id, "anomalia")) { await refrescar(); CEP.pintarEstado(V); } };
     await refrescar();
     setInterval(tic, 1000);

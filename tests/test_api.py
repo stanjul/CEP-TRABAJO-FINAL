@@ -205,7 +205,10 @@ def test_crear_proceso_y_variable(c):
 def test_turnos(c):
     assert len(c.get("/api/ajustes/turnos").json()) == 3
     nuevos = [{"nombre": "Día", "inicio": "07:00", "fin": "19:00"}, {"nombre": "Noche", "inicio": "19:00", "fin": "07:00"}]
-    assert c.put("/api/ajustes/turnos", json=nuevos).json() == nuevos
+    guardados = c.put("/api/ajustes/turnos", json=nuevos).json()
+    assert [{k: g[k] for k in ("nombre", "inicio", "fin")} for g in guardados] == nuevos
+    assert all(g["dias"] == [0, 1, 2, 3, 4, 5, 6] and g["arranque_min"] is None for g in guardados)
+    assert c.put("/api/ajustes/turnos", json=[{"nombre": "A", "inicio": "06:00", "fin": "06:00"}]).status_code == 422
     t = sv.turno_actual(nuevos, datetime(2026, 11, 21, 2, 30))
     assert t["nombre"] == "Noche" and t["desde"] == datetime(2026, 11, 20, 19, 0)
 

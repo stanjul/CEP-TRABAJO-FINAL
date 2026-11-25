@@ -175,14 +175,82 @@
   }
 
   // ------------------------------------------------------------------ Turnos
+  const DIAS = ["L", "M", "X", "J", "V", "S", "D"];
+  const DIAS_NOMBRE = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"];
   function pintarTurnos() {
-    $("turnos").innerHTML = turnos.map((t, i) => `<div class="flex items-center gap-1">
-      <input class="h-8 w-20 rounded border-outline-variant font-label-sm text-label-sm" data-t="${i}" data-c="nombre" value="${esc(t.nombre)}"/>
-      <input class="h-8 w-[4.5rem] rounded border-outline-variant font-label-sm text-label-sm" data-t="${i}" data-c="inicio" maxlength="5" pattern="\\d{2}:\\d{2}" placeholder="HH:MM" title="Inicio (HH:MM, 24 h)" type="text" value="${t.inicio}"/>
-      <input class="h-8 w-[4.5rem] rounded border-outline-variant font-label-sm text-label-sm" data-t="${i}" data-c="fin" maxlength="5" pattern="\\d{2}:\\d{2}" placeholder="HH:MM" title="Fin (HH:MM, 24 h)" type="text" value="${t.fin}"/>
-      <button class="text-error" data-borrar="${i}" title="Quitar" type="button"><span class="material-symbols-outlined text-base">close</span></button></div>`).join("");
-    $("turnos").querySelectorAll("input").forEach((el) => (el.oninput = () => (turnos[+el.dataset.t][el.dataset.c] = el.value)));
+    const inp = "h-8 rounded border-outline-variant font-label-sm text-label-sm";
+    $("turnos").innerHTML = turnos.map((t, i) => {
+      const dias = t.dias || [0, 1, 2, 3, 4, 5, 6];
+      return `<div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col gap-space-xs">
+      <div class="flex items-center gap-1">
+        <input class="${inp} flex-1 min-w-0 font-semibold" data-t="${i}" data-c="nombre" value="${esc(t.nombre)}" aria-label="Nombre del turno"/>
+        <button class="text-error" data-borrar="${i}" title="Quitar este turno" type="button"><span class="material-symbols-outlined text-base">close</span></button></div>
+      <div class="flex items-center gap-1 font-label-sm text-label-sm text-on-surface-variant">
+        <input class="${inp} w-[4.5rem]" data-t="${i}" data-c="inicio" maxlength="5" placeholder="HH:MM" title="Inicio (HH:MM, 24 h)" type="text" value="${t.inicio}"/> a
+        <input class="${inp} w-[4.5rem]" data-t="${i}" data-c="fin" maxlength="5" placeholder="HH:MM" title="Fin (HH:MM, 24 h)" type="text" value="${t.fin}"/></div>
+      <div class="flex gap-0.5" role="group" aria-label="Días de trabajo">${DIAS.map((d, k) => `<button class="w-7 h-7 rounded font-label-sm text-label-sm font-bold ${dias.includes(k) ? "bg-primary-container text-on-primary" : "bg-surface-container-lowest text-outline"}"
+        data-t="${i}" data-dia="${k}" aria-pressed="${dias.includes(k)}" title="${DIAS_NOMBRE[k]}" type="button">${d}</button>`).join("")}</div>
+      <label class="flex flex-wrap items-center gap-1 font-label-sm text-label-sm text-on-surface-variant">Primera muestra a los
+        <input class="${inp} w-14" data-t="${i}" data-c="arranque_min" inputmode="numeric" placeholder="auto" title="Minutos después del inicio del turno. Vacío (auto): un intervalo de muestreo de cada variable." type="text" value="${t.arranque_min ?? ""}"/> min</label>
+    </div>`;
+    }).join("");
+    $("turnos").querySelectorAll("input").forEach((el) => (el.oninput = () => {
+      const t = turnos[+el.dataset.t], c = el.dataset.c;
+      t[c] = c === "arranque_min" ? (el.value.trim() === "" ? null : parseInt(el.value, 10)) : el.value;
+    }));
+    $("turnos").querySelectorAll("[data-dia]").forEach((b) => (b.onclick = () => {
+      const t = turnos[+b.dataset.t], k = +b.dataset.dia;
+      const dias = new Set(t.dias || [0, 1, 2, 3, 4, 5, 6]);
+      if (dias.has(k)) dias.delete(k); else dias.add(k);
+      if (!dias.size) return toast("Un turno necesita al menos un día de trabajo.", "aviso");
+      t.dias = [...dias].sort();
+      pintarTurnos();
+    }));
     $("turnos").querySelectorAll("[data-borrar]").forEach((b) => (b.onclick = () => { turnos.splice(+b.dataset.borrar, 1); pintarTurnos(); }));
+  }
+
+  // Turno actual (iniciar / terminar) e historial de turnos reales.
+  let estadoTurno = null;
+  const hm = (iso) => (iso ? String(iso).slice(11, 16) : "");
+  const diaMes = (iso) => (iso ? `${String(iso).slice(8, 10)}/${String(iso).slice(5, 7)}` : "");
+  async function pintarTurnoActual() {
+    try { estadoTurno = await api("/turnos/estado"); } catch (e) { return; }
+    const ab = estadoTurno.abierto, prox = estadoTurno.proximo;
+    $("turno-actual").textContent = ab ? `#${ab.numero} · ${ab.nombre}, desde las ${hm(ab.inicio)} hasta las ${hm(ab.fin_programado)}`
+      : `Fuera de turno${prox ? ` · próximo: ${prox.nombre}, ${diaMes(prox.desde)} a las ${hm(prox.desde)}` : ""}`;
+    $("btn-turno-accion-texto").textContent = ab ? "Terminar turno" : "Iniciar turno";
+    $("btn-turno-accion-icono").textContent = ab ? "stop_circle" : "play_circle";
+    const hist = await api("/turnos?limite=15").catch(() => []);
+    $("turnos-historial").innerHTML = hist.length ? hist.map((t) => `<li class="py-1.5 flex flex-col font-label-sm text-label-sm">
+      <span class="font-semibold text-on-surface">#${t.numero} · ${esc(t.nombre)} · ${diaMes(t.inicio)} ${hm(t.inicio)}–${t.fin ? hm(t.fin) : "en curso"}</span>
+      <span class="text-on-surface-variant">${t.muestras} ${t.muestras === 1 ? "muestra" : "muestras"}${t.fin ? ` · ${t.cierre === "manual" ? `terminado a mano por ${esc(t.cerrado_por || "—")}` : "terminó a su hora"}` : ""}${t.abierto_por && t.abierto_por !== "Automático" ? ` · iniciado por ${esc(t.abierto_por)}` : ""}</span></li>`).join("")
+      : '<li class="py-1.5 font-label-sm text-label-sm text-on-surface-variant">Todavía no hay turnos registrados.</li>';
+  }
+  async function accionTurno() {
+    const usuario = await CEP.exigirUsuario();
+    if (!usuario || !estadoTurno) return;
+    const ab = estadoTurno.abierto;
+    try {
+      if (ab) {
+        const ok = await CEP.modal({ titulo: `Terminar el turno #${ab.numero} · ${ab.nombre}`,
+          texto: "La cuenta regresiva de las muestras se detiene hasta el próximo turno. Queda registrado quién lo terminó y a qué hora.",
+          aceptar: "Terminar turno", peligro: true });
+        if (!ok) return;
+        await api("/turnos/terminar", { json: { usuario } });
+        toast(`Turno #${ab.numero} terminado.`);
+      } else {
+        const opciones = estadoTurno.programados.map((t) => [t.nombre, `${t.nombre} (${t.inicio} a ${t.fin})`]);
+        const r = await CEP.modal({ titulo: "Iniciar un turno", texto: "Úsalo cuando la línea trabaja fuera de la hora programada.",
+          campos: [{ nombre: "nombre", etiqueta: "¿Qué turno es?", tipo: "select", opciones,
+                     valor: estadoTurno.proximo ? estadoTurno.proximo.nombre : opciones[0][0] }],
+          aceptar: "Iniciar turno" });
+        if (!r) return;
+        const t = await api("/turnos/iniciar", { json: { nombre: r.nombre, usuario } });
+        toast(`Turno #${t.numero} · ${t.nombre} iniciado.`);
+      }
+      await pintarTurnoActual();
+      CEP.pintarEstado(V);
+    } catch (e) { toast(e.message, "error"); }
   }
 
   // ------------------------------------------------------------------ Guardar
@@ -233,11 +301,21 @@
     await cargarHistorial();
     turnos = await api("/ajustes/turnos");
     pintarTurnos();
-    $("btn-turno-mas").onclick = () => { turnos.push({ nombre: `Turno ${turnos.length + 1}`, inicio: "00:00", fin: "06:00" }); pintarTurnos(); };
-    $("btn-turnos").onclick = async () => {
-      try { turnos = await api("/ajustes/turnos", { method: "PUT", json: turnos }); toast("Turnos guardados."); CEP.pintarEstado(V); }
-      catch (e) { toast(e.message, "error"); }
+    $("btn-turno-mas").onclick = () => {
+      turnos.push({ nombre: `Turno ${turnos.length + 1}`, inicio: "00:00", fin: "06:00", dias: [0, 1, 2, 3, 4, 5, 6], arranque_min: null });
+      pintarTurnos();
     };
+    $("btn-turnos").onclick = async () => {
+      try {
+        turnos = await api("/ajustes/turnos", { method: "PUT", json: turnos });
+        pintarTurnos();
+        toast("Turnos guardados.");
+        await pintarTurnoActual();
+        CEP.pintarEstado(V);
+      } catch (e) { toast(e.message, "error"); }
+    };
+    $("btn-turno-accion").onclick = accionTurno;
+    pintarTurnoActual();
     api("/ajustes/modo-demo").then((r) => ($("modo-demo").checked = r.activo)).catch(() => {});
     $("modo-demo").onchange = async () => {
       try {

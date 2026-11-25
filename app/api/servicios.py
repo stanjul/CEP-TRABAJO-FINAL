@@ -23,7 +23,7 @@ from app.core import graficos_variables as gv
 from app.core import supuestos as core_sup
 from app.core.reglas import CATALOGO, PRESETS, REGLAS_DISPERSION, explicar
 from app.db.modelos import (Ajuste, Alarma, CambioConfiguracion, LimitesCarta, Medicion, Proceso, Subgrupo,
-                            Variable, ahora)
+                            TurnoRegistro, Variable, ahora)
 
 from .util import usuario_o_anonimo
 
@@ -133,6 +133,7 @@ def subgrupo_a_dict(sg: Subgrupo, v: Variable) -> dict:
         "id": sg.id, "numero": sg.numero, "timestamp": sg.timestamp, "fase": sg.fase, "operario": sg.operario,
         "lote": sg.lote, "origen": sg.origen, "excluido": sg.excluido, "causa_exclusion": sg.causa_exclusion,
         "accion_exclusion": sg.accion_exclusion, "comentario": sg.comentario,
+        "turno": {"id": sg.turno.id, "numero": sg.turno.numero, "nombre": sg.turno.nombre} if sg.turno else None,
     }
     if es_atributos(v):
         d.update({"conteo": sg.conteo, "tamano": sg.tamano})
@@ -287,8 +288,15 @@ def registrar_subgrupo(db: Session, v: Variable, valores=None, conteo=None, tama
         numero = (db.scalar(select(func.max(Subgrupo.numero)).where(Subgrupo.variable_id == v.id)) or 0) + 1
     elif db.scalar(select(Subgrupo.id).where(Subgrupo.variable_id == v.id, Subgrupo.numero == numero)):
         raise HTTPException(409, f"Ya existe la muestra #{numero}.")
-    sg = Subgrupo(variable_id=v.id, numero=numero, timestamp=timestamp or ahora(), fase=v.fase, operario=operario,
-                  lote=lote, comentario=comentario, origen=origen)
+    momento_sg = timestamp or ahora()
+    # Turno: una muestra tomada ahora va al turno abierto (sincronizando antes); una cargada con su
+    # fecha y hora (plantilla, CSV) va al turno real que contenga ese momento, si existe.
+    if timestamp is None:
+        turno = sincronizar_turnos(db, momento_sg) if origen == "manual" else None
+    else:
+        turno = turno_de_momento(db, momento_sg)
+    sg = Subgrupo(variable_id=v.id, numero=numero, timestamp=momento_sg, fase=v.fase, operario=operario,
+                  lote=lote, comentario=comentario, origen=origen, turno_id=turno.id if turno else None)
     if es_atributos(v):
         sg.conteo, sg.tamano = float(conteo), tam
     else:
@@ -867,11 +875,20 @@ def cambio_a_dict(c: CambioConfiguracion) -> dict:
 
 
 def obtener_turnos(db: Session) -> list[dict]:
+    """Turnos programados (con días de trabajo y arranque completados por defecto)."""
+    from app.core import turnos as core_t
+
     aj = db.get(Ajuste, "turnos")
-    return aj.valor if aj else TURNOS_POR_DEFECTO
+    return core_t.normalizar(aj.valor if aj else TURNOS_POR_DEFECTO)
 
 
 def guardar_turnos(db: Session, turnos: list[dict]) -> list[dict]:
+    from app.core import turnos as core_t
+
+    turnos = core_t.normalizar(turnos)
+    errores = core_t.validar(turnos)
+    if errores:
+        raise HTTPException(422, " ".join(errores))
     aj = db.get(Ajuste, "turnos")
     if aj:
         aj.valor = turnos
@@ -882,25 +899,138 @@ def guardar_turnos(db: Session, turnos: list[dict]) -> list[dict]:
 
 
 def turno_actual(turnos: list[dict], momento: datetime) -> dict:
-    """Turno que contiene `momento` con sus fechas de inicio y fin (admite turnos que cruzan medianoche)."""
-    def hora(t):
-        h, m = map(int, t.split(":"))
-        return time(h, m)
+    """Turno programado que contiene `momento` con sus fechas de inicio y fin (admite turnos que cruzan
+    medianoche y respeta los días de trabajo); "Sin turno" si no hay ninguno."""
+    from app.core import turnos as core_t
 
-    for t in turnos:
-        ini, fin = hora(t["inicio"]), hora(t["fin"])
-        hoy = momento.date()
-        if ini < fin:
-            inicio, final = datetime.combine(hoy, ini), datetime.combine(hoy, fin)
-        else:  # cruza medianoche
-            if momento.time() >= ini:
-                inicio, final = datetime.combine(hoy, ini), datetime.combine(hoy + timedelta(days=1), fin)
-            else:
-                inicio, final = datetime.combine(hoy - timedelta(days=1), ini), datetime.combine(hoy, fin)
-        if inicio <= momento < final:
-            return {**t, "desde": inicio, "hasta": final}
+    v = core_t.ventana_en(core_t.normalizar(turnos), momento)
+    if v:
+        return v
     hoy = datetime.combine(momento.date(), time(0))
     return {"nombre": "Sin turno", "inicio": "00:00", "fin": "23:59", "desde": hoy, "hasta": hoy + timedelta(days=1)}
+
+
+# ---------------------------------------------------------------------------
+# Turnos reales: se abren y cierran solos según la programación, o a mano
+# ---------------------------------------------------------------------------
+
+def turno_a_dict(t: TurnoRegistro | None) -> dict | None:
+    if t is None:
+        return None
+    return {"id": t.id, "numero": t.numero, "nombre": t.nombre, "inicio": t.inicio, "fin": t.fin,
+            "inicio_programado": t.inicio_programado, "fin_programado": t.fin_programado,
+            "abierto": t.fin is None, "cierre": t.cierre, "arranque_min": t.arranque_min,
+            "abierto_por": t.abierto_por, "cerrado_por": t.cerrado_por}
+
+
+def turno_abierto(db: Session) -> TurnoRegistro | None:
+    return db.scalar(select(TurnoRegistro).where(TurnoRegistro.fin.is_(None)).order_by(TurnoRegistro.id.desc()))
+
+
+def _nuevo_turno(db: Session, nombre: str, inicio: datetime, inicio_prog: datetime, fin_prog: datetime,
+                 arranque: int | None, usuario: str) -> TurnoRegistro:
+    numero = (db.scalar(select(func.max(TurnoRegistro.numero))) or 0) + 1
+    t = TurnoRegistro(numero=numero, nombre=nombre, inicio=inicio, inicio_programado=inicio_prog,
+                      fin_programado=fin_prog, arranque_min=arranque, abierto_por=usuario)
+    db.add(t)
+    db.flush()
+    return t
+
+
+def sincronizar_turnos(db: Session, momento: datetime | None = None) -> TurnoRegistro | None:
+    """Pone los turnos reales al día "al despertar" (al consultar o registrar):
+
+    1. Si el turno abierto ya pasó su hora de fin, se cierra a esa hora (cierre "hora").
+    2. Si no hay turno abierto y `momento` cae en un turno programado cuya ventana todavía no tiene
+       registro, se abre uno nuevo desde el inicio programado. Una ventana cerrada a mano no se reabre.
+
+    Si nadie usó el programa durante un turno, ese turno no queda registrado (no se inventan turnos).
+    """
+    from app.core import turnos as core_t
+
+    momento = momento or ahora()
+    abierto = turno_abierto(db)
+    cambio = False
+    if abierto and momento >= abierto.fin_programado:
+        abierto.fin, abierto.cierre, abierto.cerrado_por = abierto.fin_programado, "hora", "Automático"
+        abierto, cambio = None, True
+    if abierto is None:
+        v = core_t.ventana_en(obtener_turnos(db), momento)
+        if v and not db.scalar(select(TurnoRegistro.id).where(TurnoRegistro.inicio_programado == v["desde"],
+                                                              TurnoRegistro.nombre == v["nombre"])):
+            abierto = _nuevo_turno(db, v["nombre"], v["desde"], v["desde"], v["hasta"], v["arranque_min"], "Automático")
+            cambio = True
+    if cambio:
+        db.commit()
+    return abierto
+
+
+def estado_turno(db: Session, momento: datetime | None = None) -> dict:
+    """Turno abierto (si hay), próximo turno programado y la programación vigente."""
+    from app.core import turnos as core_t
+
+    momento = momento or ahora()
+    abierto = sincronizar_turnos(db, momento)
+    programados = obtener_turnos(db)
+    prox = core_t.proxima_ventana(programados, momento)
+    return {"momento": momento, "abierto": turno_a_dict(abierto),
+            "proximo": {"nombre": prox["nombre"], "desde": prox["desde"], "hasta": prox["hasta"]} if prox else None,
+            "programados": [{**t, "dias_texto": core_t.texto_dias(t["dias"])} for t in programados]}
+
+
+def iniciar_turno(db: Session, nombre: str | None, usuario: str | None, momento: datetime | None = None) -> dict:
+    """Abre un turno a mano (por ejemplo, si la línea arranca antes o en un día no programado).
+
+    Si `momento` cae dentro de la ventana de ese turno programado, el turno termina a su hora de fin;
+    si no, dura lo mismo que el turno programado a partir de ahora.
+    """
+    from app.core import turnos as core_t
+
+    momento = momento or ahora()
+    if sincronizar_turnos(db, momento):
+        raise HTTPException(409, "Ya hay un turno abierto. Termínalo antes de iniciar otro.")
+    programados = obtener_turnos(db)
+    if not nombre:
+        prox = core_t.proxima_ventana(programados, momento)
+        nombre = prox["nombre"] if prox else programados[0]["nombre"]
+    prog = next((t for t in programados if t["nombre"].lower() == nombre.strip().lower()), None)
+    if prog is None:
+        raise HTTPException(422, f"No hay un turno programado llamado «{nombre}». Revisa los turnos en Límites y reglas.")
+    v = core_t.ventana_en([{**prog, "dias": core_t.TODOS_LOS_DIAS}], momento)
+    if v:
+        inicio_prog, fin_prog = v["desde"], v["hasta"]
+    else:
+        inicio_prog, fin_prog = momento, momento + timedelta(minutes=core_t.duracion_min(prog))
+    t = _nuevo_turno(db, prog["nombre"], momento, inicio_prog, fin_prog, prog["arranque_min"], usuario_o_anonimo(usuario))
+    db.commit()
+    return turno_a_dict(t)
+
+
+def terminar_turno(db: Session, usuario: str | None, momento: datetime | None = None) -> dict:
+    """Cierra a mano el turno abierto (cierre "manual"): la cuenta regresiva se detiene."""
+    momento = momento or ahora()
+    t = sincronizar_turnos(db, momento)
+    if t is None:
+        raise HTTPException(409, "No hay un turno abierto.")
+    t.fin, t.cierre, t.cerrado_por = momento, "manual", usuario_o_anonimo(usuario)
+    db.commit()
+    return turno_a_dict(t)
+
+
+def historial_turnos(db: Session, limite: int = 30, momento: datetime | None = None) -> list[dict]:
+    """Últimos turnos reales con la cantidad de muestras registradas en cada uno."""
+    sincronizar_turnos(db, momento)
+    filas = list(db.scalars(select(TurnoRegistro).order_by(TurnoRegistro.id.desc()).limit(limite)))
+    cuentas = dict(db.execute(select(Subgrupo.turno_id, func.count(Subgrupo.id)).where(
+        Subgrupo.turno_id.in_([t.id for t in filas]), Subgrupo.fase != "anulado").group_by(Subgrupo.turno_id)).all())
+    return [{**turno_a_dict(t), "muestras": cuentas.get(t.id, 0)} for t in filas]
+
+
+def turno_de_momento(db: Session, momento: datetime) -> TurnoRegistro | None:
+    """Turno real que contiene `momento` (para asociar muestras cargadas con su fecha y hora)."""
+    return db.scalar(select(TurnoRegistro).where(
+        TurnoRegistro.inicio <= momento,
+        func.coalesce(TurnoRegistro.fin, TurnoRegistro.fin_programado) > momento).order_by(TurnoRegistro.id.desc()))
 
 
 # ---------------------------------------------------------------------------
@@ -1075,19 +1205,39 @@ def resumen_operario(db: Session, v: Variable, momento: datetime | None = None) 
     abiertas = alarmas_abiertas(db, v, desde_fase)
     semaforo = _semaforo(v, abiertas)
 
-    ultimo = ultimo_subgrupo(db, v)
-    proxima = (ultimo.timestamp + timedelta(minutes=v.frecuencia_min)) if ultimo else momento
-    segundos = int((proxima - momento).total_seconds())
+    from app.core import turnos as core_t
 
-    turnos = obtener_turnos(db)
-    turno = turno_actual(turnos, momento)
-    del_turno = list(db.scalars(select(Subgrupo).where(
-        Subgrupo.variable_id == v.id, Subgrupo.timestamp >= turno["desde"], Subgrupo.timestamp < turno["hasta"])
-        .order_by(Subgrupo.numero)))
-    programados = int((turno["hasta"] - turno["desde"]).total_seconds() // 60 // v.frecuencia_min)
-    alarmas_turno = list(db.scalars(select(Alarma).where(
-        Alarma.variable_id == v.id, Alarma.creada >= turno["desde"], Alarma.creada < turno["hasta"])
-        .order_by(Alarma.creada.desc())))
+    ultimo = ultimo_subgrupo(db, v)
+    est_turno = estado_turno(db, momento)          # sincroniza los turnos reales
+    abierto = turno_abierto(db)
+    if abierto:
+        ultima_turno = db.scalar(select(Subgrupo).where(
+            Subgrupo.variable_id == v.id, Subgrupo.turno_id == abierto.id, Subgrupo.fase != "anulado")
+            .order_by(Subgrupo.timestamp.desc()))
+        pm = core_t.proxima_muestra(abierto.inicio, abierto.fin_programado, ultima_turno.timestamp if ultima_turno else None,
+                                    v.frecuencia_min, abierto.arranque_min, momento)
+        estado_muestreo, proxima, segundos = pm["estado"], pm["vence"], pm["segundos"]
+        ref = abierto
+    else:
+        estado_muestreo, proxima, segundos = "fuera_de_turno", None, None
+        ref = db.scalar(select(TurnoRegistro).order_by(TurnoRegistro.id.desc()))  # último turno, para el resumen
+
+    if ref:
+        fin_ref = ref.fin or ref.fin_programado
+        del_turno = list(db.scalars(select(Subgrupo).where(
+            Subgrupo.variable_id == v.id, Subgrupo.turno_id == ref.id, Subgrupo.fase != "anulado")
+            .order_by(Subgrupo.numero)))
+        programados = core_t.muestras_programadas(ref.inicio, fin_ref, v.frecuencia_min, ref.arranque_min)
+        alarmas_turno = list(db.scalars(select(Alarma).where(
+            Alarma.variable_id == v.id, Alarma.creada >= ref.inicio, Alarma.creada < min(fin_ref, momento + timedelta(seconds=1)))
+            .order_by(Alarma.creada.desc())))
+        turno = {"id": ref.id, "numero": ref.numero, "nombre": ref.nombre, "abierto": ref.fin is None,
+                 "inicio": ref.inicio.strftime("%H:%M"), "fin": fin_ref.strftime("%H:%M"),
+                 "desde": ref.inicio, "hasta": fin_ref, "cierre": ref.cierre}
+    else:
+        del_turno, programados, alarmas_turno = [], 0, []
+        turno = {"id": None, "numero": None, "nombre": "Sin turno", "abierto": False, "inicio": None, "fin": None,
+                 "desde": None, "hasta": None, "cierre": None}
 
     conforme = None
     if del_turno:
@@ -1141,9 +1291,12 @@ def resumen_operario(db: Session, v: Variable, momento: datetime | None = None) 
         "proximo_numero": (db.scalar(select(func.max(Subgrupo.numero)).where(Subgrupo.variable_id == v.id)) or 0) + 1,
         "proxima_muestra": proxima,
         "segundos_para_muestra": segundos,
-        "muestra_atrasada": segundos < 0,
-        "turno": {"nombre": turno["nombre"], "inicio": turno["inicio"], "fin": turno["fin"], "desde": turno["desde"],
-                  "hasta": turno["hasta"], "subgrupos_tomados": len(del_turno), "subgrupos_programados": programados,
+        "muestra_atrasada": segundos is not None and segundos < 0,
+        # en_turno | sin_mas_muestras | fuera_de_turno
+        "estado_muestreo": estado_muestreo,
+        "turno_abierto": est_turno["abierto"],
+        "proximo_turno": est_turno["proximo"],
+        "turno": {**turno, "subgrupos_tomados": len(del_turno), "subgrupos_programados": programados,
                   "fraccion_conforme": conforme, "alarmas": len(alarmas_turno),
                   "alarmas_resueltas": sum(a.estado == "resuelta" for a in alarmas_turno)},
         "capacidad": cap,

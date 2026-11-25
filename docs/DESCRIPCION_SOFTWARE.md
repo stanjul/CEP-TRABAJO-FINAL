@@ -38,7 +38,7 @@ qué fracción del producto se espera fuera de ella y con qué plan de muestreo 
 └───────────────────────────────┬──────────────────────────────────────────┘
                                 │ HTTP/JSON (127.0.0.1)
 ┌───────────────────────────────┴──────────────────────────────────────────┐
-│ app/api — FastAPI: 68 operaciones REST en 15 grupos (routers por módulo) │
+│ app/api — FastAPI: 72 operaciones REST en 16 grupos (routers por módulo) │
 │   servicios.py: orquesta base de datos + núcleo (sin fórmulas propias)   │
 └──────────────┬───────────────────────────────────────┬───────────────────┘
                │                                       │
@@ -65,7 +65,7 @@ API, los reportes y la consola (`datos_prueba/demo_core.py`).
 | Interfaz | Jinja2 3.1, JavaScript sin framework, Tailwind CSS (local), Plotly.js 2.35 (local) |
 | Reportes | LaTeX (`pdflatex`, MiKTeX/TeX Live) + Jinja2; respaldo con ReportLab 5.1; Excel con openpyxl 3.1; figuras con Matplotlib 3.11 |
 | Escritorio | pywebview 6.2 (Microsoft Edge WebView2), PyInstaller 6.22, Inno Setup 6 |
-| Pruebas | pytest (285 pruebas automáticas) |
+| Pruebas | pytest (296 pruebas automáticas) |
 
 Todos los recursos de la interfaz (Tailwind, Plotly, tipografías League Spartan y Montserrat, íconos
 Material Symbols) se sirven desde la propia aplicación: no hay solicitudes a internet en ejecución.
@@ -78,7 +78,7 @@ Material Symbols) se sirven desde la propia aplicación: no hay solicitudes a in
 | `app/api` (endpoints y servicios) | 19 | ≈ 2 200 |
 | `app/db` (modelos, sesión, semilla, respaldos) | 5 | ≈ 400 |
 | `app/web` (plantillas HTML y JavaScript) | 39 | ≈ 5 800 |
-| `tests` | 23 | ≈ 1 900 |
+| `tests` | 24 | ≈ 2 700 |
 
 ---
 
@@ -134,7 +134,8 @@ Una sola base SQLite con todos los procesos de la planta.
 | `cambios_configuracion` | Historial de auditoría: parámetro, valor anterior y nuevo, usuario, justificación, versión y SHA-256 de la configuración |
 | `lotes_inspeccion` | Lotes evaluados por muestreo de aceptación y su dictamen |
 | `reportes` | Reportes generados con su huella SHA-256 |
-| `ajustes` | Ajustes globales (turnos, modo demostración, identificadores de plantillas) |
+| `ajustes` | Ajustes globales (horario de turnos, modo demostración, identificadores de plantillas) |
+| `turnos` | Turnos reales: número, nombre, inicio y fin programados y reales, cómo se cerró (a su hora o a mano) y quién lo abrió y lo cerró; cada subgrupo apunta a su turno |
 
 Las columnas agregadas en versiones posteriores se crean automáticamente al abrir una base
 anterior (migración incorporada).
@@ -292,8 +293,14 @@ obligatorias, registradas en el historial).
 - **Vista Operario:** captura con resultado en vivo (promedio y si está dentro de lo normal), aviso
   de valor probablemente mal escrito (a más de 5σ del centro habitual o muy lejos de la
   especificación), **deshacer** el último registro durante 10 minutos (queda como «anulado», con
-  motivo), cuenta regresiva a la próxima muestra según la frecuencia, resumen del turno y
-  reporte manual de problemas.
+  motivo), cuenta regresiva a la próxima muestra según la frecuencia (solo dentro de un turno),
+  botón para iniciar o terminar el turno, resumen del turno y reporte manual de problemas.
+- **Turnos de trabajo:** el ingeniero define el horario de la planta (nombre, inicio, fin, días de
+  trabajo y minutos hasta la primera muestra). Cada turno se abre y se cierra solo a sus horas, o a
+  mano desde Operario o Ingeniería, y queda numerado (#1, #2…). La próxima muestra vence a la
+  última muestra del turno + h, o al inicio + arranque (h por omisión); fuera de turno no hay
+  cuenta regresiva ni muestras atrasadas. Registrar fuera de turno pide confirmación y la muestra
+  queda «sin turno». Se rechazan turnos que se superponen el mismo día.
 - **Alarmas:** seguimiento con estados (sin revisar, en revisión, resuelta); para resolver se
   exigen causa y acción.
 - **Configuración y auditoría:** especificaciones, reglas, turnos y parámetros con versión, motivo
@@ -332,7 +339,7 @@ la vista Operario.
 
 ## 7. API REST
 
-68 operaciones bajo el prefijo `/api`, documentadas en `/docs`:
+72 operaciones bajo el prefijo `/api`, documentadas en `/docs`:
 
 | Grupo | Operaciones | Grupo | Operaciones |
 |---|---|---|---|
@@ -343,7 +350,7 @@ la vista Operario.
 | Subgrupos | 5 | Operario | 1 |
 | Muestreo de aceptación | 5 | Supuestos | 1 |
 | Alarmas | 4 | Capacidad | 1 |
-| Datos | 4 | | |
+| Datos | 4 | Turnos | 4 |
 
 Las respuestas son JSON; los valores no numéricos (NaN, ±∞) se convierten en `null`. Las entradas
 se validan con esquemas Pydantic y los errores se devuelven con mensajes en español que indican
@@ -364,7 +371,7 @@ cómo corregirlos.
 
 ## 9. Validación y calidad
 
-- **285 pruebas automáticas** (pytest): cada módulo del núcleo tiene su archivo de pruebas, más
+- **296 pruebas automáticas** (pytest): cada módulo del núcleo tiene su archivo de pruebas, más
   pruebas de la API con base temporal, de las pantallas y de la generación de archivos.
 - **Valores de referencia de Montgomery:** cartas X̄-R (anillos de pistón), I-MR (préstamos), p
   (jugo de naranja), c (circuitos), u (computadoras), capacidad, ARL y muestreo de aceptación.

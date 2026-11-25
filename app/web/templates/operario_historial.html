@@ -35,7 +35,7 @@
     const attr = CEP.esAtributos(V);
     const d = V.decimales;
     const t = V.tipo_carta;
-    const cab = ["Muestra", "Fecha y hora", "Etapa",
+    const cab = ["Muestra", "Fecha y hora", "Turno", "Etapa",
       ...(attr ? (t === "c" ? ["Fallas"] : [t === "u" ? "Fallas" : "Defectuosas", "Revisadas", t === "u" ? "Fallas por unidad" : "% defectuosas"])
         : (t === "imr" ? [`Valor (${V.unidad})`] : [`Valores (${V.unidad})`, "Promedio"])),
       "Quién", "Lote", "Estado"];
@@ -53,6 +53,7 @@
       return `<tr class="${i % 2 ? "bg-surface-container-low" : ""}">
         <td class="py-1.5 px-space-sm font-label-md text-label-md font-bold text-primary">#${s.numero}</td>
         <td class="py-1.5 px-space-sm font-body-sm text-body-sm">${fechaHora(s.timestamp)}</td>
+        <td class="py-1.5 px-space-sm font-body-sm text-body-sm">${s.turno ? `#${s.turno.numero} ${esc(s.turno.nombre)}` : '<span class="text-outline">Sin turno</span>'}</td>
         <td class="py-1.5 px-space-sm font-body-sm text-body-sm">${ETAPA[s.fase] || s.fase}</td>
         ${datos.map((x) => `<td class="py-1.5 px-space-sm font-label-md text-label-md text-right ${tachado}">${x}</td>`).join("")}
         <td class="py-1.5 px-space-sm font-body-sm text-body-sm">${esc(s.operario || "—")}</td>
@@ -66,8 +67,8 @@
     V = ctx.variable;
     $("h-fase").onchange = cargar;
     $("h-csv").onclick = () => {
-      const lineas = ["numero,timestamp,fase,valores,conteo,tamano,operario,lote,reglas,excluido,comentario"].concat(filas.map((s) =>
-        [s.numero, s.timestamp, s.fase, (s.valores || []).join(" "), s.conteo ?? "", s.tamano ?? "", s.operario ?? "", s.lote ?? "", s.reglas_violadas.join(" "), s.excluido, s.comentario ?? ""].map((x) => `"${String(x).replace(/"/g, '""')}"`).join(",")));
+      const lineas = ["numero,timestamp,turno,fase,valores,conteo,tamano,operario,lote,reglas,excluido,comentario"].concat(filas.map((s) =>
+        [s.numero, s.timestamp, s.turno ? `#${s.turno.numero} ${s.turno.nombre}` : "", s.fase, (s.valores || []).join(" "), s.conteo ?? "", s.tamano ?? "", s.operario ?? "", s.lote ?? "", s.reglas_violadas.join(" "), s.excluido, s.comentario ?? ""].map((x) => `"${String(x).replace(/"/g, '""')}"`).join(",")));
       const a = document.createElement("a");
       a.href = URL.createObjectURL(new Blob(["﻿" + lineas.join("\n")], { type: "text/csv" }));
       a.download = `historial_${V.nombre.replace(/\W+/g, "_")}.csv`;

@@ -57,6 +57,7 @@ def crear_tablas() -> None:
 COLUMNAS_NUEVAS = [
     ("variables", "sigma_monitoreo", "FLOAT"),
     ("alarmas", "explicacion", "TEXT"),
+    ("subgrupos", "turno_id", "INTEGER"),
 ]
 
 

@@ -6,7 +6,8 @@ Proceso 1─* Variable 1─* Subgrupo 1─* Medicion
                     1─* CambioConfiguracion (historial de auditoría)
 LoteInspeccion   (muestreo de aceptación)
 ReporteGenerado  (historial de reportes exportados)
-Ajuste           (clave/valor global: turnos, etc.)
+Ajuste           (clave/valor global: turnos programados, etc.)
+TurnoRegistro 1─* Subgrupo  (turnos reales: se abren y cierran solos según la programación o a mano)
 """
 
 from __future__ import annotations
@@ -91,6 +92,9 @@ class Subgrupo(Base):
     causa_exclusion: Mapped[str | None] = mapped_column(Text)
     accion_exclusion: Mapped[str | None] = mapped_column(Text)
     comentario: Mapped[str | None] = mapped_column(Text)
+    # Turno real en que se tomó (None: fuera de turno o cargada sin turno, p. ej. datos históricos)
+    turno_id: Mapped[int | None] = mapped_column(ForeignKey("turnos.id", ondelete="SET NULL"), index=True)
+    turno: Mapped["TurnoRegistro | None"] = relationship()
 
     variable: Mapped[Variable] = relationship(back_populates="subgrupos")
     mediciones: Mapped[list["Medicion"]] = relationship(back_populates="subgrupo", cascade="all, delete-orphan",
@@ -216,3 +220,22 @@ class Ajuste(Base):
 
     clave: Mapped[str] = mapped_column(String(60), primary_key=True)
     valor: Mapped[dict | list] = mapped_column(JSON)
+
+
+class TurnoRegistro(Base):
+    """Turno real: se abre al llegar la hora de un turno programado (o a mano) y se cierra a su hora de
+    fin (o antes, a mano). Las muestras registradas mientras está abierto quedan asociadas a él."""
+
+    __tablename__ = "turnos"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    numero: Mapped[int] = mapped_column(Integer)  # consecutivo: Turno #1, #2, …
+    nombre: Mapped[str] = mapped_column(String(80))  # nombre del turno programado (Mañana, Tarde…)
+    inicio_programado: Mapped[datetime] = mapped_column(DateTime, index=True)
+    fin_programado: Mapped[datetime] = mapped_column(DateTime)
+    inicio: Mapped[datetime] = mapped_column(DateTime)
+    fin: Mapped[datetime | None] = mapped_column(DateTime)  # None mientras está abierto
+    cierre: Mapped[str | None] = mapped_column(String(10))  # hora | manual
+    arranque_min: Mapped[int | None] = mapped_column(Integer)
+    abierto_por: Mapped[str | None] = mapped_column(String(80))
+    cerrado_por: Mapped[str | None] = mapped_column(String(80))

@@ -234,11 +234,24 @@
     }) || null;
   }
 
+  /** «Turno #12 · Mañana | 06:00 - 14:00» o «Fuera de turno · Mañana lun 06:00». */
+  function textoTurno(e) {
+    const hm = (iso) => (iso ? String(iso).slice(11, 16) : "");
+    if (e && e.abierto) return `Turno #${e.abierto.numero} · ${e.abierto.nombre} | ${hm(e.abierto.inicio)} - ${hm(e.abierto.fin_programado)}`;
+    if (e && e.proximo) {
+      const d = new Date(e.proximo.desde);
+      const hoy = new Date();
+      const dia = d.toDateString() === hoy.toDateString() ? "" : `${d.toLocaleDateString("es", { weekday: "short" })} `;
+      return `Fuera de turno · ${e.proximo.nombre} ${dia}${hm(e.proximo.desde)}`;
+    }
+    return "Fuera de turno";
+  }
+
   async function pintarEstado(variable) {
     try {
-      const turnos = await api("/ajustes/turnos");
-      const t = turnoActual(turnos);
-      document.getElementById("hdr-turno").textContent = t ? `${t.nombre} | ${t.inicio} - ${t.fin}` : "Fuera de turno";
+      const e = await api("/turnos/estado");
+      CEP.turno = e;
+      document.getElementById("hdr-turno").textContent = textoTurno(e);
     } catch (e) { /* el header no bloquea la pantalla */ }
     if (!variable) {
       // Base vacía: no hay proceso que evaluar (no mostrar «Va bien»).
@@ -317,6 +330,7 @@
 
   window.CEP = {
     api, arrancar, fmt, pct, fecha, hora, fechaHora, esc, rellenar, toast, modal, usuario, exigirUsuario,
-    pedirUsuario, conVariable, avisoPantalla, pintarEstado, turnoActual, NOMBRES_CARTA, esAtributos, cadaCuanto, ctx: null,
+    pedirUsuario, conVariable, avisoPantalla, pintarEstado, turnoActual, textoTurno, turno: null,
+    NOMBRES_CARTA, esAtributos, cadaCuanto, ctx: null,
   };
 })();

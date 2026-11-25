@@ -89,6 +89,9 @@ de Google Stitch (`Stitch/stitch_industrial_spc_suite/`). `Programa/` es un proy
   (reutilizables en reportes). σ fijada: `variables.sigma_monitoreo` + `gv.limites_con_sigma`.
 - Columnas nuevas en modelos: agregarlas también a `sesion.COLUMNAS_NUEVAS` (migración automática).
 - Capacidad: solo Cp, Cpk, Cpl, Cpu y fracción no conforme (sin Pp/Ppk).
+- Turnos: horario en Ajuste `turnos` (`app/core/turnos.py`), turnos reales en `TurnoRegistro` +
+  `Subgrupo.turno_id`. No hay hilos: `servicios.sincronizar_turnos` abre/cierra al consultar.
+  La cuenta regresiva solo corre con un turno abierto (`estado_muestreo`).
 
 ## Plantilla de carga (2026-11)
 - `app/core/plantilla.py`: `construir_plantilla(spec)` (Excel con openpyxl: hoja por variable, bloques

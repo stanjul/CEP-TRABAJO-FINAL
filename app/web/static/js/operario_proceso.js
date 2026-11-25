@@ -64,8 +64,10 @@
     paraRevisar();
     $("aside-frecuencia").textContent = CEP.cadaCuanto(V.frecuencia_min);
     const seg = R.segundos_para_muestra;
-    $("aside-proxima").textContent = seg >= 0 ? `Próxima muestra en ${Math.ceil(seg / 60)} min (#${R.proximo_numero}).`
-      : `La muestra #${R.proximo_numero} está atrasada.`;
+    $("aside-proxima").textContent = R.estado_muestreo === "fuera_de_turno" ? "Fuera de turno: no hay muestras pendientes."
+      : R.estado_muestreo === "sin_mas_muestras" ? "No quedan muestras en este turno."
+        : seg >= 0 ? `Próxima muestra en ${Math.ceil(seg / 60)} min (#${R.proximo_numero}).`
+          : `La muestra #${R.proximo_numero} está atrasada.`;
   }
 
   CEP.arrancar(async (ctx) => {

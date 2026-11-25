@@ -112,7 +112,7 @@ Base teórica & Montgomery, \emph{Introduction to Statistical Quality Control}. 
   \textbf{Interfaz} — ventana propia (WebView2 vía pywebview) o navegador en modo servidor\\
   16 pantallas Jinja2 + JavaScript por pantalla + Plotly.js (todo local)};
 \node[caja, text width=0.86\linewidth, below=0.9cm of web] (api) {%
-  \textbf{\texttt{app/api}} — FastAPI: 68 operaciones REST en 15 grupos (un router por módulo)\\
+  \textbf{\texttt{app/api}} — FastAPI: 72 operaciones REST en 16 grupos (un router por módulo)\\
   \texttt{servicios.py}: combina base de datos y núcleo, sin fórmulas propias};
 \node[caja, text width=0.39\linewidth, below left=0.9cm and -0.43\linewidth of api] (db) {%
   \textbf{\texttt{app/db}} — SQLAlchemy 2\\SQLite (un archivo \texttt{cep.db})\\migraciones y respaldos};
@@ -142,7 +142,7 @@ Persistencia & SQLAlchemy 2.1 sobre SQLite\\
 Interfaz & Jinja2 3.1, JavaScript sin framework, Tailwind CSS (local), Plotly.js 2.35 (local)\\
 Reportes & LaTeX (\texttt{pdflatex}, MiKTeX/TeX Live) + Jinja2; respaldo con ReportLab 5.1; Excel con openpyxl 3.1; figuras con Matplotlib 3.11\\
 Escritorio & pywebview 6.2 (Microsoft Edge WebView2), PyInstaller 6.22, Inno Setup 6\\
-Pruebas & pytest (285 pruebas automáticas)\\
+Pruebas & pytest (296 pruebas automáticas)\\
 \bottomrule
 \end{tabularx}
 
@@ -160,7 +160,7 @@ durante la ejecución.
 \texttt{app/api} (endpoints y servicios) & 19 & $\approx$ 2\,200\\
 \texttt{app/db} (modelos, sesión, semilla, respaldos) & 5 & $\approx$ 400\\
 \texttt{app/web} (plantillas HTML y JavaScript) & 39 & $\approx$ 5\,800\\
-\texttt{tests} & 23 & $\approx$ 1\,900\\
+\texttt{tests} & 24 & $\approx$ 2\,700\\
 \bottomrule
 \end{tabularx}
 
@@ -226,7 +226,8 @@ Una sola base SQLite guarda todos los procesos de la planta.
 \texttt{cambios\_configuracion} & Historial de auditoría: parámetro, valor anterior y nuevo, usuario, justificación, versión y SHA-256 de la configuración.\\
 \texttt{lotes\_inspeccion} & Lotes evaluados por muestreo de aceptación y su dictamen.\\
 \texttt{reportes} & Reportes generados con su huella SHA-256.\\
-\texttt{ajustes} & Ajustes globales (turnos, modo demostración, identificadores de plantillas).\\
+\texttt{ajustes} & Ajustes globales (horario de turnos, modo demostración, identificadores de plantillas).\\
+\texttt{turnos} & Turnos reales: número, nombre, inicio y fin programados y reales, cómo se cerró (a su hora o a mano) y quién lo abrió y lo cerró; cada subgrupo apunta a su turno.\\
 \bottomrule
 \end{tabularx}
 
@@ -451,8 +452,15 @@ obligatorias, registradas en el historial).
 \item \textbf{Vista Operario:} captura con resultado en vivo (promedio y si está dentro de lo
   normal), aviso de valor probablemente mal escrito (a más de $5\sigma$ del centro habitual o muy
   lejos de la especificación), \textbf{deshacer} el último registro durante 10 minutos (queda como
-  «anulado», con motivo), cuenta regresiva a la próxima muestra según la frecuencia, resumen del
-  turno y reporte manual de problemas.
+  «anulado», con motivo), cuenta regresiva a la próxima muestra según la frecuencia (solo dentro
+  de un turno), botón para iniciar o terminar el turno, resumen del turno y reporte manual de
+  problemas.
+\item \textbf{Turnos de trabajo:} el ingeniero define el horario de la planta (nombre, inicio,
+  fin, días de trabajo y minutos hasta la primera muestra). Cada turno se abre y se cierra solo a
+  sus horas, o a mano desde Operario o Ingeniería, y queda numerado (\#1, \#2\ldots). La próxima
+  muestra vence a la última muestra del turno $+\,h$, o al inicio $+$ arranque ($h$ por omisión);
+  fuera de turno no hay cuenta regresiva ni muestras atrasadas. Registrar fuera de turno pide
+  confirmación y la muestra queda «sin turno». Se rechazan turnos que se superponen el mismo día.
 \item \textbf{Alarmas:} seguimiento con estados (sin revisar, en revisión, resuelta); para
   resolver se exigen causa y acción.
 \item \textbf{Configuración y auditoría:} especificaciones, reglas, turnos y parámetros con
@@ -497,7 +505,7 @@ textos sin jerga en la vista Operario.
 \needspace{16\baselineskip}
 \section{API REST}
 
-La API tiene 68 operaciones bajo el prefijo \texttt{/api}, documentadas en \texttt{/docs}:
+La API tiene 72 operaciones bajo el prefijo \texttt{/api}, documentadas en \texttt{/docs}:
 
 \begin{center}
 \begin{tabular}{@{}lr@{\qquad\qquad}lr@{}}
@@ -511,7 +519,7 @@ Reportes & 6 & Atributos & 2\\
 Subgrupos & 5 & Operario & 1\\
 Muestreo de aceptación & 5 & Supuestos & 1\\
 Alarmas & 4 & Capacidad & 1\\
-Datos & 4 & & \\
+Datos & 4 & Turnos & 4\\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -535,7 +543,7 @@ mensajes en español que indican cómo corregirlos.
 % ---------------------------------------------------------------- 9
 \section{Validación y calidad}
 \begin{itemize}
-\item \textbf{285 pruebas automáticas} (pytest): cada módulo del núcleo tiene su archivo de
+\item \textbf{296 pruebas automáticas} (pytest): cada módulo del núcleo tiene su archivo de
   pruebas, además de pruebas de la API con base temporal, de las pantallas y de la generación de
   archivos.
 \item \textbf{Valores de referencia de Montgomery:} cartas $\bar{X}$-R (anillos de pistón), I-MR

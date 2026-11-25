@@ -162,11 +162,21 @@
   <section class="lg:col-span-3 bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-sm">
     <div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary">schedule</span>
       <h2 class="font-label-lg text-label-lg font-bold">Turnos de Trabajo</h2></div>
-    <p class="font-body-sm text-body-sm text-on-surface-variant">Se usan en el resumen del turno de la vista Operario (globales para la planta).</p>
+    <div class="flex flex-col gap-space-xs p-space-sm rounded-lg bg-primary-fixed/30">
+      <span class="font-label-sm text-label-sm text-on-surface-variant">Turno actual</span>
+      <span class="font-body-md text-body-md font-semibold text-on-surface" id="turno-actual">—</span>
+      <button class="h-9 rounded bg-primary-container hover:bg-primary text-on-primary font-label-sm text-label-sm font-bold flex items-center justify-center gap-1" id="btn-turno-accion" type="button">
+        <span class="material-symbols-outlined text-sm" id="btn-turno-accion-icono">play_circle</span><span id="btn-turno-accion-texto">Iniciar turno</span></button>
+    </div>
+    <p class="font-body-sm text-body-sm text-on-surface-variant">Horario de la planta. Cada turno se abre y se cierra solo a sus horas; fuera de turno no corre la cuenta regresiva de las muestras.</p>
     <div class="flex flex-col gap-space-xs" id="turnos"></div>
     <div class="flex gap-space-xs">
       <button class="flex-1 h-9 rounded bg-surface-container-low hover:bg-surface-container font-label-sm text-label-sm" id="btn-turno-mas" type="button">+ Turno</button>
       <button class="flex-1 h-9 rounded bg-primary text-on-primary font-label-sm text-label-sm font-bold" id="btn-turnos" type="button">Guardar turnos</button></div>
+    <details class="pt-space-xs" id="turnos-historial-caja">
+      <summary class="cursor-pointer font-label-md text-label-md font-semibold text-primary">Historial de turnos</summary>
+      <ul class="flex flex-col divide-y divide-surface-container mt-space-xs" id="turnos-historial"></ul>
+    </details>
     <div class="flex flex-col gap-space-xs pt-space-sm mt-space-xs border-t border-outline-variant/40">
       <label class="flex items-start gap-space-sm cursor-pointer">
         <input class="mt-1 w-5 h-5" id="modo-demo" type="checkbox"/>
